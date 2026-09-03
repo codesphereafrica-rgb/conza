@@ -56,7 +56,7 @@
             font-weight: 700;
         }
         .brand img {
-            height: 40px;
+            height: 64px;
             width: auto;
             display: block;
         }
@@ -263,7 +263,7 @@
             display: flex;
             align-items: flex-start;
             gap: 14px;
-            padding: 18px;
+            padding: 10px 12px;
             background: rgba(255,255,255,0.08);
             border: 1px solid rgba(255,255,255,0.14);
             border-radius: 18px;
@@ -271,7 +271,7 @@
             flex: 1 1 220px;
             min-width: 220px;
             max-width: 260px;
-            min-height: 96px;
+            min-height: 68px;
         }
         .contact-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .contact-card .icon {
@@ -448,6 +448,7 @@
             .menu-toggle { display: inline-flex; order: 0; }
             .brand { order: 1; }
             .header-actions { order: 2; }
+            .brand img { height: 52px; }
             .nav { top: calc(100% + 8px); left: 12px; right: 12px; min-width: 0; align-items: stretch; }
             .nav a, .nav form { width: 100%; }
             .nav a { border-radius: 8px; justify-content: flex-start; }
@@ -458,7 +459,7 @@
             .hero-actions { justify-content: center; }
             .hero-right-visuals { width: 100%; max-width: 440px; flex-basis: auto; margin-left: 0; }
             .contact-cards { gap: 8px; }
-            .contact-card { min-width: 0; max-width: none; padding: 10px; gap: 8px; border-radius: 10px; }
+            .contact-card { min-width: 0; max-width: none; min-height: 58px; padding: 7px 8px; gap: 8px; border-radius: 10px; }
             .contact-card .icon { width: 30px; min-width: 30px; height: 30px; border-radius: 8px; }
             .contact-card .icon svg { width: 17px; height: 17px; }
             .contact-card strong { font-size: .82rem; margin-bottom: 3px; }
@@ -511,10 +512,6 @@
             </nav>
             <div class="header-actions">
                 @auth
-                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                        @csrf
-                        <button type="submit" class="btn small secondary">Déconnexion</button>
-                    </form>
                     <a href="{{ route('profile.edit') }}" class="avatar-only" aria-label="Ouvrir le profil">
                         @if(auth()->user()->avatar)
                             <img class="profile-avatar" src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar">
