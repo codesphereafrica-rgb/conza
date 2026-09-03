@@ -47,7 +47,7 @@
             align-items: center;
             gap: 16px;
         }
-        .menu-toggle { display: none; border: 0; background: transparent; color: white; font-size: 1.6rem; cursor: pointer; padding: 4px; }
+        .menu-toggle { border: 0; background: transparent; color: white; font-size: 1.6rem; cursor: pointer; padding: 4px; }
         .brand {
             display: inline-flex;
             align-items: center;
@@ -61,12 +61,25 @@
             display: block;
         }
         .nav {
-            display: flex;
+            display: none;
+            position: absolute;
+            top: calc(100% + 10px);
+            left: 20px;
+            z-index: 20;
+            min-width: 230px;
+            padding: 10px;
+            background: var(--primary-dark);
+            border: 1px solid rgba(255,255,255,.18);
+            border-radius: 12px;
+            box-shadow: 0 16px 30px rgba(15, 23, 42, .2);
+            flex-direction: column;
             gap: 14px;
             align-items: center;
-            flex-wrap: wrap;
-            margin-left: auto;
+            margin-left: 0;
         }
+        .nav.is-open { display: flex; }
+        .topbar-inner { position: relative; }
+        .header-actions { display: flex; align-items: center; gap: 10px; margin-left: auto; }
         .nav a {
             display: inline-flex;
             align-items: center;
@@ -434,12 +447,11 @@
             }
             .menu-toggle { display: inline-flex; order: 0; }
             .brand { order: 1; }
-            .nav { display: none; order: 3; width: 100%; margin-left: 0; flex-direction: column; align-items: stretch; }
-            .nav.is-open { display: flex; }
+            .header-actions { order: 2; }
+            .nav { top: calc(100% + 8px); left: 12px; right: 12px; min-width: 0; align-items: stretch; }
             .nav a, .nav form { width: 100%; }
             .nav a { border-radius: 8px; justify-content: flex-start; }
             .nav form .btn { width: 100%; text-align: left; }
-            .nav .profile-link { display: flex; justify-content: flex-start; align-items: center; gap: 8px; }
             .profile-heading { align-items: flex-start; }
             .hero-top { justify-content: center; text-align: center; }
             .hero-text-column { max-width: 100%; min-width: 0; text-align: center; }
@@ -492,6 +504,17 @@
                         @csrf
                         <button type="submit" class="btn small secondary">Déconnexion</button>
                     </form>
+                @else
+                    <a href="{{ route('login') }}">Se connecter</a>
+                    <a href="{{ route('register') }}">Inscription</a>
+                @endauth
+            </nav>
+            <div class="header-actions">
+                @auth
+                    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                        @csrf
+                        <button type="submit" class="btn small secondary">Déconnexion</button>
+                    </form>
                     <a href="{{ route('profile.edit') }}" class="avatar-only" aria-label="Ouvrir le profil">
                         @if(auth()->user()->avatar)
                             <img class="profile-avatar" src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar">
@@ -500,10 +523,10 @@
                         @endif
                     </a>
                 @else
-                    <a href="{{ route('login') }}">Se connecter</a>
-                    <a href="{{ route('register') }}">Inscription</a>
+                    <a href="{{ route('login') }}" class="btn small secondary">Connexion</a>
+                    <a href="{{ route('register') }}" class="btn small">Inscription</a>
                 @endauth
-            </nav>
+            </div>
         </div>
     </header>
 
