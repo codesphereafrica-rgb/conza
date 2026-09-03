@@ -14,10 +14,26 @@ services:
         sync: false
       - key: DB_CONNECTION
         value: pgsql
-      - key: DB_URL
+      - key: DB_HOST
         fromDatabase:
           name: conza-db
-          property: connectionString
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: conza-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: conza-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: conza-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: conza-db
+          property: password
       - key: SESSION_DRIVER
         value: database
       - key: CACHE_STORE
