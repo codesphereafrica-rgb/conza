@@ -15,6 +15,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $adminEmail = env('ADMIN_EMAIL', 'admin@conza.com');
+        $adminPassword = env('ADMIN_PASSWORD');
+
+        if ($adminPassword) {
+            $admin = User::updateOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name' => 'Administrateur',
+                    'password' => $adminPassword,
+                    'role' => 'admin',
+                    'status' => 'active',
+                ]
+            );
+
+            \App\Models\Setting::updateOrCreate(
+                ['key' => 'super_admin_id'],
+                ['value' => (string) $admin->id]
+            );
+        }
+
         User::updateOrCreate(
             ['email' => 'admin@conza.cd'],
             [

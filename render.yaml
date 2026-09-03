@@ -50,6 +50,10 @@ services:
         sync: false
       - key: LABYRINTHE_CURRENCY
         value: CDF
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
 
 databases:
   - name: conza-db

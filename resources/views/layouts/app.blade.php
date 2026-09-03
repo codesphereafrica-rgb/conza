@@ -142,14 +142,14 @@
         }
         .hero-right-visuals {
             position: relative;
-            width: min(440px, 42%);
-            min-height: 300px;
+            width: min(462px, 42%);
+            min-height: 315px;
             border-radius: 28px;
             overflow: hidden;
             background: rgba(255,255,255,0.12);
             border: 1px solid rgba(255,255,255,0.22);
             box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
-            flex: 0 0 440px;
+            flex: 0 0 462px;
             margin-left: 44px;
         }
         .hero-visual {
@@ -457,7 +457,7 @@
             .hero-top { justify-content: center; text-align: center; }
             .hero-text-column { max-width: 100%; min-width: 0; text-align: center; }
             .hero-actions { justify-content: center; }
-            .hero-right-visuals { width: 100%; max-width: 440px; flex-basis: auto; margin-left: 0; }
+            .hero-right-visuals { width: 100%; max-width: 462px; min-height: 315px; flex-basis: auto; margin-left: 0; }
             .contact-cards { gap: 8px; }
             .contact-card { min-width: 0; max-width: none; min-height: 58px; padding: 7px 8px; gap: 8px; border-radius: 10px; }
             .contact-card .icon { width: 30px; min-width: 30px; height: 30px; border-radius: 8px; }
