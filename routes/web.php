@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CloudinaryTestController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\HomeController;
@@ -15,6 +16,10 @@ Route::get('/inscription', [AuthController::class, 'showRegister'])->name('regis
 Route::post('/inscription', [AuthController::class, 'register']);
 Route::get('/connexion', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/connexion', [AuthController::class, 'login']);
+Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->group(function () {
+    Route::get('/test-cloud', [CloudinaryTestController::class, 'index'])->name('cloudinary.test');
+    Route::post('/test-cloud', [CloudinaryTestController::class, 'upload'])->name('cloudinary.test.upload');
+});
 Route::get('/mot-de-passe-oublie', [PasswordResetController::class, 'requestForm'])->name('password.request');
 Route::post('/mot-de-passe-oublie', [PasswordResetController::class, 'sendLink'])->name('password.email');
 Route::get('/reinitialiser-mot-de-passe/{token}', [PasswordResetController::class, 'resetForm'])->name('password.reset');

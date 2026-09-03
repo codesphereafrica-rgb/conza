@@ -29,10 +29,10 @@
                 <div style="margin-top: 20px; display: grid; gap: 16px;">
                     @foreach($topic->attachments as $attachment)
                         @php
-                            $filePath = is_string($attachment) ? str_replace('\\', '/', $attachment) : null;
-                            $mediaUrl = $filePath ? Storage::disk('public')->url($filePath) : null;
-                            $isImage = $filePath && preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)$/i', $filePath);
-                            $isVideo = $filePath && preg_match('/\.(mp4|mov|avi|mkv)$/i', $filePath);
+                            $filePath = is_array($attachment) ? ($attachment['url'] ?? null) : (is_string($attachment) ? str_replace('\\', '/', $attachment) : null);
+                            $mediaUrl = is_array($attachment) ? $filePath : ($filePath ? Storage::disk('public')->url($filePath) : null);
+                            $isImage = $filePath && (is_array($attachment) ? ($attachment['type'] ?? null) === 'image' : preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)(\?.*)?$/i', $filePath));
+                            $isVideo = $filePath && (is_array($attachment) ? ($attachment['type'] ?? null) === 'video' : preg_match('/\.(mp4|mov|avi|mkv)(\?.*)?$/i', $filePath));
                         @endphp
 
                         @if($mediaUrl && $isImage)

@@ -520,7 +520,7 @@
                 @auth
                     <a href="{{ route('profile.edit') }}" class="avatar-only" aria-label="Ouvrir le profil">
                         @if(auth()->user()->avatar)
-                            <img class="profile-avatar" src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar">
+                            <img class="profile-avatar" src="{{ auth()->user()->avatar }}" alt="Avatar">
                         @else
                             <span class="profile-avatar" aria-hidden="true">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
                         @endif

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -30,7 +31,7 @@ class AuthController extends Controller
             'role' => 'member',
             'status' => 'active',
             'avatar' => $request->hasFile('avatar')
-                ? $request->file('avatar')->store('avatars', 'public')
+                ? app(Cloudinary::class)->uploadApi()->upload($request->file('avatar')->getRealPath(), ['folder' => 'conza_avatars'])->offsetGet('secure_url')
                 : null,
         ]);
 

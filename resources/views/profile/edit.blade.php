@@ -7,7 +7,7 @@
         <div class="card profile-card">
             <div class="profile-heading">
                 @if($user->avatar)
-                    <img class="profile-avatar profile-avatar-large" src="{{ asset('storage/' . $user->avatar) }}" alt="Avatar de {{ $user->name }}">
+                    <img class="profile-avatar profile-avatar-large" src="{{ $user->avatar }}" alt="Avatar de {{ $user->name }}">
                 @else
                     <span class="profile-avatar profile-avatar-large" aria-hidden="true">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
                 @endif

@@ -129,12 +129,12 @@
                         $thumb = null;
                         if(!empty($topic->attachments) && is_array($topic->attachments)){
                             foreach($topic->attachments as $att){
-                                $fp = is_string($att) ? str_replace('\\', '/', $att) : null;
+                                $fp = is_array($att) ? ($att['url'] ?? null) : (is_string($att) ? str_replace('\\', '/', $att) : null);
                                 if(!$fp) continue;
-                                $isImage = preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)$/i', $fp);
-                                $isVideo = preg_match('/\.(mp4|mov|avi|mkv)$/i', $fp);
+                                $isImage = is_array($att) ? ($att['type'] ?? null) === 'image' : preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)(\?.*)?$/i', $fp);
+                                $isVideo = is_array($att) ? ($att['type'] ?? null) === 'video' : preg_match('/\.(mp4|mov|avi|mkv)(\?.*)?$/i', $fp);
                                 if($isImage){
-                                    $thumb = ['url' => Storage::disk('public')->url($fp), 'type' => 'image'];
+                                    $thumb = ['url' => is_array($att) ? $fp : Storage::disk('public')->url($fp), 'type' => 'image'];
                                     break;
                                 }
                                 if($isVideo){

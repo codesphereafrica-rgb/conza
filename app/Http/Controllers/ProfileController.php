@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -22,11 +22,7 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         if ($request->hasFile('avatar')) {
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            $user->avatar = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = app(Cloudinary::class)->uploadApi()->upload($request->file('avatar')->getRealPath(), ['folder' => 'conza_avatars'])->offsetGet('secure_url');
             $user->save();
         }
 

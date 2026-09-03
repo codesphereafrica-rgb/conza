@@ -50,6 +50,8 @@ services:
         sync: false
       - key: LABYRINTHE_CURRENCY
         value: CDF
+      - key: CLOUDINARY_URL
+        sync: false
       - key: ADMIN_EMAIL
         value: admin@conza.com
       - key: ADMIN_PASSWORD
