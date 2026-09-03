@@ -443,12 +443,16 @@
         }
         @media (max-width: 768px) {
             .topbar-inner {
-                flex-wrap: wrap;
+                flex-wrap: nowrap;
+                gap: 6px;
+                padding-left: 10px;
+                padding-right: 10px;
             }
             .menu-toggle { display: inline-flex; order: 0; }
-            .brand { order: 1; }
-            .header-actions { order: 2; }
-            .brand img { height: 52px; }
+            .brand { order: 1; min-width: 0; gap: 6px; font-size: 1rem; flex: 1 1 auto; }
+            .header-actions { order: 2; gap: 4px; flex: 0 0 auto; }
+            .brand img { height: 52px; max-width: 78px; object-fit: contain; }
+            .header-actions .btn { padding: 7px 8px; font-size: .74rem; white-space: nowrap; }
             .nav { top: calc(100% + 8px); left: 12px; right: 12px; min-width: 0; align-items: stretch; }
             .nav a, .nav form { width: 100%; }
             .nav a { border-radius: 8px; justify-content: flex-start; }
