@@ -97,6 +97,8 @@
         .profile-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
         .locked-input { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
         .form-link { display: inline-block; margin-left: 12px; color: var(--primary-dark); font-weight: 700; }
+        .login-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 8px; }
+        .login-actions .form-link { margin-left: 0; }
         .eyebrow { color: var(--primary-dark); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
         .auth-panel { max-width: 560px; }
         .nav a:hover,
