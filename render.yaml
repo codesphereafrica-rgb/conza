@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: conza
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        generateValue: true
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_URL
+        fromDatabase:
+          name: conza-db
+          property: connectionString
+      - key: SESSION_DRIVER
+        value: database
+      - key: CACHE_STORE
+        value: database
+      - key: QUEUE_CONNECTION
+        value: database
+      - key: FILESYSTEM_DISK
+        value: local
+      - key: ADSENSE_CLIENT_ID
+        sync: false
+      - key: LABYRINTHE_API_URL
+        sync: false
+      - key: LABYRINTHE_API_TOKEN
+        sync: false
+      - key: LABYRINTHE_CURRENCY
+        value: CDF
+
+databases:
+  - name: conza-db
+    plan: free
