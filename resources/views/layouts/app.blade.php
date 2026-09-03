@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @php
         $adsenseClientId = env('ADSENSE_CLIENT_ID', 'ca-pub-3688942362866671');
+        $adsenseAdSlot = env('ADSENSE_AD_SLOT');
     @endphp
     @if(env('APP_ENV') !== 'local')
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsenseClientId }}" crossorigin="anonymous"></script>
@@ -43,10 +44,10 @@
         }
         .topbar-inner {
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: 16px;
         }
+        .menu-toggle { display: none; border: 0; background: transparent; color: white; font-size: 1.6rem; cursor: pointer; padding: 4px; }
         .brand {
             display: inline-flex;
             align-items: center;
@@ -55,7 +56,7 @@
             font-weight: 700;
         }
         .brand img {
-            height: 60px;
+            height: 40px;
             width: auto;
             display: block;
         }
@@ -64,6 +65,7 @@
             gap: 14px;
             align-items: center;
             flex-wrap: wrap;
+            margin-left: auto;
         }
         .nav a {
             display: inline-flex;
@@ -76,6 +78,14 @@
             font-weight: 700;
             transition: background 0.2s ease, transform 0.2s ease;
         }
+        .profile-avatar { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #fbbf24; color: #422006; font-weight: 800; }
+        .avatar-only { margin-left: 2px; }
+        .profile-avatar-large { width: 76px; height: 76px; font-size: 1.8rem; }
+        .profile-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .locked-input { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
+        .form-link { display: inline-block; margin-left: 12px; color: var(--primary-dark); font-weight: 700; }
+        .eyebrow { color: var(--primary-dark); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+        .auth-panel { max-width: 560px; }
         .nav a:hover,
         .nav a:focus {
             background: rgba(255,255,255,0.22);
@@ -209,37 +219,7 @@
             gap: 14px;
             flex-wrap: wrap;
         }
-        .ad-banner {
-            display: grid;
-            grid-template-columns: minmax(220px, 300px) 1fr;
-            gap: 20px;
-            align-items: center;
-            background: linear-gradient(135deg, rgba(15,118,110,0.08), rgba(17,94,89,0.04));
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 18px;
-            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
-            margin-bottom: 12px;
-        }
-        .ad-banner img {
-            width: 100%;
-            height: 170px;
-            object-fit: cover;
-            border-radius: 14px;
-            display: block;
-        }
-        .ad-banner-copy h3 {
-            margin: 12px 0 8px;
-            font-size: clamp(1.2rem, 2vw, 1.8rem);
-        }
-        .ad-banner-copy p {
-            margin: 0;
-            line-height: 1.7;
-            color: var(--muted);
-        }
-        .ad-banner-main {
-            margin-top: 0;
-        }
+        .ad-slot { min-height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .footer-section {
             width: 100%;
             background: #0f766e;
@@ -280,6 +260,7 @@
             max-width: 260px;
             min-height: 96px;
         }
+        .contact-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
         .contact-card .icon {
             display: inline-flex;
             align-items: center;
@@ -449,9 +430,27 @@
         }
         @media (max-width: 768px) {
             .topbar-inner {
-                flex-direction: column;
-                align-items: flex-start;
+                flex-wrap: wrap;
             }
+            .menu-toggle { display: inline-flex; order: 0; }
+            .brand { order: 1; }
+            .nav { display: none; order: 3; width: 100%; margin-left: 0; flex-direction: column; align-items: stretch; }
+            .nav.is-open { display: flex; }
+            .nav a, .nav form { width: 100%; }
+            .nav a { border-radius: 8px; justify-content: flex-start; }
+            .nav form .btn { width: 100%; text-align: left; }
+            .nav .profile-link { display: flex; justify-content: flex-start; align-items: center; gap: 8px; }
+            .profile-heading { align-items: flex-start; }
+            .hero-top { justify-content: center; text-align: center; }
+            .hero-text-column { max-width: 100%; min-width: 0; text-align: center; }
+            .hero-actions { justify-content: center; }
+            .hero-right-visuals { width: 100%; max-width: 440px; flex-basis: auto; margin-left: 0; }
+            .contact-cards { gap: 8px; }
+            .contact-card { min-width: 0; max-width: none; padding: 10px; gap: 8px; border-radius: 10px; }
+            .contact-card .icon { width: 30px; min-width: 30px; height: 30px; border-radius: 8px; }
+            .contact-card .icon svg { width: 17px; height: 17px; }
+            .contact-card strong { font-size: .82rem; margin-bottom: 3px; }
+            .contact-card a { font-size: .74rem; overflow-wrap: anywhere; }
             .nav {
                 width: 100%;
             }
@@ -464,14 +463,20 @@
 <body>
     <header class="topbar">
         <div class="container topbar-inner">
-                <a href="{{ route('home') }}" class="brand" aria-label="Conza ASBL Forum">
+            <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">☰</button>
+            <a href="{{ route('home') }}" class="brand" aria-label="Conza ASBL Forum">
                 <img src="{{ url('/images_conza/logo_conza_v3.png') }}" alt="Logo Conza ASBL">
                 <span>Forum</span>
             </a>
-            <nav class="nav">
+            <nav class="nav" id="main-nav">
                 <a href="{{ route('home') }}">Accueil</a>
                 <a href="{{ route('forum.index') }}">Forum</a>
                 <a href="{{ route('donations.index') }}">Dons</a>
+                @auth
+                    <a href="{{ route('profile.edit') }}">Profil</a>
+                @else
+                    <a href="{{ route('profile.edit') }}">Profil</a>
+                @endauth
                 @auth
                     @php
                         $superAdminId = \App\Models\Setting::get('super_admin_id');
@@ -487,8 +492,15 @@
                         @csrf
                         <button type="submit" class="btn small secondary">Déconnexion</button>
                     </form>
+                    <a href="{{ route('profile.edit') }}" class="avatar-only" aria-label="Ouvrir le profil">
+                        @if(auth()->user()->avatar)
+                            <img class="profile-avatar" src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar">
+                        @else
+                            <span class="profile-avatar" aria-hidden="true">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</span>
+                        @endif
+                    </a>
                 @else
-                    <a href="{{ route('login') }}">Connexion</a>
+                    <a href="{{ route('login') }}">Se connecter</a>
                     <a href="{{ route('register') }}">Inscription</a>
                 @endauth
             </nav>
@@ -541,49 +553,13 @@
         })();
     </script>
 
-    @php
-        $showGlobalBanners = !request()->routeIs('login');
-    @endphp
-
-    @if($showGlobalBanners)
-        @php
-            $globalBanners = [
-                [
-                    'image' => '/images_conza/Chutes_Wagenia.jpg',
-                    'title' => 'Partenariat & visibilité',
-                    'text' => 'Emplacement dédié aux bannières sponsorisées et aux messages publicitaires.',
-                ],
-                [
-                    'image' => '/images_conza/Garamba_National_Park_overhead.jpg',
-                    'title' => 'Mise en avant des initiatives',
-                    'text' => 'Zone réservée aux campagnes promotionnelles rémunérées.',
-                ],
-            ];
-        @endphp
-
-        <div class="container section" style="padding-top: 0; padding-bottom: 0;">
-            <div class="grid grid-2" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-                @foreach($globalBanners as $banner)
-                    <div class="ad-banner">
-                        <img src="{{ url($banner['image']) }}" alt="{{ $banner['title'] }}">
-                        <div class="ad-banner-copy">
-                            <span class="badge">Pub rémunérée</span>
-                            <h3>{{ $banner['title'] }}</h3>
-                            <p>{{ $banner['text'] }}</p>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    @endif
-
-    @if(env('APP_ENV') !== 'local')
+    @if(env('APP_ENV') !== 'local' && $adsenseAdSlot)
         <div class="container section" style="padding-top: 12px; padding-bottom: 0;">
-            <div class="card" style="padding: 18px; text-align: center;">
+            <div class="ad-slot">
                 <ins class="adsbygoogle"
-                    style="display:block; width:100%; min-height:120px;"
+                    style="display:block; width:100%;"
                     data-ad-client="{{ $adsenseClientId }}"
-                    data-ad-slot="1234567890"
+                    data-ad-slot="{{ $adsenseAdSlot }}"
                     data-ad-format="auto"
                     data-full-width-responsive="true"></ins>
                 <script>
@@ -592,6 +568,15 @@
             </div>
         </div>
     @endif
+
+    <script>
+        const menuButton = document.querySelector('.menu-toggle');
+        const mainNav = document.querySelector('#main-nav');
+        menuButton?.addEventListener('click', () => {
+            const open = mainNav.classList.toggle('is-open');
+            menuButton.setAttribute('aria-expanded', String(open));
+        });
+    </script>
 
     @yield('content')
 </body>

@@ -21,6 +21,7 @@ class AuthController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
             'password' => ['required', 'min:8', 'confirmed'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $user = User::create([
@@ -29,6 +30,9 @@ class AuthController extends Controller
             'password' => Hash::make($validated['password']),
             'role' => 'member',
             'status' => 'active',
+            'avatar' => $request->hasFile('avatar')
+                ? $request->file('avatar')->store('avatars', 'public')
+                : null,
         ]);
 
         Auth::login($user);

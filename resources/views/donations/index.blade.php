@@ -13,14 +13,17 @@
             </p>
 
             <div style="margin-top: 20px;">
-                <div class="ad-banner" style="margin-bottom: 20px;">
-                    <img src="{{ url('/images_conza/Chutes_de_la_Lofoï.jpg') }}" alt="Bannière donation Conza">
-                    <div class="ad-banner-copy">
-                        <span class="badge">Paiement sécurisé</span>
-                        <h3>Contribuez à la mission Conza</h3>
-                        <p>Vos dons sont utilisés pour soutenir les projets communautaires, la communication et les actions de terrain.</p>
+                @if(env('APP_ENV') !== 'local' && env('ADSENSE_AD_SLOT'))
+                    <div class="ad-slot donation-ad" style="margin-bottom: 20px;">
+                        <ins class="adsbygoogle"
+                            style="display:block; width:100%;"
+                            data-ad-client="{{ env('ADSENSE_CLIENT_ID') }}"
+                            data-ad-slot="{{ env('ADSENSE_AD_SLOT') }}"
+                            data-ad-format="auto"
+                            data-full-width-responsive="true"></ins>
+                        <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
                     </div>
-                </div>
+                @endif
 
                 <strong>Objectif : @if($target) {{ number_format($target, 0, ',', ' ') }} € @else Non défini @endif</strong>
                 @auth

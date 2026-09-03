@@ -27,6 +27,7 @@
                 </div>
 
                 <button type="submit" class="btn">Se connecter</button>
+                <a href="{{ route('password.request') }}" class="form-link">Mot de passe oublié ?</a>
             </form>
         </div>
     </main>
