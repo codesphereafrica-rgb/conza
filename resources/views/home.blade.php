@@ -166,7 +166,9 @@
                         @endif
 
                         <div style="flex:1; min-width:0;">
-                            <div class="flex flex-wrap gap-2" style="margin-bottom: 8px;">
+                            <p class="muted" style="margin:0 0 8px; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 160) }}</p>
+
+                            <div class="flex flex-wrap gap-2">
                                 @if($primaryPost)
                                     <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
                                         @csrf
@@ -176,8 +178,6 @@
                                 @endif
                                 <button type="button" class="btn small secondary share-btn" style="padding:7px 10px; font-size:0.78rem;" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">Partager</button>
                             </div>
-
-                            <p class="muted" style="margin:0; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 160) }}</p>
                         </div>
                     </div>
                 </li>
