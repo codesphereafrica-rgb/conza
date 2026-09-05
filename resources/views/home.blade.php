@@ -12,6 +12,11 @@
                         Un espace communautaire pour partager des idées, débattre, informer et soutenir les projets
                         qui portent la mission de notre association.
                     </p>
+                    <ul class="mt-4 list-disc space-y-2 pl-5 text-sm font-medium text-white/90">
+                        <li>S'assumer et assumer, la liberté ;</li>
+                        <li>Citoyenneté optimale ;</li>
+                        <li>Dignité authentique.</li>
+                    </ul>
                     <div class="hero-actions">
                         <a href="{{ route('forum.index') }}" class="btn">Explorer le forum</a>
                         <a href="{{ route('donations.index') }}" class="btn secondary">Voir les dons</a>
@@ -118,44 +123,63 @@
 
         <ul class="list">
             @forelse($latestTopics as $topic)
-                <li class="list-item">
-                    <div class="badge">{{ $topic->category->name ?? 'Forum' }}</div>
-                    <h3 style="margin: 12px 0 8px;">
-                        <a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a>
-                    </h3>
-                    <p class="muted">{{ $topic->user->name ?? 'Membre' }} · {{ $topic->created_at->diffForHumans() }}</p>
-
-                    @php
-                        $thumb = null;
-                        if(!empty($topic->attachments) && is_array($topic->attachments)){
-                            foreach($topic->attachments as $att){
-                                $fp = is_array($att) ? ($att['url'] ?? null) : (is_string($att) ? str_replace('\\', '/', $att) : null);
-                                if(!$fp) continue;
-                                $isImage = is_array($att) ? ($att['type'] ?? null) === 'image' : preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)(\?.*)?$/i', $fp);
-                                $isVideo = is_array($att) ? ($att['type'] ?? null) === 'video' : preg_match('/\.(mp4|mov|avi|mkv)(\?.*)?$/i', $fp);
-                                if($isImage){
-                                    $thumb = ['url' => is_array($att) ? $fp : Storage::disk('public')->url($fp), 'type' => 'image'];
-                                    break;
-                                }
-                                if($isVideo){
-                                    $thumb = ['url' => asset('images/video-preview.svg'), 'type' => 'video'];
-                                    break;
-                                }
+                @php
+                    $primaryPost = $topic->posts()->first();
+                    $likeCount = $primaryPost ? $primaryPost->reactions()->where('type', 'like')->count() : 0;
+                    $commentCount = max(0, $topic->posts()->count() - 1);
+                    $thumb = null;
+                    if(!empty($topic->attachments) && is_array($topic->attachments)){
+                        foreach($topic->attachments as $att){
+                            $fp = is_array($att) ? ($att['url'] ?? null) : (is_string($att) ? str_replace('\\', '/', $att) : null);
+                            if(!$fp) continue;
+                            $isImage = is_array($att) ? ($att['type'] ?? null) === 'image' : preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)(\?.*)?$/i', $fp);
+                            $isVideo = is_array($att) ? ($att['type'] ?? null) === 'video' : preg_match('/\.(mp4|mov|avi|mkv)(\?.*)?$/i', $fp);
+                            if($isImage){
+                                $thumb = ['url' => is_array($att) ? $fp : Storage::disk('public')->url($fp), 'type' => 'image'];
+                                break;
+                            }
+                            if($isVideo){
+                                $thumb = ['url' => asset('images/video-preview.svg'), 'type' => 'video'];
+                                break;
                             }
                         }
-                    @endphp
+                    }
+                @endphp
 
-                    @if($thumb)
-                        <div style="margin-top:8px;">
-                            <a href="{{ route('forum.topic', $topic->id) }}">
-                                @if($thumb['type'] === 'image')
-                                    <img src="{{ $thumb['url'] }}" alt="Miniature du sujet" style="width:130px;height:130px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:block;">
-                                @else
-                                    <img src="{{ $thumb['url'] }}" alt="Miniature vidéo du sujet" style="width:130px;height:130px;object-fit:cover;border-radius:8px;border:1px solid #e5e7eb;display:block;">
+                <li class="list-item">
+                    <div class="flex flex-col gap-4 md:flex-row md:items-start">
+                        @if($thumb)
+                            <div class="w-full md:w-[180px] md:flex-shrink-0">
+                                <a href="{{ route('forum.topic', $topic->id) }}">
+                                    @if($thumb['type'] === 'image')
+                                        <img src="{{ $thumb['url'] }}" alt="Image de la discussion" class="h-[150px] w-full rounded-xl border border-slate-200 object-cover md:h-[140px]" style="background:#000;">
+                                    @else
+                                        <img src="{{ $thumb['url'] }}" alt="Vidéo de la discussion" class="h-[150px] w-full rounded-xl border border-slate-200 object-cover md:h-[140px]" style="background:#000;">
+                                    @endif
+                                </a>
+                            </div>
+                        @endif
+
+                        <div class="flex-1 min-w-0">
+                            <div class="badge">{{ $topic->category->name ?? 'Forum' }}</div>
+                            <h3 style="margin: 12px 0 8px;">
+                                <a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a>
+                            </h3>
+                            <p class="muted">{{ $topic->content ?: 'Aucune description disponible.' }}</p>
+                            <p class="muted" style="margin-top: 10px;">{{ $topic->user->name ?? 'Membre' }} · {{ $topic->created_at->diffForHumans() }}</p>
+
+                            <div class="flex flex-wrap gap-3" style="margin-top: 14px;">
+                                @if($primaryPost)
+                                    <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
+                                        @csrf
+                                        <input type="hidden" name="type" value="like">
+                                        <button type="submit" class="btn small secondary">👍 Like <span>({{ $likeCount }})</span></button>
+                                    </form>
                                 @endif
-                            </a>
+                                <button type="button" class="btn small secondary share-btn" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">Partager</button>
+                            </div>
                         </div>
-                    @endif
+                    </div>
                 </li>
             @empty
                 <li class="list-item">
@@ -193,7 +217,7 @@
                         </span>
                         <div>
                             <strong>Facebook</strong>
-                            <a href="https://facebook.com/conzaASBL" target="_blank" rel="noopener">Conza ASBL</a>
+                            <a href="https://www.facebook.com/profile.php?id=100079688452304&mibextid=rS40aB7S9Ucbxw6v" target="_blank" rel="noopener">Konza</a>
                         </div>
                     </div>
                     <div class="contact-card">
@@ -206,7 +230,7 @@
                         </span>
                         <div>
                             <strong>Instagram</strong>
-                            <a href="https://instagram.com/conzaASBL" target="_blank" rel="noopener">Conza ASBL</a>
+                            <a href="https://instagram.com" target="_blank" rel="noopener">Programme Konza</a>
                         </div>
                     </div>
                     <div class="contact-card">
@@ -230,7 +254,7 @@
                         </span>
                         <div>
                             <strong>YouTube</strong>
-                            <a href="https://www.youtube.com/@CONZA243tv" target="_blank" rel="noopener">@CONZA243tv</a>
+                            <a href="https://www.youtube.com/@Konza243TV" target="_blank" rel="noopener">Konza 243 TV</a>
                         </div>
                     </div>
                 </div>

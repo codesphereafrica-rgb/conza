@@ -55,6 +55,11 @@
             font-size: 1.3rem;
             font-weight: 700;
         }
+        .brand span {
+            display: inline-block;
+            line-height: 1.2;
+            font-size: 1.25rem;
+        }
         .brand img {
             height: 64px;
             width: auto;
@@ -423,6 +428,43 @@
             margin-bottom: 20px;
             flex-wrap: wrap;
         }
+        .forum-post-card {
+            width: min(100%, 600px);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .forum-post-media {
+            width: 100%;
+            max-width: 600px;
+            max-height: 420px;
+            object-fit: contain;
+            background: #000;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            display: block;
+        }
+        .forum-post-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+            margin-top: 4px;
+        }
+        .forum-post-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            color: var(--text);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            font-weight: 700;
+        }
         .search-box {
             display: flex;
             gap: 10px;
@@ -452,6 +494,7 @@
             }
             .menu-toggle { display: inline-flex; order: 0; }
             .brand { order: 1; min-width: 0; gap: 6px; font-size: 1rem; flex: 1 1 auto; }
+            .brand span { font-size: 1.25rem; }
             .header-actions { order: 2; gap: 4px; flex: 0 0 auto; }
             .brand img { height: 52px; max-width: 78px; object-fit: contain; }
             .header-actions .btn { padding: 7px 8px; font-size: .74rem; white-space: nowrap; }
@@ -485,7 +528,7 @@
             <button class="menu-toggle" type="button" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="main-nav">☰</button>
             <a href="{{ route('home') }}" class="brand" aria-label="Conza ASBL Forum">
                 <img src="{{ url('/images_conza/logo_conza_v3.png') }}" alt="Logo Conza ASBL">
-                <span>Forum</span>
+                <span class="text-xl md:text-base">Forum</span>
             </a>
             <nav class="nav" id="main-nav">
                 <a href="{{ route('home') }}">Accueil</a>
@@ -601,6 +644,29 @@
         menuButton?.addEventListener('click', () => {
             const open = mainNav.classList.toggle('is-open');
             menuButton.setAttribute('aria-expanded', String(open));
+        });
+
+        document.querySelectorAll('.share-btn').forEach((button) => {
+            button.addEventListener('click', async () => {
+                const url = button.dataset.shareUrl || window.location.href;
+                const title = button.dataset.shareTitle || document.title;
+
+                try {
+                    if (navigator.share) {
+                        await navigator.share({ title, url });
+                        return;
+                    }
+
+                    if (navigator.clipboard) {
+                        await navigator.clipboard.writeText(url);
+                        const original = button.textContent;
+                        button.textContent = 'Lien copié';
+                        setTimeout(() => button.textContent = original, 1200);
+                    }
+                } catch (error) {
+                    console.warn('Partage annulé', error);
+                }
+            });
         });
     </script>
 
