@@ -146,37 +146,37 @@
                     }
                 @endphp
 
-                <li class="list-item">
-                    <div class="flex flex-col gap-4 md:flex-row md:items-start">
+                <li class="list-item" style="padding:12px;">
+                    <div class="flex gap-3 md:items-start" style="align-items:flex-start;">
                         @if($thumb)
-                            <div class="w-full md:w-[180px] md:flex-shrink-0">
+                            <div style="width:130px; min-width:130px;">
                                 <a href="{{ route('forum.topic', $topic->id) }}">
                                     @if($thumb['type'] === 'image')
-                                        <img src="{{ $thumb['url'] }}" alt="Image de la discussion" class="h-[150px] w-full rounded-xl border border-slate-200 object-cover md:h-[140px]" style="background:#000;">
+                                        <img src="{{ $thumb['url'] }}" alt="Image de la discussion" style="width:130px; height:130px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#000; display:block;">
                                     @else
-                                        <img src="{{ $thumb['url'] }}" alt="Vidéo de la discussion" class="h-[150px] w-full rounded-xl border border-slate-200 object-cover md:h-[140px]" style="background:#000;">
+                                        <img src="{{ $thumb['url'] }}" alt="Vidéo de la discussion" style="width:130px; height:130px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#000; display:block;">
                                     @endif
                                 </a>
                             </div>
                         @endif
 
-                        <div class="flex-1 min-w-0">
+                        <div style="flex:1; min-width:0;">
                             <div class="badge">{{ $topic->category->name ?? 'Forum' }}</div>
-                            <h3 style="margin: 12px 0 8px;">
+                            <h3 style="margin: 10px 0 6px; font-size: 1rem; line-height:1.4;">
                                 <a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a>
                             </h3>
-                            <p class="muted">{{ $topic->content ?: 'Aucune description disponible.' }}</p>
-                            <p class="muted" style="margin-top: 10px;">{{ $topic->user->name ?? 'Membre' }} · {{ $topic->created_at->diffForHumans() }}</p>
+                            <p class="muted" style="margin:0; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 120) }}</p>
+                            <p class="muted" style="margin:8px 0 0; font-size:0.8rem;">{{ $topic->user->name ?? 'Membre' }} · {{ $topic->created_at->diffForHumans() }}</p>
 
-                            <div class="flex flex-wrap gap-3" style="margin-top: 14px;">
+                            <div class="flex flex-wrap gap-2" style="margin-top: 10px;">
                                 @if($primaryPost)
                                     <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
                                         @csrf
                                         <input type="hidden" name="type" value="like">
-                                        <button type="submit" class="btn small secondary">👍 Like <span>({{ $likeCount }})</span></button>
+                                        <button type="submit" class="btn small secondary" style="padding:7px 10px; font-size:0.78rem;">👍 Like <span>({{ $likeCount }})</span></button>
                                     </form>
                                 @endif
-                                <button type="button" class="btn small secondary share-btn" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">Partager</button>
+                                <button type="button" class="btn small secondary share-btn" style="padding:7px 10px; font-size:0.78rem;" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">Partager</button>
                             </div>
                         </div>
                     </div>
