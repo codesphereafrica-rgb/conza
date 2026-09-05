@@ -241,6 +241,25 @@
             .forum-comment-form textarea {
                 min-height: 100px;
             }
+            .reply-highlight {
+                color: #16a34a;
+                font-weight: 700;
+            }
+            .reply-editor {
+                width: 100%;
+                min-height: 100px;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                background: white;
+                padding: 12px 14px;
+                color: #111827;
+                line-height: 1.6;
+                outline: none;
+            }
+            .reply-editor:focus {
+                border-color: #16a34a;
+                box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+            }
         </style>
 
         <h3 id="reponses">Réponses</h3>
@@ -281,10 +300,11 @@
         @auth
             <div class="forum-comment-form" id="comment-form">
                 <h3>Ajouter une réponse</h3>
-                <form method="POST" action="{{ route('forum.reply', $topic->id) }}">
+                <form method="POST" action="{{ route('forum.reply', $topic->id) }}" id="reply-form">
                     @csrf
                     <input type="hidden" name="parent_id" id="reply-parent-id" value="">
-                    <textarea id="comment-textarea" name="content" required placeholder="Écrivez une réponse..."></textarea>
+                    <div id="comment-editor" class="reply-editor" contenteditable="true" data-placeholder="Écrivez une réponse..."></div>
+                    <textarea id="comment-textarea" name="content" required hidden></textarea>
                     <button type="submit" class="btn" style="margin-top: 12px;">Répondre</button>
                 </form>
             </div>
@@ -298,32 +318,62 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const replyButtons = document.querySelectorAll('.reply-to-comment');
-            const commentField = document.getElementById('comment-textarea');
+            const replyEditor = document.getElementById('comment-editor');
+            const hiddenTextarea = document.getElementById('comment-textarea');
             const parentInput = document.getElementById('reply-parent-id');
             const commentForm = document.getElementById('comment-form');
+            const replyForm = document.getElementById('reply-form');
             const commentTrigger = document.querySelector('.scroll-to-comments');
 
-            if (commentTrigger && commentForm && commentField) {
-                commentTrigger.addEventListener('click', function () {
-                    commentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    commentField.focus();
+            if (replyEditor && hiddenTextarea && replyForm) {
+                const syncContent = function () {
+                    hiddenTextarea.value = replyEditor.innerText.trim();
+                };
+
+                replyForm.addEventListener('submit', function () {
+                    syncContent();
+                });
+
+                replyEditor.addEventListener('input', function () {
+                    syncContent();
                 });
             }
 
-            if (!replyButtons.length || !commentField || !parentInput || !commentForm) {
+            if (commentTrigger && commentForm && replyEditor) {
+                commentTrigger.addEventListener('click', function () {
+                    commentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    replyEditor.focus();
+                });
+            }
+
+            if (!replyButtons.length || !replyEditor || !parentInput || !commentForm) {
                 return;
+            }
+
+            function setCaretToEnd(element) {
+                const range = document.createRange();
+                const selection = window.getSelection();
+                range.selectNodeContents(element);
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
 
             replyButtons.forEach((button) => {
                 button.addEventListener('click', function () {
                     const userName = button.dataset.userName || 'cette personne';
                     const commentId = button.dataset.commentId || '';
-                    const prefix = '@' + userName + ' ';
-                    commentField.value = (commentField.value ? commentField.value + '\n' : '') + prefix;
+                    const prefix = '<span class="reply-highlight">@' + userName + '</span> ';
+
+                    if (!replyEditor.innerHTML.includes('reply-highlight')) {
+                        replyEditor.innerHTML = prefix;
+                    }
+
                     parentInput.value = commentId;
                     commentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    commentField.focus();
-                    commentField.setSelectionRange(commentField.value.length, commentField.value.length);
+                    replyEditor.focus();
+                    setCaretToEnd(replyEditor);
+                    hiddenTextarea.value = replyEditor.innerText.trim();
                 });
             });
         });
