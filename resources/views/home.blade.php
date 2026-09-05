@@ -152,23 +152,21 @@
                         <a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a>
                     </h3>
 
-                    <div class="flex gap-3 md:items-start" style="align-items:flex-start;">
+                    <div style="display:flex; align-items:flex-start; gap:12px; width:100%;">
                         @if($thumb)
-                            <div style="width:130px; min-width:130px;">
-                                <a href="{{ route('forum.topic', $topic->id) }}">
-                                    @if($thumb['type'] === 'image')
-                                        <img src="{{ $thumb['url'] }}" alt="Image de la discussion" style="width:130px; height:130px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#000; display:block;">
-                                    @else
-                                        <img src="{{ $thumb['url'] }}" alt="Vidéo de la discussion" style="width:130px; height:130px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#000; display:block;">
-                                    @endif
-                                </a>
-                            </div>
+                            <a href="{{ route('forum.topic', $topic->id) }}" style="flex-shrink:0;">
+                                @if($thumb['type'] === 'image')
+                                    <img src="{{ $thumb['url'] }}" alt="Image de la discussion" style="width:130px; min-width:130px; height:130px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#000; display:block;">
+                                @else
+                                    <img src="{{ $thumb['url'] }}" alt="Vidéo de la discussion" style="width:130px; min-width:130px; height:130px; object-fit:cover; border-radius:10px; border:1px solid #e5e7eb; background:#000; display:block;">
+                                @endif
+                            </a>
                         @endif
 
-                        <div style="flex:1; min-width:0;">
+                        <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
                             <p class="muted" style="margin:0 0 8px; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 160) }}</p>
 
-                            <div class="flex flex-wrap gap-2">
+                            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:0;">
                                 @if($primaryPost)
                                     <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
                                         @csrf
