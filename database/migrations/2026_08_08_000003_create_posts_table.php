@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('topic_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('posts')->nullOnDelete();
             $table->text('content');
             $table->boolean('is_edited')->default(false);
             $table->timestamps();

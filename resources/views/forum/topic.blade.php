@@ -242,8 +242,8 @@
                 min-height: 100px;
             }
             .reply-highlight {
-                color: #16a34a;
-                font-weight: 700;
+                color: #14532d;
+                font-weight: 800;
             }
             .reply-editor {
                 width: 100%;
