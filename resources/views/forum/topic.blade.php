@@ -22,11 +22,31 @@
             @endauth
         </div>
 
-        <div class="card" style="margin-bottom: 24px;">
-            <p>{{ $topic->content }}</p>
+        @php
+            $primaryPost = $topic->posts()->first();
+            $topicLikeCount = $primaryPost ? $primaryPost->reactions()->where('type', 'like')->count() : 0;
+            $topicCommentCount = max(0, $topic->posts()->count() - 1);
+        @endphp
+
+        <article class="topic-post-card">
+            <div class="topic-post-header">
+                <div class="topic-post-user">
+                    @if($topic->user && $topic->user->avatar)
+                        <img src="{{ $topic->user->avatar }}" alt="Avatar de {{ $topic->user->name }}" class="topic-post-avatar">
+                    @else
+                        <span class="topic-post-avatar" aria-hidden="true">{{ strtoupper(substr(($topic->user->name ?? 'U'), 0, 1)) }}</span>
+                    @endif
+                    <div>
+                        <strong>{{ $topic->user->name }}</strong>
+                        <div class="muted" style="font-size:0.82rem;">{{ $topic->created_at->diffForHumans() }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="topic-post-body">{{ $topic->content }}</p>
 
             @if(!empty($topic->attachments))
-                <div style="margin-top: 20px; display: grid; gap: 16px;">
+                <div class="topic-post-media-wrap">
                     @foreach($topic->attachments as $attachment)
                         @php
                             $filePath = is_array($attachment) ? ($attachment['url'] ?? null) : (is_string($attachment) ? str_replace('\\', '/', $attachment) : null);
@@ -36,12 +56,12 @@
                         @endphp
 
                         @if($mediaUrl && $isImage)
-                            <div style="max-width: 320px; width: 100%; margin-top: 8px;">
-                                <img src="{{ $mediaUrl }}" alt="Image jointe" style="width: 100%; height: auto; max-width: 320px; display: block; border-radius: 12px; border: 1px solid #e5e7eb;">
+                            <div class="topic-post-media-frame">
+                                <img src="{{ $mediaUrl }}" alt="Image jointe" class="topic-post-image">
                             </div>
                         @elseif($mediaUrl && $isVideo)
-                            <div style="max-width: 640px; max-height: 320px; width: 100%; margin-top: 8px; overflow: hidden; border-radius: 12px; border: 1px solid #e5e7eb; background: #000; display:flex; align-items:center; justify-content:center;">
-                                <video controls playsinline preload="metadata" style="width:100%; height:100%; max-width:640px; max-height:320px; object-fit:contain; display:block; background:#000;">
+                            <div class="topic-post-media-frame">
+                                <video controls playsinline preload="metadata" class="topic-post-video">
                                     <source src="{{ $mediaUrl }}" type="video/mp4">
                                     Votre navigateur ne supporte pas la lecture vidéo.
                                 </video>
@@ -52,9 +72,98 @@
                     @endforeach
                 </div>
             @endif
-        </div>
+
+            <div class="topic-post-actions">
+                @if($primaryPost)
+                    <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
+                        @csrf
+                        <input type="hidden" name="type" value="like">
+                        <button type="submit" class="topic-post-action-btn">👍 J'aime <span>({{ $topicLikeCount }})</span></button>
+                    </form>
+                @endif
+                <button type="button" class="topic-post-action-btn scroll-to-comments">💬 Commenter <span>({{ $topicCommentCount }})</span></button>
+                <button type="button" class="topic-post-action-btn share-btn" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">🔗 Partager</button>
+            </div>
+        </article>
 
         <style>
+            .topic-post-card {
+                width: min(100%, 760px);
+                margin: 0 auto 24px;
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 18px;
+                padding: 18px 18px 10px;
+                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+            }
+            .topic-post-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+            .topic-post-user {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .topic-post-avatar {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                object-fit: cover;
+                background: #e2e8f0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                color: #0f172a;
+            }
+            .topic-post-body {
+                margin: 14px 0 0;
+                line-height: 1.7;
+                color: #111827;
+            }
+            .topic-post-media-wrap {
+                margin-top: 16px;
+                border-radius: 16px;
+                overflow: hidden;
+                background: #000;
+                border: 1px solid #0f172a;
+            }
+            .topic-post-media-frame {
+                background: #000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .topic-post-image,
+            .topic-post-video {
+                display: block;
+                width: 100%;
+                max-height: 620px;
+                object-fit: contain;
+                background: #000;
+            }
+            .topic-post-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+                padding-top: 12px;
+                border-top: 1px solid #e5e7eb;
+                margin-top: 16px;
+            }
+            .topic-post-action-btn {
+                border: 1px solid #e5e7eb;
+                background: #f8fafc;
+                color: #111827;
+                border-radius: 999px;
+                padding: 8px 12px;
+                font-size: 0.82rem;
+                font-weight: 700;
+                cursor: pointer;
+            }
             .forum-comment-item {
                 display: flex;
                 flex-direction: column;
@@ -192,6 +301,14 @@
             const commentField = document.getElementById('comment-textarea');
             const parentInput = document.getElementById('reply-parent-id');
             const commentForm = document.getElementById('comment-form');
+            const commentTrigger = document.querySelector('.scroll-to-comments');
+
+            if (commentTrigger && commentForm && commentField) {
+                commentTrigger.addEventListener('click', function () {
+                    commentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    commentField.focus();
+                });
+            }
 
             if (!replyButtons.length || !commentField || !parentInput || !commentForm) {
                 return;
