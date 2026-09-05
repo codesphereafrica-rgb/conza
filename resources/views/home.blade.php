@@ -147,6 +147,11 @@
                 @endphp
 
                 <li class="list-item" style="padding:12px;">
+                    <div class="badge">{{ $topic->category->name ?? 'Forum' }}</div>
+                    <h3 style="margin: 10px 0 10px; font-size: 1rem; line-height:1.4;">
+                        <a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a>
+                    </h3>
+
                     <div class="flex gap-3 md:items-start" style="align-items:flex-start;">
                         @if($thumb)
                             <div style="width:130px; min-width:130px;">
@@ -161,14 +166,7 @@
                         @endif
 
                         <div style="flex:1; min-width:0;">
-                            <div class="badge">{{ $topic->category->name ?? 'Forum' }}</div>
-                            <h3 style="margin: 10px 0 6px; font-size: 1rem; line-height:1.4;">
-                                <a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a>
-                            </h3>
-                            <p class="muted" style="margin:0; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 120) }}</p>
-                            <p class="muted" style="margin:8px 0 0; font-size:0.8rem;">{{ $topic->user->name ?? 'Membre' }} · {{ $topic->created_at->diffForHumans() }}</p>
-
-                            <div class="flex flex-wrap gap-2" style="margin-top: 10px;">
+                            <div class="flex flex-wrap gap-2" style="margin-bottom: 8px;">
                                 @if($primaryPost)
                                     <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
                                         @csrf
@@ -178,6 +176,8 @@
                                 @endif
                                 <button type="button" class="btn small secondary share-btn" style="padding:7px 10px; font-size:0.78rem;" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">Partager</button>
                             </div>
+
+                            <p class="muted" style="margin:0; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 160) }}</p>
                         </div>
                     </div>
                 </li>
