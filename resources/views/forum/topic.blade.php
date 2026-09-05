@@ -54,21 +54,112 @@
             @endif
         </div>
 
+        <style>
+            .forum-comment-item {
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 16px;
+                padding: 16px;
+            }
+            .forum-comment-header {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .forum-comment-avatar {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                object-fit: cover;
+                background: #e2e8f0;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                color: #0f172a;
+            }
+            .forum-comment-user {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                font-weight: 700;
+            }
+            .forum-comment-meta {
+                margin-left: auto;
+                color: #6b7280;
+                font-size: 0.8rem;
+            }
+            .forum-comment-body {
+                margin: 0;
+                line-height: 1.7;
+            }
+            .forum-comment-actions {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
+            }
+            .forum-comment-action-btn {
+                border: 1px solid #e5e7eb;
+                background: #f8fafc;
+                color: #0f172a;
+                border-radius: 999px;
+                padding: 8px 12px;
+                font-size: 0.82rem;
+                font-weight: 700;
+                cursor: pointer;
+            }
+            .forum-reply-inline {
+                margin-top: 8px;
+                padding: 8px 10px;
+                border-radius: 10px;
+                background: #f8fafc;
+                border: 1px solid #e5e7eb;
+                color: #374151;
+                font-size: 0.9rem;
+            }
+            .forum-comment-form {
+                margin-top: 24px;
+                padding: 18px;
+                border: 1px solid #e5e7eb;
+                border-radius: 16px;
+                background: #ffffff;
+            }
+            .forum-comment-form textarea {
+                min-height: 100px;
+            }
+        </style>
+
         <h3 id="reponses">Réponses</h3>
         <ul class="list" id="reponses-list">
             @forelse($topic->posts as $post)
-                <li class="list-item">
-                    <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
-                        <strong>{{ $post->user->name }}</strong>
-                        <span class="muted">{{ $post->created_at->diffForHumans() }}</span>
+                <li class="forum-comment-item">
+                    <div class="forum-comment-header">
+                        <div class="forum-comment-user">
+                            @if($post->user && $post->user->avatar)
+                                <img src="{{ $post->user->avatar }}" alt="Avatar de {{ $post->user->name }}" class="forum-comment-avatar">
+                            @else
+                                <span class="forum-comment-avatar" aria-hidden="true">{{ strtoupper(substr(($post->user->name ?? 'U'), 0, 1)) }}</span>
+                            @endif
+                            <span>{{ $post->user->name }}</span>
+                        </div>
+                        <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
-                    <p>{{ $post->content }}</p>
+                    <p class="forum-comment-body">{{ $post->content }}</p>
+
                     @auth
-                        <form method="POST" action="{{ route('forum.react', $post->id) }}">
-                            @csrf
-                            <input type="hidden" name="type" value="like">
-                            <button type="submit" class="btn small secondary">👍 J'aime</button>
-                        </form>
+                        <div class="forum-comment-actions">
+                            <form method="POST" action="{{ route('forum.react', $post->id) }}">
+                                @csrf
+                                <input type="hidden" name="type" value="like">
+                                <button type="submit" class="forum-comment-action-btn">👍 J'aime</button>
+                            </form>
+                            <button type="button" class="forum-comment-action-btn reply-to-comment" data-user-name="{{ $post->user->name }}" data-comment-id="{{ $post->id }}">💬 Répondre</button>
+                        </div>
                     @endauth
                 </li>
             @empty
@@ -79,11 +170,12 @@
         </ul>
 
         @auth
-            <div class="card" style="margin-top: 24px;">
+            <div class="forum-comment-form" id="comment-form">
                 <h3>Ajouter une réponse</h3>
                 <form method="POST" action="{{ route('forum.reply', $topic->id) }}">
                     @csrf
-                    <textarea name="content" required></textarea>
+                    <input type="hidden" name="parent_id" id="reply-parent-id" value="">
+                    <textarea id="comment-textarea" name="content" required placeholder="Écrivez une réponse..."></textarea>
                     <button type="submit" class="btn" style="margin-top: 12px;">Répondre</button>
                 </form>
             </div>
@@ -93,4 +185,30 @@
             </div>
         @endauth
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const replyButtons = document.querySelectorAll('.reply-to-comment');
+            const commentField = document.getElementById('comment-textarea');
+            const parentInput = document.getElementById('reply-parent-id');
+            const commentForm = document.getElementById('comment-form');
+
+            if (!replyButtons.length || !commentField || !parentInput || !commentForm) {
+                return;
+            }
+
+            replyButtons.forEach((button) => {
+                button.addEventListener('click', function () {
+                    const userName = button.dataset.userName || 'cette personne';
+                    const commentId = button.dataset.commentId || '';
+                    const prefix = '@' + userName + ' ';
+                    commentField.value = (commentField.value ? commentField.value + '\n' : '') + prefix;
+                    parentInput.value = commentId;
+                    commentForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    commentField.focus();
+                    commentField.setSelectionRange(commentField.value.length, commentField.value.length);
+                });
+            });
+        });
+    </script>
 @endsection

@@ -12,6 +12,7 @@ class Post extends Model
     protected $fillable = [
         'topic_id',
         'user_id',
+        'parent_id',
         'content',
         'is_edited',
     ];
@@ -24,6 +25,16 @@ class Post extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(self::class, 'parent_id');
+    }
+
+    public function replies()
+    {
+        return $this->hasMany(self::class, 'parent_id')->orderBy('created_at');
     }
 
     public function reactions()

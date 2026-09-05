@@ -99,11 +99,20 @@ class ForumController extends Controller
     {
         $validated = $request->validate([
             'content' => ['required', 'string', 'min:2'],
+            'parent_id' => ['nullable', 'exists:posts,id'],
         ]);
+
+        $parentPost = null;
+        if (!empty($validated['parent_id'])) {
+            $parentPost = Post::where('id', $validated['parent_id'])
+                ->where('topic_id', $topic->id)
+                ->first();
+        }
 
         Post::create([
             'topic_id' => $topic->id,
             'user_id' => Auth::id(),
+            'parent_id' => $parentPost?->id,
             'content' => $validated['content'],
         ]);
 
