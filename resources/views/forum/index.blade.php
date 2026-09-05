@@ -65,10 +65,10 @@
                     <li class="list-item forum-post-card">
                         <div class="badge">{{ $topic->category?->name ?? 'Sans catégorie' }}</div>
                         <h3 class="font-bold" style="margin: 12px 0 8px;"><a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a></h3>
-                        <p class="muted" style="margin:0 0 12px;">{{ $topic->content ?: 'Aucune description disponible.' }}</p>
+                        <p class="muted forum-post-description">{{ $topic->content ?: 'Aucune description disponible.' }}</p>
 
                         @if($thumb)
-                            <a href="{{ route('forum.topic', $topic->id) }}">
+                            <a href="{{ route('forum.topic', $topic->id) }}" class="forum-post-media-link">
                                 @if($thumb['type'] === 'image')
                                     <img src="{{ $thumb['url'] }}" alt="Image du sujet" class="forum-post-media">
                                 @else
@@ -85,7 +85,7 @@
                                     <button type="submit" class="forum-post-action">👍 Like <span>({{ $likeCount }})</span></button>
                                 </form>
                             @endif
-                            <div class="forum-post-action">💬 Commenter <span>({{ $commentCount }})</span></div>
+                            <a href="{{ route('forum.topic', $topic->id) }}#reponses" class="forum-post-action">💬 Commenter <span>({{ $commentCount }})</span></a>
                             <button type="button" class="forum-post-action share-btn" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">🔗 Partager</button>
                         </div>
                     </li>

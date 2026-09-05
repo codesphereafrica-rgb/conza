@@ -54,8 +54,8 @@
             @endif
         </div>
 
-        <h3>Réponses</h3>
-        <ul class="list">
+        <h3 id="reponses">Réponses</h3>
+        <ul class="list" id="reponses-list">
             @forelse($topic->posts as $post)
                 <li class="list-item">
                     <div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap;">

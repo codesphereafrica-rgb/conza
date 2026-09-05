@@ -98,6 +98,36 @@
         }
         .profile-avatar { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; object-fit: cover; background: #fbbf24; color: #422006; font-weight: 800; }
         .avatar-only { margin-left: 2px; }
+        .notification-bell {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+        .notification-bell:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-1px);
+        }
+        .notification-bell::after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            right: 6px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fbbf24;
+            border: 2px solid var(--primary-dark);
+        }
         .profile-avatar-large { width: 76px; height: 76px; font-size: 1.8rem; }
         .profile-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
         .locked-input { background: #f3f4f6; color: #6b7280; cursor: not-allowed; }
@@ -429,17 +459,26 @@
             flex-wrap: wrap;
         }
         .forum-post-card {
-            width: min(100%, 600px);
+            width: min(100%, 760px);
             margin: 0 auto;
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
+        .forum-post-description {
+            margin: 0 0 4px;
+            line-height: 1.6;
+        }
+        .forum-post-media-link {
+            display: block;
+            width: 100%;
+            max-width: 100%;
+        }
         .forum-post-media {
             width: 100%;
-            max-width: 600px;
-            max-height: 420px;
-            object-fit: contain;
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: cover;
             background: #000;
             border-radius: 12px;
             border: 1px solid var(--border);
@@ -464,6 +503,32 @@
             padding: 8px 12px;
             font-size: 0.875rem;
             font-weight: 700;
+        }
+        .home-discussion-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            width: 100%;
+        }
+        .home-discussion-thumb {
+            width: 130px;
+            min-width: 130px;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            background: #000;
+            display: block;
+        }
+        .home-discussion-content {
+            flex: 1;
+            min-width: 0;
+        }
+        .home-discussion-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
         }
         .search-box {
             display: flex;
@@ -561,6 +626,7 @@
             </nav>
             <div class="header-actions">
                 @auth
+                    <a href="#" class="notification-bell" aria-label="Notifications" title="Notifications">🔔</a>
                     <a href="{{ route('profile.edit') }}" class="avatar-only" aria-label="Ouvrir le profil">
                         @if(auth()->user()->avatar)
                             <img class="profile-avatar" src="{{ auth()->user()->avatar }}" alt="Avatar">
@@ -639,33 +705,38 @@
     @endif
 
     <script>
-        const menuButton = document.querySelector('.menu-toggle');
-        const mainNav = document.querySelector('#main-nav');
-        menuButton?.addEventListener('click', () => {
-            const open = mainNav.classList.toggle('is-open');
-            menuButton.setAttribute('aria-expanded', String(open));
-        });
+        document.addEventListener('DOMContentLoaded', function () {
+            const menuButton = document.querySelector('.menu-toggle');
+            const mainNav = document.querySelector('#main-nav');
+            menuButton?.addEventListener('click', () => {
+                const open = mainNav.classList.toggle('is-open');
+                menuButton.setAttribute('aria-expanded', String(open));
+            });
 
-        document.querySelectorAll('.share-btn').forEach((button) => {
-            button.addEventListener('click', async () => {
-                const url = button.dataset.shareUrl || window.location.href;
-                const title = button.dataset.shareTitle || document.title;
+            document.querySelectorAll('.share-btn').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const url = button.dataset.shareUrl || window.location.href;
+                    const title = button.dataset.shareTitle || document.title;
 
-                try {
-                    if (navigator.share) {
-                        await navigator.share({ title, url });
-                        return;
+                    try {
+                        if (navigator.share) {
+                            await navigator.share({ title, url });
+                            return;
+                        }
+
+                        if (navigator.clipboard) {
+                            await navigator.clipboard.writeText(url);
+                            const original = button.textContent;
+                            button.textContent = 'Lien copié';
+                            setTimeout(() => button.textContent = original, 1200);
+                            return;
+                        }
+
+                        window.prompt('Copiez ce lien :', url);
+                    } catch (error) {
+                        console.warn('Partage annulé', error);
                     }
-
-                    if (navigator.clipboard) {
-                        await navigator.clipboard.writeText(url);
-                        const original = button.textContent;
-                        button.textContent = 'Lien copié';
-                        setTimeout(() => button.textContent = original, 1200);
-                    }
-                } catch (error) {
-                    console.warn('Partage annulé', error);
-                }
+                });
             });
         });
     </script>
