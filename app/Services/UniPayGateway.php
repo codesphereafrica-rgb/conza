@@ -30,7 +30,7 @@ class UniPayGateway
         return '+' . $digits;
     }
 
-    public function createPayment(float $amount, string $reference, ?string $phone = null, ?string $operator = 'orange', ?string $direction = 'collect'): array
+    public function createPayment(float $amount, string $reference, ?string $phone = null, ?string $operator = 'orange', ?string $direction = 'collect', ?string $currency = null, ?string $country = null): array
     {
         if (!self::enabled()) {
             return [
@@ -45,8 +45,10 @@ class UniPayGateway
             'operator' => strtolower((string) ($operator ?? 'orange')),
             'phone' => $normalizedPhone,
             'amount' => (int) round($amount),
+            'currency' => strtoupper($currency ?? config('services.unipay.currency', 'CDF')),
             'reference' => $reference,
             'direction' => strtolower((string) ($direction ?? 'collect')),
+            'country' => strtoupper($country ?? 'CD'),
         ];
 
         $payload = array_filter($payload, fn ($value) => $value !== null && $value !== '');

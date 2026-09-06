@@ -27,7 +27,9 @@ class UniPayGatewayTest extends TestCase
             'don_123',
             '0970000000',
             'orange',
-            'collect'
+            'collect',
+            'CDF',
+            'CD'
         );
 
         $this->assertTrue($result['success']);
@@ -38,6 +40,8 @@ class UniPayGatewayTest extends TestCase
             $this->assertSame('up_72618c931ad3be0753277feeaecdda0c', $request->header('X-API-Key')[0] ?? null);
             $this->assertSame('orange', data_get($request->data(), 'operator'));
             $this->assertSame('collect', data_get($request->data(), 'direction'));
+            $this->assertSame('CDF', data_get($request->data(), 'currency'));
+            $this->assertSame('CD', data_get($request->data(), 'country'));
             $this->assertSame('+243970000000', data_get($request->data(), 'phone'));
 
             return true;

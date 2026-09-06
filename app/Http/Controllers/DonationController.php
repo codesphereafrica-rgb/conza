@@ -105,7 +105,9 @@ class DonationController extends Controller
                 $donation->external_reference,
                 $phone,
                 $validated['operator'],
-                $validated['direction'] ?? 'collect'
+                $validated['direction'] ?? 'collect',
+                $validated['currency'],
+                $validated['country']
             );
 
             if (($result['success'] ?? false) === true) {
