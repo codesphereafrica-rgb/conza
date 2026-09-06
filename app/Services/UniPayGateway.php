@@ -71,12 +71,14 @@ class UniPayGateway
         }
 
         $data = $response->json();
-        $success = (bool) ($data['success'] ?? ($data['status'] ?? null) === 'success');
+        $status = strtolower((string) ($data['status'] ?? $data['state'] ?? ''));
+        $acceptedStatuses = ['success', 'pending', 'initiated', 'processing', 'queued', 'authorized'];
+        $success = (bool) ($data['success'] ?? false) || in_array($status, $acceptedStatuses, true);
 
         return [
             'enabled' => true,
             'success' => $success,
-            'message' => $data['message'] ?? ($success ? 'Transaction Unipay initiée.' : 'Erreur Unipay.'),
+            'message' => $data['message'] ?? ($success ? 'Demande de paiement envoyée. Validez le push USSD sur votre téléphone.' : 'Erreur Unipay.'),
             'reference' => $data['reference'] ?? $reference,
             'payment_url' => $data['payment_url'] ?? $data['checkout_url'] ?? $data['url'] ?? null,
             'response' => $data,

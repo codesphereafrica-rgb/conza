@@ -6,8 +6,9 @@
     @php
         $adsenseClientId = env('ADSENSE_CLIENT_ID', 'ca-pub-3688942362866671');
         $adsenseAdSlot = env('ADSENSE_AD_SLOT');
+        $adsenseEnabled = filled($adsenseClientId) && filled($adsenseAdSlot);
     @endphp
-    @if(env('APP_ENV') !== 'local')
+    @if(filled($adsenseClientId))
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsenseClientId }}" crossorigin="anonymous"></script>
     @endif
     <title>@yield('title', 'ASBL Forum')</title>
@@ -688,7 +689,7 @@
         })();
     </script>
 
-    @if(env('APP_ENV') !== 'local' && $adsenseAdSlot)
+    @if($adsenseEnabled)
         <div class="container section" style="padding-top: 12px; padding-bottom: 0;">
             <div class="ad-slot">
                 <ins class="adsbygoogle"

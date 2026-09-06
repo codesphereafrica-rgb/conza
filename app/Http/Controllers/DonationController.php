@@ -11,17 +11,8 @@ use Illuminate\Support\Facades\DB;
 
 class DonationController extends Controller
 {
-    private function finalizePendingDonations(): void
-    {
-        Donation::where('status', 'pending')
-            ->where('created_at', '<=', now()->subMinutes(1))
-            ->update(['status' => 'paid']);
-    }
-
     public function index()
     {
-        $this->finalizePendingDonations();
-
         $goalValue = Setting::get('fundraising_goal', null);
         $target = $goalValue !== null ? (float) $goalValue : null;
 
@@ -135,11 +126,17 @@ class DonationController extends Controller
             abort(404, 'Donation introuvable.');
         }
 
-        $status = $request->input('status', 'paid');
-        $donation->status = strtolower($status) === 'paid' ? 'paid' : 'pending';
+        $status = strtolower((string) $request->input('status', 'pending'));
+        $donation->status = in_array($status, ['paid', 'success', 'completed', 'confirmed'], true)
+            ? 'paid'
+            : 'pending';
         $donation->save();
 
-        return redirect()->route('donations.index')->with('success', 'Paiement confirmé. Merci pour votre soutien.');
+        $message = $donation->status === 'paid'
+            ? 'Paiement confirmé. Merci pour votre soutien.'
+            : 'Paiement reçu, en attente de confirmation par l’opérateur.';
+
+        return redirect()->route('donations.index')->with('success', $message);
     }
 
     public function checkStatus(Request $request, string $reference)
@@ -173,17 +170,23 @@ class DonationController extends Controller
 
     public function mobileCallback(Request $request)
     {
-        $status = strtolower((string) $request->input('status', 'paid'));
+        $status = strtolower((string) $request->input('status', 'pending'));
         $reference = (string) $request->input('reference', '');
 
         if ($reference !== '') {
             $donation = Donation::where('external_reference', $reference)->first();
             if ($donation) {
-                $donation->status = $status === 'paid' ? 'paid' : 'pending';
+                $donation->status = in_array($status, ['paid', 'success', 'completed', 'confirmed'], true)
+                    ? 'paid'
+                    : 'pending';
                 $donation->save();
             }
         }
 
-        return redirect()->route('donations.index')->with('success', 'Paiement Unipay traité. Merci pour votre soutien.');
+        $message = in_array($status, ['paid', 'success', 'completed', 'confirmed'], true)
+            ? 'Paiement Unipay confirmé. Merci pour votre soutien.'
+            : 'Demande Unipay reçue, en attente de confirmation par l’opérateur.';
+
+        return redirect()->route('donations.index')->with('success', $message);
     }
 }

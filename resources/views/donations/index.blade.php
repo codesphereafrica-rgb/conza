@@ -13,7 +13,7 @@
             </p>
 
             <div style="margin-top: 20px;">
-                @if(env('APP_ENV') !== 'local' && env('ADSENSE_AD_SLOT'))
+                @if(filled(env('ADSENSE_CLIENT_ID')) && filled(env('ADSENSE_AD_SLOT')))
                     <div class="ad-slot donation-ad" style="margin-bottom: 20px;">
                         <ins class="adsbygoogle"
                             style="display:block; width:100%;"

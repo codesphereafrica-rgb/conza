@@ -74,4 +74,32 @@ class UniPayGatewayTest extends TestCase
             return true;
         });
     }
+
+    public function test_it_accepts_a_pending_payment_when_the_ussd_request_was_sent(): void
+    {
+        Http::fake([
+            'https://unipay-api.onrender.com/v1/payment/initiate' => Http::response([
+                'success' => false,
+                'status' => 'pending',
+                'message' => 'USSD push sent.',
+                'reference' => 'don_456',
+            ], 200),
+        ]);
+
+        config()->set('services.unipay.api_key', 'test-key');
+        config()->set('services.unipay.base_url', 'https://unipay-api.onrender.com');
+
+        $result = (new \App\Services\UniPayGateway())->createPayment(
+            2500,
+            'don_456',
+            '0970000000',
+            'orange',
+            'collect',
+            'CDF',
+            'CD'
+        );
+
+        $this->assertTrue($result['success']);
+        $this->assertSame('don_456', $result['reference']);
+    }
 }
