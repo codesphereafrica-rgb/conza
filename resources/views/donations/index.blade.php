@@ -47,7 +47,7 @@
                                         <span>Validation dans :</span>
                                     </div>
                                     <div class="progress-wrap" style="height:10px;">
-                                        <div class="progress-bar pending-user-timer-bar" data-created-at="{{ $pendingDonation->created_at->toIso8601String() }}" style="width:0%;"></div>
+                                        <div class="progress-bar pending-user-timer-bar" data-created-at="{{ $pendingDonation->created_at->toIso8601String() }}" data-reference="{{ $pendingDonation->external_reference }}" style="width:0%;"></div>
                                     </div>
                                     <div class="pending-user-timer-text" style="margin-top:6px; font-size:12px; color:#374151;">00:00</div>
                                 </div>
@@ -56,15 +56,15 @@
                     @endif
                 @endauth
 
-                @if($labyrintheEnabled)
+                @if($unipayEnabled)
                     <div style="margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #ecfdf5; border: 1px solid #bbf7d0; color: #065f46;">
-                        <strong>Paiement Labyrinthe activé</strong>
-                        <div style="margin-top: 6px; font-size: 0.95rem;">Le don sera traité via l’API Labyrinthe avec redirection vers le paiement sécurisé.</div>
+                        <strong>Paiement Unipay activé</strong>
+                        <div style="margin-top: 6px; font-size: 0.95rem;">Le don sera traité via l’API Unipay avec redirection vers le paiement sécurisé.</div>
                     </div>
                 @else
                     <div style="margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a4d00;">
-                        <strong>Paiement Labyrinthe en attente de configuration</strong>
-                        <div style="margin-top: 6px; font-size: 0.95rem;">Ajoute tes clés API Labyrinthe dans le fichier .env pour activer le paiement direct.</div>
+                        <strong>Paiement Unipay en attente de configuration</strong>
+                        <div style="margin-top: 6px; font-size: 0.95rem;">Ajoute tes clés API Unipay dans le fichier .env pour activer le paiement direct.</div>
                     </div>
                 @endif
 
@@ -136,6 +136,14 @@
                     @csrf
 
                     <div class="form-group">
+                        <label for="operator">Opérateur</label>
+                        <select id="operator" name="operator" required>
+                            <option value="orange">Orange Money</option>
+                            <option value="airtel">Airtel Money</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
                         <label for="phone">Numéro de téléphone</label>
                         <input id="phone" name="phone" type="tel" placeholder="0970000000" required>
                     </div>
@@ -175,6 +183,7 @@
             const bars = document.querySelectorAll('.pending-user-timer-bar');
             bars.forEach(function (bar) {
                 const createdAt = new Date(bar.dataset.createdAt).getTime();
+                const reference = bar.dataset.reference;
                 const durationMs = 1 * 60 * 1000;
 
                 function update() {
@@ -193,8 +202,43 @@
                     }
                 }
 
+                function pollStatus() {
+                    if (!reference) {
+                        return;
+                    }
+
+                    fetch('/dons/status/' + encodeURIComponent(reference), {
+                        headers: {
+                            'Accept': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(function (response) {
+                        if (!response.ok) {
+                            return null;
+                        }
+
+                        return response.json();
+                    })
+                    .then(function (data) {
+                        if (!data || !data.success) {
+                            return;
+                        }
+
+                        const status = String(data.status || '').toLowerCase();
+                        if (['paid', 'success', 'completed', 'confirmed'].includes(status)) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(function () {
+                        // Ignore polling errors and continue retrying until the payment resolves.
+                    });
+                }
+
                 update();
                 setInterval(update, 1000);
+                pollStatus();
+                setInterval(pollStatus, 5000);
             });
         });
     </script>

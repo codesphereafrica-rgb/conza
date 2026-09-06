@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Setting;
-use App\Services\LabyrintheGateway;
+use App\Services\UniPayGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,9 +46,9 @@ class DonationController extends Controller
                 ->get()
             : collect();
 
-        $labyrintheEnabled = LabyrintheGateway::enabled();
+        $unipayEnabled = UniPayGateway::enabled();
 
-        return view('donations.index', compact('target', 'collected', 'progress', 'byStatus', 'recentDonations', 'userPendingDonations', 'labyrintheEnabled'));
+        return view('donations.index', compact('target', 'collected', 'progress', 'byStatus', 'recentDonations', 'userPendingDonations', 'unipayEnabled'));
     }
 
     public function markPaid(Donation $donation)
@@ -82,6 +82,8 @@ class DonationController extends Controller
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
             'phone' => ['required', 'string', 'min:8'],
+            'operator' => ['required', 'string', 'in:orange,airtel'],
+            'direction' => ['sometimes', 'string', 'in:collect,payout'],
             'currency' => ['required', 'string', 'in:CDF,USD'],
             'country' => ['required', 'string', 'in:CD'],
         ]);
@@ -91,32 +93,31 @@ class DonationController extends Controller
         $donation = Donation::create([
             'user_id' => Auth::id(),
             'amount' => $validated['amount'],
-            'provider' => 'labyrinthe',
+            'provider' => 'unipay',
             'status' => 'pending',
             'external_reference' => 'don_' . time() . '_' . Auth::id(),
         ]);
 
-        if (LabyrintheGateway::enabled()) {
-            $gateway = new LabyrintheGateway();
+        if (UniPayGateway::enabled()) {
+            $gateway = new UniPayGateway();
             $result = $gateway->createPayment(
                 (float) $validated['amount'],
                 $donation->external_reference,
-                optional(Auth::user())->email,
                 $phone,
-                $validated['currency'],
-                $validated['country']
+                $validated['operator'],
+                $validated['direction'] ?? 'collect'
             );
 
             if (($result['success'] ?? false) === true) {
                 $donation->update([
-                    'provider' => 'labyrinthe',
+                    'provider' => 'unipay',
                     'external_reference' => $result['reference'] ?? $donation->external_reference,
                 ]);
 
                 return redirect()->route('donations.index')->with('success', $result['message'] ?? 'Votre transaction a bien été initiée.');
             }
 
-            return back()->with('error', $result['message'] ?? 'Le paiement Labyrinthe est indisponible pour le moment.');
+            return back()->with('error', $result['message'] ?? 'Le paiement Unipay est indisponible pour le moment.');
         }
 
         $donation->update(['provider' => 'manual']);
@@ -139,6 +140,35 @@ class DonationController extends Controller
         return redirect()->route('donations.index')->with('success', 'Paiement confirmé. Merci pour votre soutien.');
     }
 
+    public function checkStatus(Request $request, string $reference)
+    {
+        $gateway = new UniPayGateway();
+        $result = $gateway->checkStatus($reference);
+
+        if (($result['success'] ?? false) === false) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'] ?? 'Impossible de vérifier le statut du paiement.',
+            ], 400);
+        }
+
+        $payload = $result['response'] ?? [];
+        $status = strtolower((string) ($payload['status'] ?? $payload['state'] ?? 'pending'));
+        $donation = Donation::where('external_reference', $reference)->first();
+
+        if ($donation) {
+            $donation->status = in_array($status, ['paid', 'success', 'completed', 'confirmed'], true) ? 'paid' : 'pending';
+            $donation->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'status' => $status,
+            'reference' => $reference,
+            'payload' => $payload,
+        ]);
+    }
+
     public function mobileCallback(Request $request)
     {
         $status = strtolower((string) $request->input('status', 'paid'));
@@ -152,6 +182,6 @@ class DonationController extends Controller
             }
         }
 
-        return redirect()->route('donations.index')->with('success', 'Paiement Labyrinthe traité. Merci pour votre soutien.');
+        return redirect()->route('donations.index')->with('success', 'Paiement Unipay traité. Merci pour votre soutien.');
     }
 }

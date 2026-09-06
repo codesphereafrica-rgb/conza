@@ -35,10 +35,10 @@ return [
         ],
     ],
 
-    'labyrinthe' => [
-        'api_url' => env('LABYRINTHE_API_URL'),
-        'api_token' => env('LABYRINTHE_API_TOKEN'),
-        'currency' => env('LABYRINTHE_CURRENCY', 'CDF'),
+    'unipay' => [
+        'base_url' => env('UNIPAY_BASE_URL', 'https://unipay-api.onrender.com'),
+        'api_key' => env('UNIPAY_API_KEY'),
+        'currency' => env('UNIPAY_CURRENCY', 'CDF'),
     ],
 
 ];
