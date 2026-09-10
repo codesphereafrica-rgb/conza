@@ -117,7 +117,7 @@
             .forum-comment-header-green {
                 border-radius: 16px 16px 0 0;
                 padding: 12px;
-                margin: -16px -16px 0;
+                margin: 0;
             }
             .topic-post-user {
                 display: flex;
@@ -141,13 +141,13 @@
                 line-height: 1.7;
                 color: #111827;
                 background: #f3f4f6;
-                border: 1px solid #e5e7eb;
+                border: 0;
                 border-radius: 0;
                 padding: 16px 18px;
             }
             .topic-post-content {
                 margin: 0 -18px;
-                padding: 0 18px 16px;
+                padding: 0 18px;
                 background: #f3f4f6;
             }
             .topic-post-media-wrap {
@@ -178,7 +178,7 @@
                 align-items: center;
                 padding-top: 12px;
                 border-top: 1px solid #e5e7eb;
-                margin-top: 16px;
+                margin-top: 0;
                 background: #fff;
             }
             .topic-post-action-btn {
