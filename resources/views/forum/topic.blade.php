@@ -29,7 +29,7 @@
         @endphp
 
         <article class="topic-post-card">
-            <div class="topic-post-header bg-[#eef6f0] text-[#1a4d2e] border border-[#bcd9c8] rounded-t-xl p-3 -mx-[18px] -mt-[18px]">
+            <div class="topic-post-header topic-post-header-green border border-[#bcd9c8] rounded-t-xl p-3 -mx-[18px] -mt-[18px]">
                 <div class="topic-post-user">
                     @if($topic->user && $topic->user->avatar)
                         <img src="{{ $topic->user->avatar }}" alt="Avatar de {{ $topic->user->name }}" class="topic-post-avatar">
@@ -103,6 +103,11 @@
                 justify-content: space-between;
                 gap: 12px;
             }
+            .topic-post-header-green,
+            .forum-comment-header-green {
+                background: rgba(15, 118, 110, 0.1);
+                color: #115e59;
+            }
             .topic-post-user {
                 display: flex;
                 align-items: center;
@@ -156,8 +161,8 @@
                 margin-top: 16px;
             }
             .topic-post-action-btn {
-                border: 1px solid #15803d;
-                background: #16a34a;
+                border: 0;
+                background: #0f766e;
                 color: #fff;
                 border-radius: 999px;
                 padding: 8px 12px;
@@ -166,7 +171,7 @@
                 cursor: pointer;
             }
             .topic-post-action-btn:hover {
-                background: #15803d;
+                background: #115e59;
             }
             .forum-comment-item {
                 display: flex;
@@ -270,7 +275,7 @@
         <ul class="list" id="reponses-list">
             @forelse($topic->posts as $post)
                 <li class="forum-comment-item">
-                    <div class="forum-comment-header bg-[#eef6f0] text-[#1a4d2e] border border-[#bcd9c8] rounded-t-xl p-3 -mx-4 -mt-4">
+                    <div class="forum-comment-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl p-3 -mx-4 -mt-4">
                         <div class="forum-comment-user">
                             @if($post->user && $post->user->avatar)
                                 <img src="{{ $post->user->avatar }}" alt="Avatar de {{ $post->user->name }}" class="forum-comment-avatar">
