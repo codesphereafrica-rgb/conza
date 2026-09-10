@@ -21,7 +21,7 @@ class LabyrintheGateway
         }
 
         $phone = preg_replace('/\D+/', '', (string) ($phone ?? ''));
-        $callbackUrl = url('/callback');
+        $callbackUrl = 'https://conzaprogram.com/api/payment/callback';
         $baseUrl = rtrim((string) config('services.labyrinthe.api_url'), '/');
         $candidateUrls = array_values(array_unique([
             $baseUrl,

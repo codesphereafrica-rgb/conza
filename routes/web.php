@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/dons', [DonationController::class, 'index'])->name('donations.index');
 Route::get('/dons/status/{reference}', [DonationController::class, 'checkStatus'])->name('donations.status');
+Route::match(['get', 'post'], '/api/payment/callback', [DonationController::class, 'mobileCallback'])->name('payment.api.callback');
 Route::match(['get', 'post'], '/callback', [DonationController::class, 'mobileCallback'])->name('payment.callback');
 Route::match(['get', 'post'], '/dons/callback/{reference}', [DonationController::class, 'callback'])->name('donations.callback');
 Route::post('/dons', [DonationController::class, 'store'])->middleware('auth')->name('donations.store');

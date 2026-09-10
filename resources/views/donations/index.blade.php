@@ -42,7 +42,7 @@
                             <h4 style="margin:0 0 8px;">Paiement en attente</h4>
                             @foreach($userPendingDonations as $pendingDonation)
                                 @php($pendingCurrency = strtoupper($pendingDonation->currency ?? 'CDF'))
-                                <div style="margin-bottom:14px;">
+                                <div data-pending-donation style="margin-bottom:14px;">
                                     <div style="display:flex; justify-content:space-between; gap:12px; font-size:13px; margin-bottom:6px;">
                                         <span>{{ number_format($pendingDonation->amount, 2, ',', ' ') }} {{ $pendingCurrency }}</span>
                                         <span>Validation dans :</span>
@@ -193,6 +193,14 @@
                     const elapsed = Math.max(0, now - createdAt);
                     const remaining = Math.max(0, durationMs - elapsed);
                     const ratio = Math.min(100, (elapsed / durationMs) * 100);
+
+                    if (remaining <= 0) {
+                        const donation = bar.closest('[data-pending-donation]');
+                        if (donation) {
+                            donation.remove();
+                        }
+                        return;
+                    }
 
                     bar.style.width = ratio + '%';
                     const text = bar.parentElement.parentElement.querySelector('.pending-user-timer-text');

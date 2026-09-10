@@ -49,6 +49,7 @@ class UniPayGateway
             'reference' => $reference,
             'direction' => strtolower((string) ($direction ?? 'collect')),
             'country' => strtoupper($country ?? 'CD'),
+            'callbackUrl' => 'https://conzaprogram.com/api/payment/callback',
         ];
 
         $payload = array_filter($payload, fn ($value) => $value !== null && $value !== '');

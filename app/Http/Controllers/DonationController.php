@@ -33,6 +33,7 @@ class DonationController extends Controller
         $userPendingDonations = Auth::check()
             ? Donation::where('user_id', Auth::id())
                 ->where('status', 'pending')
+                ->where('created_at', '>', now()->subMinute())
                 ->orderByDesc('created_at')
                 ->get()
             : collect();

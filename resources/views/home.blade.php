@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Accueil - Conza ASBL')
+@section('title', 'Accueil - Programme Conza')
 
 @section('content')
     <section class="hero">
@@ -215,7 +215,7 @@
                         </span>
                         <div>
                             <strong>Facebook</strong>
-                            <a href="https://www.facebook.com/profile.php?id=100079688452304&mibextid=rS40aB7S9Ucbxw6v" target="_blank" rel="noopener">Konza</a>
+                            <a href="https://www.facebook.com/profile.php?id=100079688452304&mibextid=rS40aB7S9Ucbxw6v" target="_blank" rel="noopener">Conza</a>
                         </div>
                     </div>
                     <div class="contact-card">
@@ -228,7 +228,7 @@
                         </span>
                         <div>
                             <strong>Instagram</strong>
-                            <a href="https://instagram.com" target="_blank" rel="noopener">Programme Konza</a>
+                            <a href="https://instagram.com" target="_blank" rel="noopener">Programme Conza</a>
                         </div>
                     </div>
                     <div class="contact-card">
@@ -252,7 +252,7 @@
                         </span>
                         <div>
                             <strong>YouTube</strong>
-                            <a href="https://www.youtube.com/@Konza243TV" target="_blank" rel="noopener">Konza 243 TV</a>
+                            <a href="https://www.youtube.com/@Konza243TV" target="_blank" rel="noopener">Conza 243 TV</a>
                         </div>
                     </div>
                 </div>

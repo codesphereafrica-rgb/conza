@@ -43,6 +43,7 @@ class UniPayGatewayTest extends TestCase
             $this->assertSame('CDF', data_get($request->data(), 'currency'));
             $this->assertSame('CD', data_get($request->data(), 'country'));
             $this->assertSame('+243970000000', data_get($request->data(), 'phone'));
+            $this->assertSame('https://conzaprogram.com/api/payment/callback', data_get($request->data(), 'callbackUrl'));
 
             return true;
         });
