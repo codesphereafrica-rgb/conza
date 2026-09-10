@@ -29,7 +29,7 @@
         @endphp
 
         <article class="topic-post-card">
-            <div class="topic-post-header topic-post-header-green border border-[#bcd9c8] rounded-t-xl p-3 -mx-[18px] -mt-[18px]">
+            <div class="topic-post-header topic-post-header-green border border-[#bcd9c8] rounded-t-2xl p-4 -mx-[18px] -mt-[18px]">
                 <div class="topic-post-user">
                     @if($topic->user && $topic->user->avatar)
                         <img src="{{ $topic->user->avatar }}" alt="Avatar de {{ $topic->user->name }}" class="topic-post-avatar">
@@ -43,7 +43,7 @@
                 </div>
             </div>
 
-            <hr class="border-gray-200 my-3">
+            <hr class="border-gray-200 my-2">
             <p class="topic-post-body bg-gray-100 p-3 rounded-xl">{{ $topic->content }}</p>
 
             @if(!empty($topic->attachments))
