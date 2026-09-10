@@ -1,5 +1,13 @@
 <?php
 
+$emailFrom = env('MAIL_FROM_ADDRESS') ?: env('EMAIL_FROM', 'hello@example.com');
+$emailFromName = env('MAIL_FROM_NAME');
+
+if (!$emailFromName && preg_match('/^\s*(.+?)\s*<([^>]+)>\s*$/', $emailFrom, $matches)) {
+    $emailFromName = trim($matches[1], " \\\"'");
+    $emailFrom = trim($matches[2]);
+}
+
 return [
 
     /*
@@ -14,7 +22,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', 'log'),
+    'default' => env('MAIL_MAILER', env('EMAIL_MAILER', 'smtp')),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,12 +47,12 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME'),
+            'scheme' => env('MAIL_SCHEME') ?: env('EMAIL_SCHEME', 'smtps'),
             'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', '127.0.0.1'),
-            'port' => env('MAIL_PORT', 2525),
-            'username' => env('MAIL_USERNAME'),
-            'password' => env('MAIL_PASSWORD'),
+            'host' => env('MAIL_HOST', env('EMAIL_HOST', '127.0.0.1')),
+            'port' => env('MAIL_PORT', env('EMAIL_PORT', 2525)),
+            'username' => env('MAIL_USERNAME', env('EMAIL_USER')),
+            'password' => env('MAIL_PASSWORD', env('EMAIL_PASSWORD')),
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'https://conzaprogram.com'), PHP_URL_HOST)),
         ],
@@ -111,8 +119,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
+        'address' => $emailFrom,
+        'name' => $emailFromName ?: env('APP_NAME', 'Laravel'),
     ],
 
 ];
