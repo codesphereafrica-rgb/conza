@@ -43,35 +43,37 @@
                 </div>
             </div>
 
-            <div class="topic-post-body bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
+            <div class="topic-post-content">
+                <div class="topic-post-body bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
 
-            @if(!empty($topic->attachments))
-                <div class="topic-post-media-wrap mt-3">
-                    @foreach($topic->attachments as $attachment)
-                        @php
-                            $filePath = is_array($attachment) ? ($attachment['url'] ?? null) : (is_string($attachment) ? str_replace('\\', '/', $attachment) : null);
-                            $mediaUrl = is_array($attachment) ? $filePath : ($filePath ? Storage::disk('public')->url($filePath) : null);
-                            $isImage = $filePath && (is_array($attachment) ? ($attachment['type'] ?? null) === 'image' : preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)(\?.*)?$/i', $filePath));
-                            $isVideo = $filePath && (is_array($attachment) ? ($attachment['type'] ?? null) === 'video' : preg_match('/\.(mp4|mov|avi|mkv)(\?.*)?$/i', $filePath));
-                        @endphp
+                @if(!empty($topic->attachments))
+                    <div class="topic-post-media-wrap mt-3">
+                        @foreach($topic->attachments as $attachment)
+                            @php
+                                $filePath = is_array($attachment) ? ($attachment['url'] ?? null) : (is_string($attachment) ? str_replace('\\', '/', $attachment) : null);
+                                $mediaUrl = is_array($attachment) ? $filePath : ($filePath ? Storage::disk('public')->url($filePath) : null);
+                                $isImage = $filePath && (is_array($attachment) ? ($attachment['type'] ?? null) === 'image' : preg_match('/\.(jpg|jpeg|png|gif|webp|bmp)(\?.*)?$/i', $filePath));
+                                $isVideo = $filePath && (is_array($attachment) ? ($attachment['type'] ?? null) === 'video' : preg_match('/\.(mp4|mov|avi|mkv)(\?.*)?$/i', $filePath));
+                            @endphp
 
-                        @if($mediaUrl && $isImage)
-                            <div class="topic-post-media-frame">
-                                <img src="{{ $mediaUrl }}" alt="Image jointe" class="topic-post-image">
-                            </div>
-                        @elseif($mediaUrl && $isVideo)
-                            <div class="topic-post-media-frame">
-                                <video controls playsinline preload="metadata" class="topic-post-video">
-                                    <source src="{{ $mediaUrl }}" type="video/mp4">
-                                    Votre navigateur ne supporte pas la lecture vidéo.
-                                </video>
-                            </div>
-                        @elseif($mediaUrl)
-                            <a href="{{ $mediaUrl }}" target="_blank" rel="noopener" class="btn small secondary">Télécharger la pièce jointe</a>
-                        @endif
-                    @endforeach
-                </div>
-            @endif
+                            @if($mediaUrl && $isImage)
+                                <div class="topic-post-media-frame">
+                                    <img src="{{ $mediaUrl }}" alt="Image jointe" class="topic-post-image">
+                                </div>
+                            @elseif($mediaUrl && $isVideo)
+                                <div class="topic-post-media-frame">
+                                    <video controls playsinline preload="metadata" class="topic-post-video">
+                                        <source src="{{ $mediaUrl }}" type="video/mp4">
+                                        Votre navigateur ne supporte pas la lecture vidéo.
+                                    </video>
+                                </div>
+                            @elseif($mediaUrl)
+                                <a href="{{ $mediaUrl }}" target="_blank" rel="noopener" class="btn small secondary">Télécharger la pièce jointe</a>
+                            @endif
+                        @endforeach
+                    </div>
+                @endif
+            </div>
 
             <div class="topic-post-actions border-t border-gray-200 pt-3 mt-3">
                 @if($primaryPost)
@@ -135,13 +137,18 @@
                 color: #0f172a;
             }
             .topic-post-body {
-                margin: 0 -18px;
+                margin: 0;
                 line-height: 1.7;
                 color: #111827;
                 background: #f3f4f6;
                 border: 1px solid #e5e7eb;
                 border-radius: 0;
                 padding: 16px 18px;
+            }
+            .topic-post-content {
+                margin: 0 -18px;
+                padding: 0 18px 16px;
+                background: #f3f4f6;
             }
             .topic-post-media-wrap {
                 margin-top: 16px;
@@ -172,6 +179,7 @@
                 padding-top: 12px;
                 border-top: 1px solid #e5e7eb;
                 margin-top: 16px;
+                background: #fff;
             }
             .topic-post-action-btn {
                 border: 0;
