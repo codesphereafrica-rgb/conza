@@ -73,7 +73,7 @@ class DonationController extends Controller
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
             'phone' => ['required', 'string', 'min:8'],
-            'operator' => ['required', 'string', 'in:orange,airtel'],
+            'operator' => ['required', 'string', 'in:orange,airtel,vodacom'],
             'direction' => ['sometimes', 'string', 'in:collect,payout'],
             'currency' => ['required', 'string', 'in:CDF,USD'],
             'country' => ['required', 'string', 'in:CD'],

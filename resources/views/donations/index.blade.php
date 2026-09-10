@@ -141,6 +141,7 @@
                         <select id="operator" name="operator" required>
                             <option value="orange">Orange Money</option>
                             <option value="airtel">Airtel Money</option>
+                            <option value="vodacom">Vodacom M-Pesa</option>
                         </select>
                     </div>
 
