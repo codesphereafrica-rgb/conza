@@ -17,6 +17,10 @@
                 <div class="form-group">
                     <label for="password">Nouveau mot de passe</label>
                     <input id="password" name="password" type="password" required>
+                    <small class="muted">Le mot de passe doit contenir au minimum 8 caracteres.</small>
+                    @error('password')
+                        <div class="alert alert-error" style="margin-top:8px; color:#dc2626;">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label for="password_confirmation">Confirmation</label>
