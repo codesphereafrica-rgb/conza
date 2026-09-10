@@ -156,14 +156,17 @@
                 margin-top: 16px;
             }
             .topic-post-action-btn {
-                border: 1px solid #e5e7eb;
-                background: #f8fafc;
-                color: #111827;
+                border: 1px solid #15803d;
+                background: #16a34a;
+                color: #fff;
                 border-radius: 999px;
                 padding: 8px 12px;
                 font-size: 0.82rem;
                 font-weight: 700;
                 cursor: pointer;
+            }
+            .topic-post-action-btn:hover {
+                background: #15803d;
             }
             .forum-comment-item {
                 display: flex;
