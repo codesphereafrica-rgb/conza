@@ -141,7 +141,7 @@
             .topic-post-video {
                 display: block;
                 width: 100%;
-                max-height: 620px;
+                max-height: 480px;
                 object-fit: contain;
                 background: #000;
             }

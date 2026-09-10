@@ -153,7 +153,7 @@
                 <li class="list-item" style="padding:12px;">
                     <div class="badge">{{ $topic->category->name ?? 'Forum' }}</div>
                     <h3 style="margin: 10px 0 10px; font-size: 1rem; line-height:1.4;">
-                        <a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a>
+                        <a href="{{ route('forum.topic', $topic->id) }}" style="text-decoration: underline;">{{ $topic->title }}</a>
                     </h3>
 
                     <div style="display:flex; align-items:flex-start; gap:12px; width:100%;">
