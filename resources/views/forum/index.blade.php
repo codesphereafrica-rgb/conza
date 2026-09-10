@@ -64,7 +64,7 @@
 
                     <li class="list-item forum-post-card">
                         <div class="badge">{{ $topic->category?->name ?? 'Sans catégorie' }}</div>
-                        <h3 class="font-bold" style="margin: 12px 0 8px;"><a href="{{ route('forum.topic', $topic->id) }}">{{ $topic->title }}</a></h3>
+                        <h3 class="font-bold" style="margin: 12px 0 8px;"><a href="{{ route('forum.topic', $topic->id) }}" style="text-decoration: underline;">{{ $topic->title }}</a></h3>
                         <p class="muted forum-post-description">{{ $topic->content ?: 'Aucune description disponible.' }}</p>
 
                         @if($thumb)
