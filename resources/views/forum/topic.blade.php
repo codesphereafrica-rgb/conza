@@ -93,10 +93,10 @@
                 width: min(100%, 760px);
                 margin: 0 auto 24px;
                 background: #fff;
-                border: 1px solid #e5e7eb;
+                border: 1px solid #d7dee5;
                 border-radius: 18px;
                 padding: 18px 18px 10px;
-                box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+                box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14), 0 3px 8px rgba(15, 23, 42, 0.08);
             }
             .topic-post-header {
                 display: flex;
@@ -199,9 +199,10 @@
                 flex-direction: column;
                 gap: 12px;
                 background: #fff;
-                border: 1px solid #e5e7eb;
+                border: 1px solid #d7dee5;
                 border-radius: 16px;
                 padding: 16px;
+                box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
             }
             .forum-comment-header {
                 display: flex;
@@ -271,6 +272,7 @@
                 border: 1px solid #e5e7eb;
                 border-radius: 16px;
                 background: #f9fafb;
+                box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
             }
             .forum-comment-form textarea {
                 min-height: 100px;
