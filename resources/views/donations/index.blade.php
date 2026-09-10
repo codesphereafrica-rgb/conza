@@ -25,7 +25,7 @@
                     </div>
                 @endif
 
-                <strong>Objectif : @if($target) {{ number_format($target, 0, ',', ' ') }} € @else Non défini @endif</strong>
+                <strong>Objectif : @if($target) {{ number_format($target, 0, ',', ' ') }} $ @else Non défini @endif</strong>
                 @auth
                     @if((auth()->user()->role ?? null) === 'admin')
                         <div class="muted" style="margin-top: 8px;">Déjà collecté : {{ number_format($collected, 0, ',', ' ') }} €</div>
@@ -41,9 +41,10 @@
                         <div style="margin-top:18px; border:1px solid #f0f0f0; border-radius:10px; padding:12px; background:#fafafa;">
                             <h4 style="margin:0 0 8px;">Paiement en attente</h4>
                             @foreach($userPendingDonations as $pendingDonation)
+                                @php($pendingCurrency = strtoupper($pendingDonation->currency ?? 'CDF'))
                                 <div style="margin-bottom:14px;">
                                     <div style="display:flex; justify-content:space-between; gap:12px; font-size:13px; margin-bottom:6px;">
-                                        <span>{{ number_format($pendingDonation->amount, 2, ',', ' ') }} €</span>
+                                        <span>{{ number_format($pendingDonation->amount, 2, ',', ' ') }} {{ $pendingCurrency }}</span>
                                         <span>Validation dans :</span>
                                     </div>
                                     <div class="progress-wrap" style="height:10px;">

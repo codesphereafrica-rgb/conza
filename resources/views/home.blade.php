@@ -26,7 +26,7 @@
                     @php
                         $homeSlides = [];
                         $imageDirectory = public_path('images_conza');
-                        $allowedImageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'svg'];
+                        $allowedImageExtensions = ['jpg', 'jpeg', 'png'];
 
                         if (is_dir($imageDirectory)) {
                             $files = glob($imageDirectory . DIRECTORY_SEPARATOR . '*');
@@ -192,7 +192,7 @@
             <div class="footer-grid">
                 <div>
                     <h2>Contacts</h2>
-                    <p>Restons en contact pour soutenir Conza ASBL et nos actions sur le terrain.</p>
+                    <p>Restons en contact pour soutenir programme Conza et nos actions sur le terrain.</p>
                 </div>
                 <div class="contact-cards">
                     <div class="contact-card">

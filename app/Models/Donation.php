@@ -12,6 +12,7 @@ class Donation extends Model
     protected $fillable = [
         'user_id',
         'amount',
+        'currency',
         'provider',
         'status',
         'external_reference',

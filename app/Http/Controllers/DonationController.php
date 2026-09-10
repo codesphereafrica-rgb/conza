@@ -84,6 +84,7 @@ class DonationController extends Controller
         $donation = Donation::create([
             'user_id' => Auth::id(),
             'amount' => $validated['amount'],
+            'currency' => strtoupper($validated['currency']),
             'provider' => 'unipay',
             'status' => 'pending',
             'external_reference' => 'don_' . time() . '_' . Auth::id(),
