@@ -47,12 +47,12 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => env('MAIL_SCHEME') ?: env('EMAIL_SCHEME', 'smtps'),
-            'url' => env('MAIL_URL'),
-            'host' => env('MAIL_HOST', env('EMAIL_HOST', '127.0.0.1')),
-            'port' => (int) env('MAIL_PORT', env('EMAIL_PORT', 2525)),
-            'username' => env('MAIL_USERNAME', env('EMAIL_USER')),
-            'password' => env('MAIL_PASSWORD', env('EMAIL_PASSWORD')),
+            'scheme' => 'smtps',
+            'url' => null,
+            'host' => 'smtp.zoho.com',
+            'port' => 465,
+            'username' => env('EMAIL_USER'),
+            'password' => env('EMAIL_PASSWORD'),
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'https://conzaprogram.com'), PHP_URL_HOST)),
         ],
