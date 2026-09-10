@@ -44,7 +44,7 @@
             </div>
 
             <hr class="border-gray-200 my-2">
-            <p class="topic-post-body bg-gray-100 p-3 rounded-xl">{{ $topic->content }}</p>
+            <div class="topic-post-body bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
 
             @if(!empty($topic->attachments))
                 <div class="topic-post-media-wrap mt-3">
@@ -286,7 +286,7 @@
                         </div>
                         <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
-                    <p class="forum-comment-body bg-gray-100 rounded-lg p-3">{{ $post->content }}</p>
+                    <div class="forum-comment-body bg-gray-100 border border-gray-200 rounded-lg p-3">{{ $post->content }}</div>
 
                     @auth
                         <div class="forum-comment-actions">
