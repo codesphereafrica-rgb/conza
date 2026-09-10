@@ -43,10 +43,11 @@
                 </div>
             </div>
 
-            <p class="topic-post-body">{{ $topic->content }}</p>
+            <hr class="border-gray-200 my-3">
+            <p class="topic-post-body bg-gray-100 p-3 rounded-xl">{{ $topic->content }}</p>
 
             @if(!empty($topic->attachments))
-                <div class="topic-post-media-wrap">
+                <div class="topic-post-media-wrap mt-3">
                     @foreach($topic->attachments as $attachment)
                         @php
                             $filePath = is_array($attachment) ? ($attachment['url'] ?? null) : (is_string($attachment) ? str_replace('\\', '/', $attachment) : null);
@@ -73,7 +74,7 @@
                 </div>
             @endif
 
-            <div class="topic-post-actions">
+            <div class="topic-post-actions border-t border-gray-200 pt-3 mt-3">
                 @if($primaryPost)
                     <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
                         @csrf
@@ -236,7 +237,7 @@
                 padding: 18px;
                 border: 1px solid #e5e7eb;
                 border-radius: 16px;
-                background: #ffffff;
+                background: #f9fafb;
             }
             .forum-comment-form textarea {
                 min-height: 100px;
@@ -277,7 +278,7 @@
                         </div>
                         <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
-                    <p class="forum-comment-body">{{ $post->content }}</p>
+                    <p class="forum-comment-body bg-gray-50 rounded-lg p-3">{{ $post->content }}</p>
 
                     @auth
                         <div class="forum-comment-actions">
@@ -298,12 +299,12 @@
         </ul>
 
         @auth
-            <div class="forum-comment-form" id="comment-form">
+            <div class="forum-comment-form bg-gray-50" id="comment-form">
                 <h3>Ajouter une réponse</h3>
                 <form method="POST" action="{{ route('forum.reply', $topic->id) }}" id="reply-form">
                     @csrf
                     <input type="hidden" name="parent_id" id="reply-parent-id" value="">
-                    <div id="comment-editor" class="reply-editor" contenteditable="true" data-placeholder="Écrivez une réponse..."></div>
+                    <div id="comment-editor" class="reply-editor bg-white border border-gray-200" contenteditable="true" data-placeholder="Écrivez une réponse..."></div>
                     <textarea id="comment-textarea" name="content" required hidden></textarea>
                     <button type="submit" class="btn" style="margin-top: 12px;">Répondre</button>
                 </form>
