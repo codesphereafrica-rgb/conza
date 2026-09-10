@@ -40,7 +40,7 @@ return [
     | your mailers below. You may also add additional mailers if needed.
     |
     | Supported: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
-    |            "postmark", "resend", "log", "array",
+    |            "postmark", "log", "array",
     |            "failover", "roundrobin"
     |
     */
@@ -51,7 +51,7 @@ return [
             'transport' => 'smtp',
             'scheme' => $mailScheme,
             'url' => null,
-            'host' => env('MAIL_HOST', env('EMAIL_HOST', 'smtp.zoho.com')),
+            'host' => env('MAIL_HOST', env('EMAIL_HOST', 'smtp-relay.brevo.com')),
             'port' => (int) env('MAIL_PORT', env('EMAIL_PORT', 587)),
             'username' => env('MAIL_USERNAME', env('EMAIL_USER')),
             'password' => env('MAIL_PASSWORD', env('EMAIL_PASSWORD')),
@@ -69,10 +69,6 @@ return [
             // 'client' => [
             //     'timeout' => 5,
             // ],
-        ],
-
-        'resend' => [
-            'transport' => 'resend',
         ],
 
         'sendmail' => [
