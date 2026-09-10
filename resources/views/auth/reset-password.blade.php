@@ -12,7 +12,7 @@
                 <input type="hidden" name="token" value="{{ $token }}">
                 <div class="form-group">
                     <label for="email">Adresse e-mail</label>
-                    <input id="email" name="email" type="email" value="{{ old('email', $email) }}" required>
+                    <input id="email" name="email" type="email" value="{{ old('email', $email) }}" readonly required style="background-color:#e5e7eb; color:#6b7280; cursor:not-allowed;">
                 </div>
                 <div class="form-group">
                     <label for="password">Nouveau mot de passe</label>
