@@ -2,6 +2,8 @@
 
 $emailFrom = env('MAIL_FROM_ADDRESS') ?: env('EMAIL_FROM', 'hello@example.com');
 $emailFromName = env('MAIL_FROM_NAME');
+$mailEncryption = strtolower((string) (env('MAIL_ENCRYPTION') ?: env('EMAIL_ENCRYPTION', 'tls')));
+$mailScheme = $mailEncryption === 'ssl' ? 'smtps' : 'smtp';
 
 if (!$emailFromName && preg_match('/^\s*(.+?)\s*<([^>]+)>\s*$/', $emailFrom, $matches)) {
     $emailFromName = trim($matches[1], " \\\"'");
@@ -47,12 +49,12 @@ return [
 
         'smtp' => [
             'transport' => 'smtp',
-            'scheme' => 'smtps',
+            'scheme' => $mailScheme,
             'url' => null,
-            'host' => 'smtp.zoho.com',
-            'port' => 465,
-            'username' => env('EMAIL_USER'),
-            'password' => env('EMAIL_PASSWORD'),
+            'host' => env('MAIL_HOST', env('EMAIL_HOST', 'smtp.zoho.com')),
+            'port' => (int) env('MAIL_PORT', env('EMAIL_PORT', 587)),
+            'username' => env('MAIL_USERNAME', env('EMAIL_USER')),
+            'password' => env('MAIL_PASSWORD', env('EMAIL_PASSWORD')),
             'timeout' => null,
             'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'https://conzaprogram.com'), PHP_URL_HOST)),
         ],
