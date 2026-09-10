@@ -43,7 +43,6 @@
                 </div>
             </div>
 
-            <hr class="border-gray-200 my-2">
             <div class="topic-post-body bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
 
             @if(!empty($topic->attachments))
@@ -136,13 +135,13 @@
                 color: #0f172a;
             }
             .topic-post-body {
-                margin: 8px 0 0;
+                margin: 0 -18px;
                 line-height: 1.7;
                 color: #111827;
                 background: #f3f4f6;
                 border: 1px solid #e5e7eb;
-                border-radius: 12px;
-                padding: 12px;
+                border-radius: 0;
+                padding: 16px 18px;
             }
             .topic-post-media-wrap {
                 margin-top: 16px;
