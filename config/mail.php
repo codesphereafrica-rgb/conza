@@ -2,8 +2,6 @@
 
 $emailFrom = env('MAIL_FROM_ADDRESS') ?: env('EMAIL_FROM', 'hello@example.com');
 $emailFromName = env('MAIL_FROM_NAME');
-$mailEncryption = strtolower((string) (env('MAIL_ENCRYPTION') ?: env('EMAIL_ENCRYPTION', 'tls')));
-$mailScheme = $mailEncryption === 'ssl' ? 'smtps' : 'smtp';
 
 if (!$emailFromName && preg_match('/^\s*(.+?)\s*<([^>]+)>\s*$/', $emailFrom, $matches)) {
     $emailFromName = trim($matches[1], " \\\"'");
@@ -24,7 +22,7 @@ return [
     |
     */
 
-    'default' => env('MAIL_MAILER', env('EMAIL_MAILER', 'smtp')),
+    'default' => env('MAIL_MAILER', 'brevo'),
 
     /*
     |--------------------------------------------------------------------------
@@ -40,23 +38,15 @@ return [
     | your mailers below. You may also add additional mailers if needed.
     |
     | Supported: "smtp", "sendmail", "mailgun", "ses", "ses-v2",
-    |            "postmark", "log", "array",
+    |            "postmark", "brevo+api", "log", "array",
     |            "failover", "roundrobin"
     |
     */
 
     'mailers' => [
 
-        'smtp' => [
-            'transport' => 'smtp',
-            'scheme' => $mailScheme,
-            'url' => null,
-            'host' => env('MAIL_HOST', env('EMAIL_HOST', 'smtp-relay.brevo.com')),
-            'port' => (int) env('MAIL_PORT', env('EMAIL_PORT', 587)),
-            'username' => env('MAIL_USERNAME', env('EMAIL_USER')),
-            'password' => env('MAIL_PASSWORD', env('EMAIL_PASSWORD')),
-            'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'https://conzaprogram.com'), PHP_URL_HOST)),
+        'brevo' => [
+            'transport' => 'brevo+api',
         ],
 
         'ses' => [
