@@ -168,7 +168,7 @@
             overflow: hidden;
             background: linear-gradient(135deg, rgba(15, 118, 110, 0.84), rgba(17, 94, 89, 0.88)), url("{{ url('/images_conza/ancetres_congolais.jpeg') }}") center/cover no-repeat;
             color: white;
-            padding: 60px 0 60px;
+            padding: 60px 0 28px;
         }
         .hero::after {
             content: '';
@@ -218,12 +218,12 @@
             pointer-events: none;
         }
         .hero-values {
-            margin: 18px 0 0;
+            margin: 12px 0 0;
             padding-left: 22px;
             color: rgba(255,255,255,0.9);
             font-size: 0.9rem;
             font-weight: 600;
-            line-height: 1.7;
+            line-height: 1.5;
         }
         .hero-content {
             position: relative;
@@ -396,6 +396,9 @@
         }
         .section {
             padding: 40px 0;
+        }
+        .hero + main.section {
+            padding-top: 20px;
         }
         .grid {
             display: grid;
