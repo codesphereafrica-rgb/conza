@@ -12,17 +12,13 @@
                         Un espace communautaire pour partager des idées, débattre, informer et soutenir les projets
                         qui portent la mission de notre association.
                     </p>
-                    <ul class="mt-4 list-disc space-y-2 pl-5 text-sm font-medium text-white/90">
-                        <li>S'assumer et assumer, la liberté ;</li>
-                        <li>Citoyenneté optimale ;</li>
-                        <li>Dignité authentique.</li>
-                    </ul>
                     <div class="hero-actions">
                         <a href="{{ route('forum.index') }}" class="btn">Explorer le forum</a>
                         <a href="{{ route('donations.index') }}" class="btn secondary">Voir les dons</a>
                     </div>
                 </div>
-                <div class="hero-right-visuals" aria-hidden="true">
+                <div class="hero-right-visuals">
+                    <div class="hero-carousel">
                     @php
                         $homeSlides = [
                             'ancetres_congolais.jpeg',
@@ -72,6 +68,12 @@
                         >
                     @endforeach
                     <div class="hero-visual-overlay"></div>
+                    </div>
+                    <ul class="hero-values">
+                        <li>S'assumer et assumer, la liberté ;</li>
+                        <li>Citoyenneté optimale ;</li>
+                        <li>Dignité authentique.</li>
+                    </ul>
                 </div>
             </div>
         </div>

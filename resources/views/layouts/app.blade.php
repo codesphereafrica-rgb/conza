@@ -181,14 +181,17 @@
         .hero-right-visuals {
             position: relative;
             width: min(462px, 42%);
+            flex: 0 0 462px;
+            margin-left: 44px;
+        }
+        .hero-carousel {
+            position: relative;
             min-height: 315px;
             border-radius: 28px;
             overflow: hidden;
             background: rgba(255,255,255,0.12);
             border: 1px solid rgba(255,255,255,0.22);
             box-shadow: 0 20px 60px rgba(15, 23, 42, 0.18);
-            flex: 0 0 462px;
-            margin-left: 44px;
         }
         .hero-visual {
             position: absolute;
@@ -213,6 +216,14 @@
             background: linear-gradient(180deg, rgba(15,118,110,0.04), rgba(15,118,110,0.18));
             z-index: 99;
             pointer-events: none;
+        }
+        .hero-values {
+            margin: 18px 0 0;
+            padding-left: 22px;
+            color: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.7;
         }
         .hero-content {
             position: relative;
