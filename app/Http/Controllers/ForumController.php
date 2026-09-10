@@ -53,7 +53,7 @@ class ForumController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'content' => ['required', 'string', 'min:10'],
-            'attachments.*' => ['file', 'mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4', 'max:51200'],
+            'attachments.*' => ['file', 'mimetypes:image/jpeg,image/png,image/gif,image/webp,video/mp4,video/quicktime,video/x-msvideo', 'max:1048576'],
         ]);
 
         $attachments = null;

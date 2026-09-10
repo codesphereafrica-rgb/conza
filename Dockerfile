@@ -31,6 +31,7 @@ RUN composer install --no-dev --no-interaction --prefer-dist --no-scripts
 
 COPY . .
 COPY --from=frontend /app/public/build ./public/build
+COPY docker/php.ini /usr/local/etc/php/conf.d/uploads.ini
 
 RUN composer dump-autoload --no-dev --optimize
 
