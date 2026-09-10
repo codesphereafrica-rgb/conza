@@ -108,6 +108,16 @@
                 background: rgba(15, 118, 110, 0.1);
                 color: #115e59;
             }
+            .topic-post-header-green {
+                border-radius: 16px 16px 0 0;
+                padding: 16px;
+                margin: -18px -18px 0;
+            }
+            .forum-comment-header-green {
+                border-radius: 16px 16px 0 0;
+                padding: 12px;
+                margin: -16px -16px 0;
+            }
             .topic-post-user {
                 display: flex;
                 align-items: center;
@@ -126,9 +136,13 @@
                 color: #0f172a;
             }
             .topic-post-body {
-                margin: 14px 0 0;
+                margin: 8px 0 0;
                 line-height: 1.7;
                 color: #111827;
+                background: #f3f4f6;
+                border: 1px solid #e5e7eb;
+                border-radius: 12px;
+                padding: 12px;
             }
             .topic-post-media-wrap {
                 margin-top: 16px;
@@ -214,6 +228,10 @@
             .forum-comment-body {
                 margin: 0;
                 line-height: 1.7;
+                background: #f3f4f6;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                padding: 12px;
             }
             .forum-comment-actions {
                 display: flex;
