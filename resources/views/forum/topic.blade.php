@@ -29,7 +29,7 @@
         @endphp
 
         <article class="topic-post-card">
-            <div class="topic-post-header">
+            <div class="topic-post-header bg-[#eef6f0] text-[#1a4d2e] border border-[#bcd9c8] rounded-t-xl p-3 -mx-[18px] -mt-[18px]">
                 <div class="topic-post-user">
                     @if($topic->user && $topic->user->avatar)
                         <img src="{{ $topic->user->avatar }}" alt="Avatar de {{ $topic->user->name }}" class="topic-post-avatar">
@@ -270,7 +270,7 @@
         <ul class="list" id="reponses-list">
             @forelse($topic->posts as $post)
                 <li class="forum-comment-item">
-                    <div class="forum-comment-header">
+                    <div class="forum-comment-header bg-[#eef6f0] text-[#1a4d2e] border border-[#bcd9c8] rounded-t-xl p-3 -mx-4 -mt-4">
                         <div class="forum-comment-user">
                             @if($post->user && $post->user->avatar)
                                 <img src="{{ $post->user->avatar }}" alt="Avatar de {{ $post->user->name }}" class="forum-comment-avatar">
@@ -281,7 +281,7 @@
                         </div>
                         <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
-                    <p class="forum-comment-body bg-gray-50 rounded-lg p-3">{{ $post->content }}</p>
+                    <p class="forum-comment-body bg-gray-100 rounded-lg p-3">{{ $post->content }}</p>
 
                     @auth
                         <div class="forum-comment-actions">
