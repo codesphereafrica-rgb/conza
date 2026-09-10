@@ -24,47 +24,46 @@
                 </div>
                 <div class="hero-right-visuals" aria-hidden="true">
                     @php
-                        $homeSlides = [];
-                        $imageDirectory = public_path('images_conza');
-                        $allowedImageExtensions = ['jpg', 'jpeg', 'png'];
-
-                        if (is_dir($imageDirectory)) {
-                            $files = glob($imageDirectory . DIRECTORY_SEPARATOR . '*');
-
-                            if (is_array($files)) {
-                                foreach ($files as $file) {
-                                    if (!is_file($file)) {
-                                        continue;
-                                    }
-
-                                    $filename = basename($file);
-                                    $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-
-                                    if (preg_match('/logo/i', $filename)) {
-                                        continue;
-                                    }
-
-                                    if (in_array($extension, $allowedImageExtensions, true)) {
-                                        $homeSlides[] = '/images_conza/' . $filename;
-                                    }
-                                }
-                            }
-                        }
-
-                        sort($homeSlides, SORT_STRING);
-
-                        if (empty($homeSlides)) {
-                            $homeSlides = [
-                                '/images_conza/image_fond_conza.png',
-                                '/images_conza/ancetres_congolais.jpeg',
-                                '/images_conza/Chutes_de_la_Lofoï.jpg',
-                            ];
-                        }
+                        $homeSlides = [
+                            'ancetres_congolais.jpeg',
+                            'ancetre_2.jpg',
+                            'ngaliema_et_stanley.jpeg',
+                            'kasa_vubu_et_moise_tshombe.png',
+                            'Henry_Morton_Stanley.jpg',
+                            'kasa_vubu.jpeg',
+                            'mobutu_1.jpeg',
+                            'mobutu_2.jpeg',
+                            'laurent_desire_kabila.jpg',
+                            'camp_militaire.jpeg',
+                            'Étienne_Tshisekedi.jpg',
+                            'sozacom.jpg',
+                            'Immeuble_Sozacom_en_2024.jpg',
+                            'statut_fikin.jpeg',
+                            'plage_moanda_2.jpeg',
+                            'plage_moanda_1.jpeg',
+                            'Inga04.jpg',
+                            'Ballet_Bana_Mampala-Africa_Museum_(1)_01.jpeg',
+                            'Chutes_de_la_Lofoï.jpg',
+                            'Chutes_Wagenia.jpg',
+                            'dam.jpg',
+                            'Garamba_National_Park_overhead.jpg',
+                            'Aerial_view_of_the_Congo_River_near_Kisangani.jpg',
+                            'gorille.jpg',
+                            'Nyamulagira_volcano_(20439939664).jpg',
+                            'Paysage_de_Nsele.jpg',
+                            'ruzizi.jpeg',
+                            'ruzizi2.jpeg',
+                            'fleuve_congo.jpg',
+                            'Inga_2006-projet.svg.png',
+                            'itombwe_carte.jpg',
+                            'itombwe-reserve-e.png',
+                            'Lake_Bangweulu.jpg',
+                        ];
                     @endphp
                     @foreach($homeSlides as $index => $slide)
                         <img
                             class="hero-visual{{ $index === 0 ? ' is-active' : '' }}"
-                            src="{{ url($slide) }}"
+                            src="{{ url('/images_conza/' . $slide) }}"
                             alt=""
                             aria-hidden="true"
                         >
