@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 
 class PasswordResetController extends Controller
@@ -17,9 +18,19 @@ class PasswordResetController extends Controller
         $validated = $request->validate(['email' => ['required', 'email']]);
         $status = Password::sendResetLink($validated);
 
-        return $status === Password::RESET_LINK_SENT
-            ? back()->with('success', 'Le lien de réinitialisation a été envoyé par e-mail.')
-            : back()->withErrors(['email' => 'Impossible d’envoyer le lien pour cette adresse.']);
+        if ($status === Password::RESET_LINK_SENT) {
+            return back()->with('success', 'Le lien de réinitialisation a été envoyé par e-mail.');
+        }
+
+        if ($status === Password::RESET_THROTTLED) {
+            return back()->withErrors(['email' => 'Un lien vient déjà d’être demandé. Réessaie dans une minute.']);
+        }
+
+        Log::warning('Password reset link was not sent.', [
+            'status' => $status,
+        ]);
+
+        return back()->withErrors(['email' => 'Impossible d’envoyer le lien pour cette adresse.']);
     }
 
     public function resetForm(Request $request, string $token)
