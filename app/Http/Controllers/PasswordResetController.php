@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
+use Throwable;
 
 class PasswordResetController extends Controller
 {
@@ -16,7 +17,23 @@ class PasswordResetController extends Controller
     public function sendLink(Request $request)
     {
         $validated = $request->validate(['email' => ['required', 'email']]);
-        $status = Password::sendResetLink($validated);
+
+        try {
+            $status = Password::sendResetLink($validated);
+        } catch (Throwable $exception) {
+            Log::error('MAIL ERROR FULL', [
+                'exception' => $exception,
+                'message' => $exception->getMessage(),
+                'trace' => $exception->getTraceAsString(),
+            ]);
+            error_log('MAIL ERROR FULL '.$exception);
+
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Erreur lors de l’envoi du mail.'], 500);
+            }
+
+            return back()->withErrors(['email' => 'Une erreur est survenue pendant l’envoi du mail.']);
+        }
 
         if ($status === Password::RESET_LINK_SENT) {
             return back()->with('success', 'Le lien de réinitialisation a été envoyé par e-mail.');

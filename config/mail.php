@@ -50,7 +50,7 @@ return [
             'scheme' => env('MAIL_SCHEME') ?: env('EMAIL_SCHEME', 'smtps'),
             'url' => env('MAIL_URL'),
             'host' => env('MAIL_HOST', env('EMAIL_HOST', '127.0.0.1')),
-            'port' => env('MAIL_PORT', env('EMAIL_PORT', 2525)),
+            'port' => (int) env('MAIL_PORT', env('EMAIL_PORT', 2525)),
             'username' => env('MAIL_USERNAME', env('EMAIL_USER')),
             'password' => env('MAIL_PASSWORD', env('EMAIL_PASSWORD')),
             'timeout' => null,
