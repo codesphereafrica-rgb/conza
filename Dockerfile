@@ -7,6 +7,10 @@ COPY resources ./resources
 COPY src ./src
 COPY public ./public
 COPY vite.config.js .
+ARG VITE_SUPABASE_URL
+ARG VITE_SUPABASE_ANON_KEY
+ENV VITE_SUPABASE_URL=$VITE_SUPABASE_URL
+ENV VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY
 RUN npm run build
 
 FROM php:8.3-apache-bookworm
