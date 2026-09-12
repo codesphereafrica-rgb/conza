@@ -167,6 +167,28 @@
             background: rgba(255,255,255,0.2);
             transform: translateY(-1px);
         }
+        .notification-bell-animated { animation: notificationBellShake .7s ease; }
+        .notification-toast {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            z-index: 40;
+            min-width: 190px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #115e59;
+            color: white;
+            font-size: .82rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, .2);
+        }
+        @keyframes notificationBellShake {
+            0%, 100% { transform: rotate(0); }
+            20% { transform: rotate(-14deg); }
+            40% { transform: rotate(12deg); }
+            60% { transform: rotate(-8deg); }
+            80% { transform: rotate(5deg); }
+        }
         .notification-bell::after {
             content: "";
             position: absolute;

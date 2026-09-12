@@ -20,13 +20,15 @@ function playNotificationSound() {
     }
 }
 
-export default function NotificationBell() {
+export default function NotificationBell({ userId }) {
     const [notifications, setNotifications] = useState([])
     const [isOpen, setIsOpen] = useState(false)
+    const [toast, setToast] = useState('')
+    const [isAnimating, setIsAnimating] = useState(false)
     const unreadCount = notifications.filter((notification) => !notification.is_read).length
 
     useEffect(() => {
-        if (!supabase) {
+        if (!userId || !supabase) {
             return undefined
         }
 
@@ -36,6 +38,7 @@ export default function NotificationBell() {
             const { data, error } = await supabase
                 .from('notifications')
                 .select('*')
+                .eq('user_id', userId)
                 .order('created_at', { ascending: false })
 
             console.log('notifs data:', data, 'error:', error)
@@ -47,42 +50,63 @@ export default function NotificationBell() {
 
         loadNotifications()
 
+        const channel = supabase
+            .channel(`notifs-${userId}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: `user_id=eq.${userId}`,
+                },
+                (payload) => {
+                    setNotifications((current) => [payload.new, ...current])
+                    setToast('Nouvelle publication')
+                    setIsAnimating(true)
+                    playNotificationSound()
+                    window.setTimeout(() => setToast(''), 3500)
+                    window.setTimeout(() => setIsAnimating(false), 700)
+                },
+            )
+            .subscribe()
+
         return () => {
             isMounted = false
+            supabase.removeChannel(channel)
         }
-    }, [])
+    }, [userId])
 
-    async function markAsRead(notification) {
-        if (notification.is_read) {
+    async function markAllAsRead() {
+        if (!supabase || !userId || unreadCount === 0) {
             return
         }
 
-        setNotifications((current) => current.map((item) => (
-            item.id === notification.id ? { ...item, is_read: true } : item
-        )))
-
-        if (!supabase) {
-            return
-        }
+        setNotifications((current) => current.map((item) => ({ ...item, is_read: true })))
 
         await supabase
             .from('notifications')
             .update({ is_read: true })
-            .eq('id', notification.id)
+            .eq('user_id', userId)
+            .eq('is_read', false)
     }
 
     return (
         <div className="notification-bell-wrapper">
             <button
                 type="button"
-                className="notification-bell"
+                className={`notification-bell${isAnimating ? ' notification-bell-animated' : ''}`}
                 aria-label={`Notifications${unreadCount ? ` (${unreadCount} non lues)` : ''}`}
                 title="Notifications"
-                onClick={() => setIsOpen((open) => !open)}
+                onClick={() => {
+                    setIsOpen((open) => !open)
+                    markAllAsRead()
+                }}
             >
                 <span aria-hidden="true">🔔</span>
                 {unreadCount > 0 && <span className="notification-count">{unreadCount > 99 ? '99+' : unreadCount}</span>}
             </button>
+            {toast && <div className="notification-toast" role="status">{toast}</div>}
             {isOpen && (
                 <div className="notification-panel" role="dialog" aria-label="Notifications">
                     <div className="notification-panel-header">Notifications</div>
@@ -92,7 +116,7 @@ export default function NotificationBell() {
                         <ul className="notification-list">
                             {notifications.map((notification) => (
                                 <li key={notification.id} className={notification.is_read ? '' : 'is-unread'}>
-                                    <button type="button" onClick={() => markAsRead(notification)}>
+                                    <button type="button" onClick={() => markAllAsRead()}>
                                         <strong>{notification.title || 'Nouvelle notification'}</strong>
                                         <span>{notification.message || ''}</span>
                                     </button>
