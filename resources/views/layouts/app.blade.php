@@ -115,7 +115,16 @@
             line-height: 1;
             transition: background 0.2s ease, transform 0.2s ease;
         }
-        .notification-bell-wrapper { position: relative; }
+        #notification-bell-root,
+        .notification-bell-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            min-width: 36px;
+            height: 36px;
+        }
         .notification-count {
             position: absolute;
             top: -5px;
