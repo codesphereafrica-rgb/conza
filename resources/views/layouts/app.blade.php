@@ -499,6 +499,12 @@
         .section {
             padding: 40px 0;
         }
+        .home-section-title,
+        .forum-section-title {
+            margin-top: 6px !important;
+            font-size: 26px !important;
+            font-weight: 700 !important;
+        }
         .hero + main.section {
             padding-top: 20px;
         }

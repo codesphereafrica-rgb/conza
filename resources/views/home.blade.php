@@ -83,17 +83,17 @@
         <div class="grid grid-3">
             <div class="card card-with-media">
                 <img src="{{ url('/images_conza/notre_mission.png') }}" alt="Notre mission">
-                <h3>Notre mission</h3>
+                <h3 class="home-section-title">Notre mission</h3>
                 <p class="muted">Maintenir la cohésion sociale ainsi que l'unité nationale du peuple du Congo-Zaïre d'ici et d'ailleurs.</p>
             </div>
             <div class="card card-with-media">
                 <img src="{{ url('/images_conza/notre_vision.png') }}" alt="Notre vision">
-                <h3>Notre vision</h3>
+                <h3 class="home-section-title">Notre vision</h3>
                 <p class="muted">Créer et Maintenir la communauté nationale repondant au rendez-vous du donner et du recevoir.</p>
             </div>
             <div class="card card-with-media">
                 <img src="{{ url('/images_conza/nos_objectifs.png') }}" alt="Nos objectifs">
-                <h3>Nos objectifs</h3>
+                <h3 class="home-section-title">Nos objectifs</h3>
                 <ul class="muted objective-list">
                     <li>Assumer la qualité du Souverain primaire;</li>
                     <li>Amener le maximum de la population à assumer démocratiquement l'Etat National Moderne du bassin du Grand Congo.</li>
@@ -121,7 +121,7 @@
 
     <section class="container section" style="padding-top: 0;">
         <div class="toolbar">
-            <h2>Dernières discussions</h2>
+            <h2 class="home-section-title">Dernières discussions</h2>
             <a href="{{ route('forum.index') }}" class="btn small">Voir tout</a>
         </div>
 

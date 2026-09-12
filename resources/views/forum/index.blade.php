@@ -5,7 +5,7 @@
 @section('content')
     <main class="container section">
         <div class="toolbar">
-            <h2>Catégories du forum</h2>
+            <h2 class="forum-section-title">Catégories du forum</h2>
             <form class="search-box" method="GET" action="{{ route('forum.search') }}">
                 <input type="text" name="q" placeholder="Rechercher un sujet" value="{{ request('q') }}">
                 <button type="submit" class="btn small">Rechercher</button>
@@ -25,7 +25,7 @@
 
         <div style="margin-top: 40px;">
             <div class="toolbar">
-                <h2>Dernières discussions</h2>
+                <h2 class="forum-section-title">Dernières discussions</h2>
                 @auth
                     @php
                         $superAdminId = \App\Models\Setting::get('super_admin_id');

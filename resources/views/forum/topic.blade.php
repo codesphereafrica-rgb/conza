@@ -58,7 +58,7 @@
 
                             @if($mediaUrl && $isImage)
                                 <div class="topic-post-media-frame video-wrapper">
-                                    <img src="{{ $mediaUrl }}" alt="Image jointe" class="topic-post-image">
+                                    <img src="{{ $mediaUrl }}" alt="Image jointe" class="topic-post-image topic-lightbox-image">
                                 </div>
                             @elseif($mediaUrl && $isVideo)
                                 <div class="topic-post-media-frame video-wrapper">
@@ -121,6 +121,17 @@
             .topic-meta {
                 display: none;
             }
+            .home-section-title,
+            .forum-section-title,
+            #reponses {
+                font-size: 26px !important;
+                font-weight: 700 !important;
+            }
+            .home-section-title,
+            .forum-section-title {
+                margin-top: 6px !important;
+            }
+            .topic-lightbox-image { cursor: zoom-in; }
             .topic-card {
                 display: flex !important;
                 flex-direction: column !important;
@@ -435,6 +446,46 @@
                 margin: 0 !important;
                 padding: 10px 12px !important;
             }
+            .topic-lightbox {
+                position: fixed;
+                inset: 0;
+                z-index: 10000;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                padding: 24px;
+                background: rgba(0, 0, 0, 0.96);
+            }
+            .topic-lightbox.is-open { display: flex; }
+            .topic-lightbox img {
+                max-width: 95vw;
+                max-height: 90vh;
+                object-fit: contain;
+                cursor: zoom-in;
+                transition: transform .2s ease;
+            }
+            .topic-lightbox.is-zoomed img {
+                max-width: none;
+                max-height: none;
+                width: 150vw;
+                height: 150vh;
+                cursor: zoom-out;
+            }
+            .topic-lightbox-close,
+            .topic-lightbox-zoom {
+                position: absolute;
+                top: 18px;
+                border: 0;
+                border-radius: 50%;
+                width: 42px;
+                height: 42px;
+                background: rgba(255,255,255,.16);
+                color: #fff;
+                font-size: 1.4rem;
+                cursor: pointer;
+            }
+            .topic-lightbox-close { right: 18px; }
+            .topic-lightbox-zoom { right: 68px; }
         </style>
 
         <h3 id="reponses">Réponses</h3>
@@ -489,6 +540,44 @@
             </div>
         @endauth
     </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const images = document.querySelectorAll('.topic-lightbox-image');
+            if (!images.length) return;
+
+            const lightbox = document.createElement('div');
+            lightbox.className = 'topic-lightbox';
+            lightbox.innerHTML = '<button type="button" class="topic-lightbox-zoom" aria-label="Zoomer">+</button>'
+                + '<button type="button" class="topic-lightbox-close" aria-label="Fermer">&times;</button>'
+                + '<img alt="Image agrandie">';
+            document.body.appendChild(lightbox);
+
+            const preview = lightbox.querySelector('img');
+            const closeButton = lightbox.querySelector('.topic-lightbox-close');
+            const zoomButton = lightbox.querySelector('.topic-lightbox-zoom');
+            const close = function () {
+                lightbox.classList.remove('is-open', 'is-zoomed');
+                preview.removeAttribute('src');
+            };
+            const toggleZoom = function () { lightbox.classList.toggle('is-zoomed'); };
+
+            images.forEach((image) => image.addEventListener('click', function () {
+                preview.src = image.src;
+                preview.alt = image.alt;
+                lightbox.classList.add('is-open');
+            }));
+            closeButton.addEventListener('click', close);
+            zoomButton.addEventListener('click', toggleZoom);
+            preview.addEventListener('click', toggleZoom);
+            lightbox.addEventListener('click', function (event) {
+                if (event.target === lightbox) close();
+            });
+            document.addEventListener('keydown', function (event) {
+                if (event.key === 'Escape') close();
+            });
+        });
+    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
