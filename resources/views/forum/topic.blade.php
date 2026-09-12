@@ -123,11 +123,11 @@
                 background: white !important;
             }
             .topic-card .card-header {
-                margin-bottom: 1px !important;
+                margin-bottom: 0 !important;
                 background: #f0fdfa !important;
             }
             .topic-card .post-text {
-                margin-top: 1px !important;
+                margin-top: 0 !important;
                 width: 100% !important;
                 background: white !important;
             }
