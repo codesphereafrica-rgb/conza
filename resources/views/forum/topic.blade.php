@@ -89,8 +89,16 @@
         </article>
 
         <style>
-            body {
-                background: #e9eef5;
+            body,
+            .page-background,
+            main,
+            .forum-page {
+                background-color: #111827 !important;
+                background: #111827 !important;
+            }
+            .forum-title,
+            h1 {
+                color: white !important;
             }
             .topic-meta {
                 display: none;
@@ -104,7 +112,7 @@
                 width: 93% !important;
                 margin: 0 auto 12px auto !important;
                 border-radius: 16px !important;
-                background: white !important;
+                background-color: #e5e7eb !important;
             }
             .topic-card .p-4,
             .topic-card .p-3 {
@@ -123,11 +131,13 @@
                 background: white !important;
             }
             .topic-card .card-header {
-                margin-bottom: 0 !important;
-                background: #f0fdfa !important;
+                margin-bottom: 1px !important;
+                padding-bottom: 12px !important;
+                background-color: #b8f0df !important;
+                background: #b8f0df !important;
             }
             .topic-card .post-text {
-                margin-top: 0 !important;
+                margin-top: 1px !important;
                 width: 100% !important;
                 background: white !important;
             }
@@ -161,6 +171,8 @@
             .reply-card .reply-header {
                 margin: 0 !important;
                 padding: 10px 12px !important;
+                background-color: #b8f0df !important;
+                background: #b8f0df !important;
             }
             .reply-card .reply-bubble,
             .reply-card .message-content {
@@ -174,9 +186,6 @@
                 background-color: #115e59 !important;
                 color: white !important;
                 border: none !important;
-            }
-            .forum-page {
-                background-color: #e9eef5 !important;
             }
             .topic-post-card {
                 width: min(100%, 760px);
