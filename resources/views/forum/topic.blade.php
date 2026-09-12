@@ -3,12 +3,12 @@
 @section('title', $topic->title . ' - ASBL Forum')
 
 @section('content')
-    <main class="container section">
+    <main class="container section forum-page">
         <div class="toolbar">
             <div>
                 <div class="badge">{{ $topic->category?->name ?? 'Sans catégorie' }}</div>
                 <h2 style="margin-top: 12px;">{{ $topic->title }}</h2>
-                <p class="muted">Par {{ $topic->user->name }} · {{ $topic->created_at->diffForHumans() }}</p>
+                <p class="topic-meta muted">Par {{ $topic->user->name }} · {{ $topic->created_at->diffForHumans() }}</p>
             </div>
             @auth
                 <a href="{{ route('forum.index') }}" class="btn small secondary">Retour au forum</a>
@@ -89,6 +89,12 @@
         </article>
 
         <style>
+            body {
+                background: #e9eef5;
+            }
+            .topic-meta {
+                display: none;
+            }
             .topic-post-card {
                 width: min(100%, 760px);
                 margin: 0 auto 24px;
@@ -151,7 +157,8 @@
                 background: #f3f4f6;
             }
             .topic-post-media-wrap {
-                margin-top: 16px;
+                width: 93%;
+                margin: 16px auto 0;
                 border-radius: 16px;
                 overflow: hidden;
                 background: #000;
@@ -165,8 +172,8 @@
             }
             .topic-post-image,
             .topic-post-video {
-                display: block;
                 width: 100%;
+                display: block;
                 max-height: 480px;
                 object-fit: contain;
                 background: #000;
@@ -197,7 +204,7 @@
             .forum-comment-item {
                 display: flex;
                 flex-direction: column;
-                gap: 12px;
+                gap: 6px;
                 background: #fff;
                 border: 1px solid #d7dee5;
                 border-radius: 16px;
@@ -209,6 +216,7 @@
                 align-items: center;
                 gap: 10px;
                 flex-wrap: wrap;
+                margin: -16px -16px 0;
             }
             .forum-comment-avatar {
                 width: 38px;
