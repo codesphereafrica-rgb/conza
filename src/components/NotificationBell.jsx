@@ -26,7 +26,7 @@ export default function NotificationBell({ userId }) {
     const unreadCount = notifications.filter((notification) => !notification.is_read).length
 
     useEffect(() => {
-        if (!userId) {
+        if (!userId || !supabase) {
             return undefined
         }
 
@@ -77,6 +77,10 @@ export default function NotificationBell({ userId }) {
         setNotifications((current) => current.map((item) => (
             item.id === notification.id ? { ...item, is_read: true } : item
         )))
+
+        if (!supabase) {
+            return
+        }
 
         await supabase
             .from('notifications')
