@@ -30,6 +30,11 @@ Route::post('/deconnexion', [AuthController::class, 'logout'])->name('logout')->
 Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
 Route::get('/forum/categorie/{slug}', [ForumController::class, 'category'])->name('forum.category');
 Route::get('/forum/sujet/{id}', [ForumController::class, 'topic'])->name('forum.topic');
+Route::get('/post/{id}', function (int $id) {
+    $post = \App\Models\Post::findOrFail($id);
+
+    return redirect()->route('forum.topic', $post->topic_id);
+});
 Route::get('/recherche', [ForumController::class, 'search'])->name('forum.search');
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth')->name('notifications.index');
 

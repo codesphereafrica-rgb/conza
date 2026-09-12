@@ -60,7 +60,7 @@ class SupabaseNotificationService
             'type' => 'new_post',
             'title' => 'Nouveau post',
             'message' => ($author?->name ?? 'Un utilisateur') . ' a fait une nouvelle publication',
-            'link' => '/post/' . $post->id,
+            'link' => '/forum/sujet/' . $post->topic_id,
             'is_read' => false,
         ], $recipientIds);
 
