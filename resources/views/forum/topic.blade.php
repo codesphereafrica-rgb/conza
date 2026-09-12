@@ -28,7 +28,7 @@
             $topicCommentCount = max(0, $topic->posts()->count() - 1);
         @endphp
 
-        <article class="topic-post-card">
+        <article class="topic-post-card topic-card">
             <div class="topic-post-header topic-post-header-green border border-[#bcd9c8] rounded-t-2xl p-4 -mx-[18px] -mt-[18px]">
                 <div class="topic-post-user">
                     @if($topic->user && $topic->user->avatar)
@@ -94,6 +94,23 @@
             }
             .topic-meta {
                 display: none;
+            }
+            .topic-card,
+            .reply-card {
+                width: 93% !important;
+                max-width: 93% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                border-radius: 16px !important;
+            }
+            .forum-page {
+                background-color: #e9eef5 !important;
+            }
+            .reply-card .reply-header {
+                margin-bottom: 4px !important;
+            }
+            .reply-card .message-bubble {
+                margin-top: 0 !important;
             }
             .topic-post-card {
                 width: min(100%, 760px);
@@ -309,8 +326,8 @@
         <h3 id="reponses">Réponses</h3>
         <ul class="list" id="reponses-list">
             @forelse($topic->posts as $post)
-                <li class="forum-comment-item">
-                    <div class="forum-comment-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl p-3 -mx-4 -mt-4">
+                <li class="forum-comment-item reply-card">
+                    <div class="forum-comment-header reply-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl p-3 -mx-4 -mt-4">
                         <div class="forum-comment-user">
                             @if($post->user && $post->user->avatar)
                                 <img src="{{ $post->user->avatar }}" alt="Avatar de {{ $post->user->name }}" class="forum-comment-avatar">
@@ -321,7 +338,7 @@
                         </div>
                         <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
-                    <div class="forum-comment-body bg-gray-100 border border-gray-200 rounded-lg p-3">{{ $post->content }}</div>
+                    <div class="forum-comment-body message-bubble bg-gray-100 border border-gray-200 rounded-lg p-3">{{ $post->content }}</div>
 
                     @auth
                         <div class="forum-comment-actions">
