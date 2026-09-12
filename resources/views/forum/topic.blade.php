@@ -125,11 +125,20 @@
                 background: #e6f4f1 !important;
             }
             .topic-card .post-text,
-            .topic-card video,
-            .reply-card .reply-bubble {
+            .topic-card video {
                 margin-top: 1px !important;
                 width: 100% !important;
-                background: #fff !important;
+                background: #000 !important;
+            }
+            .topic-card,
+            .topic-card .topic-post-content,
+            .topic-card .post-text,
+            .topic-card .media,
+            .topic-card .video-wrapper {
+                background: #000 !important;
+            }
+            .topic-card .post-text {
+                color: #fff !important;
             }
             .topic-card video,
             .topic-card img,
