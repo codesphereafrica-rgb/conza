@@ -44,10 +44,10 @@
             </div>
 
             <div class="topic-post-content post-content">
-                <div class="topic-post-body topic-text bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
+                <div class="topic-post-body topic-text post-text bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
 
                 @if(!empty($topic->attachments))
-                    <div class="topic-post-media-wrap media-wrapper post-media mt-3">
+                    <div class="topic-post-media-wrap media-wrapper media post-media mt-3">
                         @foreach($topic->attachments as $attachment)
                             @php
                                 $filePath = is_array($attachment) ? ($attachment['url'] ?? null) : (is_string($attachment) ? str_replace('\\', '/', $attachment) : null);
@@ -95,45 +95,55 @@
             .topic-meta {
                 display: none;
             }
-            .topic-card,
-            .reply-card {
+            .topic-card {
                 width: 93% !important;
                 margin: 0 auto !important;
                 border-radius: 16px !important;
+                padding: 0 !important;
                 overflow: hidden !important;
             }
-            .post-content,
-            .topic-text,
-            .media-wrapper,
-            .video-wrapper,
-            .post-media {
-                width: 100% !important;
-                margin: 0 !important;
-                border-radius: 0 !important;
+            .topic-card .p-4,
+            .topic-card .p-3 {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            .topic-card .post-text {
                 padding-left: 12px !important;
                 padding-right: 12px !important;
             }
-            .post-media video,
-            .post-media img,
-            .video-wrapper video {
-                width: 100% !important;
-                border-radius: 0 !important;
+            .topic-card .topic-post-content {
                 margin: 0 !important;
+                padding: 0 !important;
+            }
+            .topic-card video,
+            .topic-card img,
+            .topic-card .media {
+                width: 100% !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+            .reply-card {
+                width: 93% !important;
+                margin: 0 auto 12px auto !important;
+                border-radius: 16px !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                gap: 0 !important;
+            }
+            .reply-card .reply-header {
+                margin: 0 !important;
+                padding: 10px 12px !important;
+            }
+            .reply-card .reply-bubble,
+            .reply-card .message-content {
+                width: 100% !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                border-left: 0 !important;
+                border-right: 0 !important;
             }
             .forum-page {
                 background-color: #e9eef5 !important;
-            }
-            .reply-card .reply-header {
-                margin-bottom: 0 !important;
-                padding-bottom: 8px !important;
-            }
-            .reply-card .reply-bubble,
-            .reply-card .message-content,
-            .reply-card .bg-gray-100 {
-                width: 100% !important;
-                margin: 0 !important;
-                border-radius: 0 0 16px 16px !important;
-                margin-top: 0 !important;
             }
             .topic-post-card {
                 width: min(100%, 760px);
@@ -361,7 +371,7 @@
                         </div>
                         <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
-                    <div class="forum-comment-body message-bubble bg-gray-100 border border-gray-200 rounded-lg p-3">{{ $post->content }}</div>
+                    <div class="forum-comment-body message-bubble reply-bubble bg-gray-100 border border-gray-200 rounded-lg p-3">{{ $post->content }}</div>
 
                     @auth
                         <div class="forum-comment-actions">
