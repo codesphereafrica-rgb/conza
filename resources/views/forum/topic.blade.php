@@ -29,7 +29,7 @@
         @endphp
 
         <article class="topic-post-card topic-card">
-            <div class="topic-post-header card-header topic-post-header-green border border-[#bcd9c8] rounded-t-2xl p-4 -mx-[18px] -mt-[18px]">
+            <div class="topic-post-header card-header topic-post-header-green border border-[#bcd9c8] rounded-t-2xl">
                 <div class="topic-post-user">
                     @if($topic->user && $topic->user->avatar)
                         <img src="{{ $topic->user->avatar }}" alt="Avatar de {{ $topic->user->name }}" class="topic-post-avatar">
@@ -201,7 +201,7 @@
             .topic-post-header-green {
                 border-radius: 16px 16px 0 0;
                 padding: 16px;
-                margin: -18px -18px 0;
+                margin: 0;
             }
             .forum-comment-header-green {
                 border-radius: 16px 16px 0 0;
@@ -235,8 +235,8 @@
                 padding: 16px 18px;
             }
             .topic-post-content {
-                margin: 0 -18px;
-                padding: 0 18px;
+                margin: 0;
+                padding: 0;
                 background: #f3f4f6;
             }
             .topic-post-media-wrap {
@@ -299,7 +299,7 @@
                 align-items: center;
                 gap: 10px;
                 flex-wrap: wrap;
-                margin: -16px -16px 0;
+                margin: 0;
             }
             .forum-comment-avatar {
                 width: 38px;
@@ -387,17 +387,13 @@
                 border-color: #16a34a;
                 box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
             }
-            .topic-card .card-header,
-            .reply-card .reply-header {
-                margin-bottom: 1px !important;
-                background: #e6f4f1 !important;
+            .topic-card .topic-post-header {
+                margin: 0 !important;
+                padding: 16px !important;
             }
-            .topic-card .post-text,
-            .topic-card video,
-            .reply-card .reply-bubble {
-                margin-top: 1px !important;
-                width: 100% !important;
-                background: #fff !important;
+            .reply-card .reply-header {
+                margin: 0 !important;
+                padding: 10px 12px !important;
             }
         </style>
 
@@ -405,7 +401,7 @@
         <ul class="list" id="reponses-list">
             @forelse($topic->posts as $post)
                 <li class="forum-comment-item reply-card">
-                    <div class="forum-comment-header reply-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl p-3 -mx-4 -mt-4">
+                    <div class="forum-comment-header reply-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl">
                         <div class="forum-comment-user">
                             @if($post->user && $post->user->avatar)
                                 <img src="{{ $post->user->avatar }}" alt="Avatar de {{ $post->user->name }}" class="forum-comment-avatar">
