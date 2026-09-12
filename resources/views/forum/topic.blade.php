@@ -7,11 +7,11 @@
         <div class="toolbar">
             <div>
                 <div class="badge">{{ $topic->category?->name ?? 'Sans catégorie' }}</div>
-                <h2 style="margin-top: 12px;">{{ $topic->title }}</h2>
+                <h2 class="topic-title" style="margin-top: 12px;">{{ $topic->title }}</h2>
                 <p class="topic-meta muted">Par {{ $topic->user->name }} · {{ $topic->created_at->diffForHumans() }}</p>
             </div>
             @auth
-                <a href="{{ route('forum.index') }}" class="btn small secondary">Retour au forum</a>
+                <a href="{{ route('forum.index') }}" class="btn small secondary retour-button">Retour au forum</a>
                 @if(auth()->id() === $topic->user_id || (auth()->user()->role ?? null) === 'admin')
                     <form method="POST" action="{{ route('forum.topic.destroy', $topic->id) }}" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce sujet ?');">
                         @csrf
@@ -93,12 +93,24 @@
             .page-background,
             main,
             .forum-page {
-                background-color: #111827 !important;
-                background: #111827 !important;
+                background-color: #1e293b !important;
+                background: #1e293b !important;
             }
             .forum-title,
-            h1 {
+            .topic-title,
+            .category-title,
+            .forum-page h1 {
                 color: white !important;
+            }
+            .badge,
+            .category-badge {
+                background-color: #115e59 !important;
+                color: #b8f0df !important;
+                border: 1px solid #b8f0df !important;
+            }
+            .retour-button {
+                background-color: white !important;
+                color: #1e293b !important;
             }
             .topic-meta {
                 display: none;
