@@ -28,7 +28,15 @@ class SupabaseNotificationService
 
     private function insertForUsers(array $userIds, array $notification): void
     {
-        if (!$userIds || !filled(env('VITE_SUPABASE_URL')) || !filled(env('VITE_SUPABASE_ANON_KEY'))) {
+        $supabaseUrl = env('SUPABASE_URL') ?: env('VITE_SUPABASE_URL');
+        $serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY');
+
+        if (!$userIds) {
+            return;
+        }
+
+        if (!filled($supabaseUrl) || !filled($serviceRoleKey)) {
+            Log::warning('Supabase notifications skipped: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing.');
             return;
         }
 
@@ -41,11 +49,11 @@ class SupabaseNotificationService
         );
 
         $response = Http::withHeaders([
-            'apikey' => env('VITE_SUPABASE_ANON_KEY'),
-            'Authorization' => 'Bearer ' . env('VITE_SUPABASE_ANON_KEY'),
+            'apikey' => $serviceRoleKey,
+            'Authorization' => 'Bearer ' . $serviceRoleKey,
             'Content-Type' => 'application/json',
             'Prefer' => 'return=minimal',
-        ])->post(rtrim(env('VITE_SUPABASE_URL'), '/') . '/rest/v1/notifications', $rows);
+        ])->timeout(10)->post(rtrim($supabaseUrl, '/') . '/rest/v1/notifications', $rows);
 
         if ($response->failed()) {
             Log::warning('Supabase notification insert failed.', [
