@@ -11,12 +11,6 @@
     @if(filled($adsenseClientId))
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsenseClientId }}" crossorigin="anonymous"></script>
     @endif
-    <script>
-        window.__SUPABASE_CONFIG__ = {
-            url: @json(env('VITE_SUPABASE_URL')),
-            anonKey: @json(env('VITE_SUPABASE_ANON_KEY')),
-        };
-    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>@yield('title', 'ASBL Forum')</title>
     <style>

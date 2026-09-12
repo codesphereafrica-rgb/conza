@@ -11,22 +11,23 @@ create table if not exists public.notifications (
 
 alter table public.notifications enable row level security;
 
-do $$
-begin
-    if not exists (
-        select 1 from pg_policies
-        where schemaname = 'public'
-          and tablename = 'notifications'
-          and policyname = 'allow service_role insert'
-    ) then
-        create policy "allow service_role insert"
-            on public.notifications
-            for insert
-            to service_role
-            with check (true);
-    end if;
-end
-$$;
+drop policy if exists "allow_insert_notifications" on public.notifications;
+create policy "allow_insert_notifications"
+    on public.notifications
+    for insert
+    with check (true);
+
+drop policy if exists "allow_select_notifications" on public.notifications;
+create policy "allow_select_notifications"
+    on public.notifications
+    for select
+    using (true);
+
+drop policy if exists "allow_update_notifications" on public.notifications;
+create policy "allow_update_notifications"
+    on public.notifications
+    for update
+    using (true);
 
 do $$
 begin
