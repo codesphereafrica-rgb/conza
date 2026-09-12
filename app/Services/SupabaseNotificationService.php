@@ -53,14 +53,14 @@ class SupabaseNotificationService
         }
 
         $notifications = array_map(fn (int $userId) => [
-            'user_id' => $userId,
+            'user_id' => (string) $userId,
             'author_id' => (string) $post->user_id,
             'author_name' => $author?->name ?? 'Utilisateur',
             'author_avatar' => $author?->avatar,
             'type' => 'new_post',
-            'title' => 'Nouveau post',
+            'title' => 'Nouvelle publication',
             'message' => ($author?->name ?? 'Un utilisateur') . ' a fait une nouvelle publication',
-            'link' => '/forum/sujet/' . $post->topic_id,
+            'link' => '/post/' . $post->id,
             'is_read' => false,
         ], $recipientIds);
 
