@@ -142,6 +142,17 @@ class ForumController extends Controller
         return back()->with('success', 'Réaction enregistrée.');
     }
 
+    public function destroyPost(Post $post)
+    {
+        abort_unless(Auth::check() && Auth::id() === $post->user_id, 403);
+
+        $post->reactions()->delete();
+        $post->replies()->update(['parent_id' => null]);
+        $post->delete();
+
+        return back()->with('success', 'Votre commentaire a été supprimé.');
+    }
+
     public function search(Request $request)
     {
         $query = $request->input('q');

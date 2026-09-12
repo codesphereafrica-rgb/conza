@@ -446,6 +446,46 @@
                 margin: 0 !important;
                 padding: 10px 12px !important;
             }
+            .reply-header-main {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                width: 100%;
+                gap: 10px;
+            }
+            .comment-menu { position: relative; margin-left: auto; }
+            .comment-menu-toggle {
+                border: 0;
+                background: transparent;
+                color: inherit;
+                font-size: 1.25rem;
+                line-height: 1;
+                padding: 2px 5px;
+                cursor: pointer;
+            }
+            .comment-menu-dropdown {
+                position: absolute;
+                top: calc(100% + 4px);
+                right: 0;
+                z-index: 20;
+                min-width: 110px;
+                padding: 4px;
+                background: #fff;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                box-shadow: 0 8px 20px rgba(15, 23, 42, .18);
+            }
+            .comment-menu-dropdown button {
+                width: 100%;
+                border: 0;
+                border-radius: 6px;
+                padding: 8px 10px;
+                background: transparent;
+                color: #dc2626;
+                text-align: left;
+                cursor: pointer;
+            }
+            .comment-menu-dropdown button:hover { background: #fef2f2; }
             .topic-lightbox {
                 position: fixed;
                 inset: 0;
@@ -493,15 +533,31 @@
             @forelse($topic->posts as $post)
                 <li id="comment-{{ $post->id }}" class="forum-comment-item reply-card">
                     <div class="forum-comment-header reply-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl">
-                        <div class="forum-comment-user">
-                            @if($post->user && $post->user->avatar)
-                                <img src="{{ $post->user->avatar }}" alt="Avatar de {{ $post->user->name }}" class="forum-comment-avatar">
-                            @else
-                                <span class="forum-comment-avatar" aria-hidden="true">{{ strtoupper(substr(($post->user->name ?? 'U'), 0, 1)) }}</span>
-                            @endif
-                            <span>{{ $post->user->name }}</span>
+                        <div class="reply-header-main">
+                            <div class="forum-comment-user">
+                                @if($post->user && $post->user->avatar)
+                                    <img src="{{ $post->user->avatar }}" alt="Avatar de {{ $post->user->name }}" class="forum-comment-avatar">
+                                @else
+                                    <span class="forum-comment-avatar" aria-hidden="true">{{ strtoupper(substr(($post->user->name ?? 'U'), 0, 1)) }}</span>
+                                @endif
+                                <span>{{ $post->user->name }}</span>
+                            </div>
+                            <div class="comment-menu">
+                                <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
+                                @auth
+                                    @if(auth()->id() === $post->user_id)
+                                        <button type="button" class="comment-menu-toggle" aria-label="Options du commentaire" aria-expanded="false">⋮</button>
+                                        <div class="comment-menu-dropdown" hidden>
+                                            <form method="POST" action="{{ route('forum.comment.destroy', $post->id) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer ce commentaire ?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit">Supprimer</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                @endauth
+                            </div>
                         </div>
-                        <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
                     </div>
                     <div class="forum-comment-body message-bubble reply-bubble bg-gray-100 border border-gray-200 rounded-lg p-3">{{ $post->content }}</div>
 
@@ -581,6 +637,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.comment-menu-toggle').forEach(function (toggle) {
+                toggle.addEventListener('click', function (event) {
+                    event.stopPropagation();
+                    const menu = toggle.nextElementSibling;
+                    const isOpen = !menu.hidden;
+                    document.querySelectorAll('.comment-menu-dropdown').forEach((item) => { item.hidden = true; });
+                    document.querySelectorAll('.comment-menu-toggle').forEach((item) => { item.setAttribute('aria-expanded', 'false'); });
+                    menu.hidden = isOpen;
+                    toggle.setAttribute('aria-expanded', String(!isOpen));
+                });
+            });
+
+            document.addEventListener('click', function () {
+                document.querySelectorAll('.comment-menu-dropdown').forEach((item) => { item.hidden = true; });
+                document.querySelectorAll('.comment-menu-toggle').forEach((item) => { item.setAttribute('aria-expanded', 'false'); });
+            });
+
             const replyButtons = document.querySelectorAll('.reply-to-comment');
             const replyEditor = document.getElementById('comment-editor');
             const hiddenTextarea = document.getElementById('comment-textarea');
