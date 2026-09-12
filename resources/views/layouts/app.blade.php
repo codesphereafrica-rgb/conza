@@ -11,6 +11,7 @@
     @if(filled($adsenseClientId))
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsenseClientId }}" crossorigin="anonymous"></script>
     @endif
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <title>@yield('title', 'ASBL Forum')</title>
     <style>
         :root {
