@@ -104,6 +104,9 @@
             }
             .topic-title {
                 color: #115e59 !important;
+                font-size: 26px !important;
+                font-weight: 700 !important;
+                margin-top: 6px !important;
             }
             .badge,
             .category-badge {
@@ -437,7 +440,7 @@
         <h3 id="reponses">Réponses</h3>
         <ul class="list" id="reponses-list">
             @forelse($topic->posts as $post)
-                <li class="forum-comment-item reply-card">
+                <li id="comment-{{ $post->id }}" class="forum-comment-item reply-card">
                     <div class="forum-comment-header reply-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl">
                         <div class="forum-comment-user">
                             @if($post->user && $post->user->avatar)

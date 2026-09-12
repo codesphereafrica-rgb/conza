@@ -87,13 +87,7 @@ class ForumController extends Controller
             'attachments' => $attachments,
         ]);
 
-        $post = Post::create([
-            'topic_id' => $topic->id,
-            'user_id' => Auth::id(),
-            'content' => $validated['content'],
-        ]);
-
-        app(SupabaseNotificationService::class)->mirrorNewPost($post);
+        app(SupabaseNotificationService::class)->mirrorNewTopic($topic);
 
         return redirect()->route('forum.topic', $topic->id)->with('success', 'Votre sujet a bien été publié.');
     }
@@ -112,12 +106,14 @@ class ForumController extends Controller
                 ->first();
         }
 
-        Post::create([
+        $post = Post::create([
             'topic_id' => $topic->id,
             'user_id' => Auth::id(),
             'parent_id' => $parentPost?->id,
             'content' => $validated['content'],
         ]);
+
+        app(SupabaseNotificationService::class)->notifyReplyAndCommenters($post, $parentPost, $topic);
 
         return back()->with('success', 'Votre réponse a été ajoutée.');
     }
