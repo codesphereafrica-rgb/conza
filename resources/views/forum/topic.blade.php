@@ -93,8 +93,8 @@
             .page-background,
             main,
             .forum-page {
-                background-color: #374151 !important;
-                background: #374151 !important;
+                background-color: #f4f7fb !important;
+                background: #f4f7fb !important;
             }
             .forum-title,
             .topic-title,
@@ -110,7 +110,7 @@
             }
             .retour-button {
                 background-color: white !important;
-                color: #374151 !important;
+                color: #1f2937 !important;
             }
             .topic-meta {
                 display: none;
