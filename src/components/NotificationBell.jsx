@@ -20,13 +20,13 @@ function playNotificationSound() {
     }
 }
 
-export default function NotificationBell({ userId }) {
+export default function NotificationBell() {
     const [notifications, setNotifications] = useState([])
     const [isOpen, setIsOpen] = useState(false)
     const unreadCount = notifications.filter((notification) => !notification.is_read).length
 
     useEffect(() => {
-        if (!userId || !supabase) {
+        if (!supabase) {
             return undefined
         }
 
@@ -36,8 +36,9 @@ export default function NotificationBell({ userId }) {
             const { data, error } = await supabase
                 .from('notifications')
                 .select('*')
-                .eq('user_id', userId)
                 .order('created_at', { ascending: false })
+
+            console.log('notifs data:', data, 'error:', error)
 
             if (!error && isMounted) {
                 setNotifications(data || [])
@@ -46,28 +47,10 @@ export default function NotificationBell({ userId }) {
 
         loadNotifications()
 
-        const channel = supabase
-            .channel(`notifs-${userId}`)
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'notifications',
-                    filter: `user_id=eq.${userId}`,
-                },
-                (payload) => {
-                    setNotifications((current) => [payload.new, ...current])
-                    playNotificationSound()
-                },
-            )
-            .subscribe()
-
         return () => {
             isMounted = false
-            supabase.removeChannel(channel)
         }
-    }, [userId])
+    }, [])
 
     async function markAsRead(notification) {
         if (notification.is_read) {
