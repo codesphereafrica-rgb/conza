@@ -114,6 +114,45 @@
             line-height: 1;
             transition: background 0.2s ease, transform 0.2s ease;
         }
+        .notification-bell-wrapper { position: relative; }
+        .notification-count {
+            position: absolute;
+            top: -5px;
+            right: -6px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 4px;
+            border-radius: 999px;
+            background: #dc2626;
+            color: white;
+            font-size: .68rem;
+            font-weight: 800;
+            line-height: 18px;
+            text-align: center;
+        }
+        .notification-panel {
+            position: absolute;
+            top: calc(100% + 10px);
+            right: 0;
+            z-index: 30;
+            width: min(340px, calc(100vw - 32px));
+            max-height: 420px;
+            overflow-y: auto;
+            background: white;
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 16px 32px rgba(15, 23, 42, .2);
+        }
+        .notification-panel-header { padding: 12px 14px; font-weight: 800; border-bottom: 1px solid var(--border); }
+        .notification-empty { margin: 0; padding: 16px 14px; color: var(--muted); }
+        .notification-list { list-style: none; margin: 0; padding: 0; }
+        .notification-list li { border-bottom: 1px solid #eef2f7; }
+        .notification-list li.is-unread { background: #ecfdf5; }
+        .notification-list button { display: block; width: 100%; padding: 12px 14px; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+        .notification-list strong, .notification-list span { display: block; }
+        .notification-list strong { margin-bottom: 4px; font-size: .88rem; }
+        .notification-list span { color: var(--muted); font-size: .8rem; line-height: 1.35; }
         .notification-bell:hover {
             background: rgba(255,255,255,0.2);
             transform: translateY(-1px);
@@ -641,7 +680,7 @@
             </nav>
             <div class="header-actions">
                 @auth
-                    <a href="#" class="notification-bell" aria-label="Notifications" title="Notifications">🔔</a>
+                    <div id="notification-bell-root" data-user-id="{{ auth()->id() }}"></div>
                     <a href="{{ route('profile.edit') }}" class="avatar-only" aria-label="Ouvrir le profil">
                         @if(auth()->user()->avatar)
                             <img class="profile-avatar" src="{{ auth()->user()->avatar }}" alt="Avatar">

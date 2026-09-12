@@ -10,6 +10,7 @@ use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Services\SupabaseNotificationService;
 
 class ForumController extends Controller
 {
@@ -92,6 +93,13 @@ class ForumController extends Controller
             'content' => $validated['content'],
         ]);
 
+        app(SupabaseNotificationService::class)->notifyUsersExcept(Auth::id(), [
+            'type' => 'new_post',
+            'title' => 'Nouveau sujet',
+            'message' => Auth::user()->name . ' a publié « ' . $topic->title . ' ».',
+            'data' => ['topic_id' => $topic->id],
+        ]);
+
         return redirect()->route('forum.topic', $topic->id)->with('success', 'Votre sujet a bien été publié.');
     }
 
@@ -114,6 +122,14 @@ class ForumController extends Controller
             'user_id' => Auth::id(),
             'parent_id' => $parentPost?->id,
             'content' => $validated['content'],
+        ]);
+
+        $recipientId = $parentPost?->user_id ?? $topic->user_id;
+        app(SupabaseNotificationService::class)->notifyUser($recipientId, [
+            'type' => $parentPost ? 'reply' : 'comment',
+            'title' => $parentPost ? 'Nouvelle réponse' : 'Nouveau commentaire',
+            'message' => Auth::user()->name . ($parentPost ? ' a répondu à votre commentaire.' : ' a commenté votre sujet.'),
+            'data' => ['topic_id' => $topic->id, 'post_id' => $parentPost?->id],
         ]);
 
         return back()->with('success', 'Votre réponse a été ajoutée.');
