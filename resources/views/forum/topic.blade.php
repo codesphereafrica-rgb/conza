@@ -75,7 +75,7 @@
                 @endif
             </div>
 
-            <div class="topic-post-actions border-t border-gray-200 pt-3 mt-3">
+            <div class="topic-post-actions card-actions border-t border-gray-200 pt-3 mt-3">
                 @if($primaryPost)
                     <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
                         @csrf
@@ -104,7 +104,7 @@
                 width: 93% !important;
                 margin: 0 auto 12px auto !important;
                 border-radius: 16px !important;
-                background-color: #e5e7eb !important;
+                background: white !important;
             }
             .topic-card .p-4,
             .topic-card .p-3 {
@@ -119,28 +119,28 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
-            .topic-card .card-header,
-            .reply-card .reply-header {
+            .topic-card .card-actions {
+                background: white !important;
+            }
+            .topic-card .card-header {
                 margin-bottom: 1px !important;
-                background: #e6f4f1 !important;
-            }
-            .topic-card .post-text,
-            .topic-card video {
-                margin-top: 1px !important;
-                width: 100% !important;
-                background: #000 !important;
-            }
-            .topic-card,
-            .topic-card .topic-post-content,
-            .topic-card .post-text,
-            .topic-card .media,
-            .topic-card .video-wrapper {
-                background: #000 !important;
+                background: #f0fdfa !important;
             }
             .topic-card .post-text {
-                color: #fff !important;
+                margin-top: 1px !important;
+                width: 100% !important;
+                background: white !important;
+            }
+            .topic-card,
+            .topic-card .topic-post-content {
+                background: white !important;
             }
             .topic-card video,
+            .topic-card .video-wrapper {
+                background: black !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
             .topic-card img,
             .topic-card .media {
                 width: 100% !important;
