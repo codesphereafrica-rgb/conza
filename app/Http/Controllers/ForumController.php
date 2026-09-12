@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Reaction;
 use App\Models\Topic;
+use App\Services\SupabaseNotificationService;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -86,11 +87,13 @@ class ForumController extends Controller
             'attachments' => $attachments,
         ]);
 
-        Post::create([
+        $post = Post::create([
             'topic_id' => $topic->id,
             'user_id' => Auth::id(),
             'content' => $validated['content'],
         ]);
+
+        app(SupabaseNotificationService::class)->mirrorNewPost($post);
 
         return redirect()->route('forum.topic', $topic->id)->with('success', 'Votre sujet a bien été publié.');
     }

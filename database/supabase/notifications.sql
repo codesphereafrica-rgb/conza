@@ -4,10 +4,26 @@ create table if not exists public.notifications (
     type text not null,
     title text,
     message text not null,
+    link text,
     data jsonb not null default '{}'::jsonb,
     is_read boolean not null default false,
     created_at timestamptz not null default now()
 );
+
+create table if not exists public.posts (
+    id bigint primary key,
+    user_id bigint not null,
+    content text not null,
+    created_at timestamptz not null default now()
+);
+
+alter table public.posts enable row level security;
+
+drop policy if exists "allow_insert_posts" on public.posts;
+create policy "allow_insert_posts"
+    on public.posts
+    for insert
+    with check (true);
 
 alter table public.notifications enable row level security;
 
