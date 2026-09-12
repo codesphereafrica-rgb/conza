@@ -102,6 +102,9 @@
             .forum-page h1 {
                 color: white !important;
             }
+            .topic-title {
+                color: #115e59 !important;
+            }
             .badge,
             .category-badge {
                 background-color: #115e59 !important;
