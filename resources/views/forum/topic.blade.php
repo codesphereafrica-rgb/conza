@@ -29,7 +29,7 @@
         @endphp
 
         <article class="topic-post-card topic-card">
-            <div class="topic-post-header topic-post-header-green border border-[#bcd9c8] rounded-t-2xl p-4 -mx-[18px] -mt-[18px]">
+            <div class="topic-post-header card-header topic-post-header-green border border-[#bcd9c8] rounded-t-2xl p-4 -mx-[18px] -mt-[18px]">
                 <div class="topic-post-user">
                     @if($topic->user && $topic->user->avatar)
                         <img src="{{ $topic->user->avatar }}" alt="Avatar de {{ $topic->user->name }}" class="topic-post-avatar">
@@ -96,11 +96,15 @@
                 display: none;
             }
             .topic-card {
-                width: 93% !important;
-                margin: 0 auto !important;
-                border-radius: 16px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1px !important;
                 padding: 0 !important;
                 overflow: hidden !important;
+                width: 93% !important;
+                margin: 0 auto 12px auto !important;
+                border-radius: 16px !important;
+                background-color: #e5e7eb !important;
             }
             .topic-card .p-4,
             .topic-card .p-3 {
@@ -115,6 +119,18 @@
                 margin: 0 !important;
                 padding: 0 !important;
             }
+            .topic-card .card-header,
+            .reply-card .reply-header {
+                margin-bottom: 1px !important;
+                background: #e6f4f1 !important;
+            }
+            .topic-card .post-text,
+            .topic-card video,
+            .reply-card .reply-bubble {
+                margin-top: 1px !important;
+                width: 100% !important;
+                background: #fff !important;
+            }
             .topic-card video,
             .topic-card img,
             .topic-card .media {
@@ -123,12 +139,15 @@
                 border-radius: 0 !important;
             }
             .reply-card {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1px !important;
                 width: 93% !important;
                 margin: 0 auto 12px auto !important;
                 border-radius: 16px !important;
                 padding: 0 !important;
                 overflow: hidden !important;
-                gap: 0 !important;
+                background-color: #e5e7eb !important;
             }
             .reply-card .reply-header {
                 margin: 0 !important;
@@ -141,6 +160,11 @@
                 border-radius: 0 !important;
                 border-left: 0 !important;
                 border-right: 0 !important;
+            }
+            .reply-card button {
+                background-color: #115e59 !important;
+                color: white !important;
+                border: none !important;
             }
             .forum-page {
                 background-color: #e9eef5 !important;
@@ -353,6 +377,18 @@
             .reply-editor:focus {
                 border-color: #16a34a;
                 box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12);
+            }
+            .topic-card .card-header,
+            .reply-card .reply-header {
+                margin-bottom: 1px !important;
+                background: #e6f4f1 !important;
+            }
+            .topic-card .post-text,
+            .topic-card video,
+            .reply-card .reply-bubble {
+                margin-top: 1px !important;
+                width: 100% !important;
+                background: #fff !important;
             }
         </style>
 
