@@ -189,6 +189,37 @@
             60% { transform: rotate(-8deg); }
             80% { transform: rotate(5deg); }
         }
+        .notifications-page h1 { margin-top: 0; color: var(--primary-dark); }
+        .notifications-list { display: grid; gap: 10px; }
+        .notification-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+        }
+        .notification-row.is-unread { background: #eff6ff; }
+        .notification-author-avatar {
+            width: 42px;
+            height: 42px;
+            min-width: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #d1fae5;
+            color: var(--primary-dark);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+        }
+        .notification-row-content { display: grid; gap: 4px; }
+        .notification-row-content small { color: var(--muted); font-size: .78rem; }
         .notification-bell::after {
             content: "";
             position: absolute;
