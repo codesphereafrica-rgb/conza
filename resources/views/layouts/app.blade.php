@@ -689,8 +689,8 @@
                 @endauth
             </nav>
             <div class="header-actions">
+                <div id="notification-bell-root" data-user-id="{{ auth()->id() }}"></div>
                 @auth
-                    <div id="notification-bell-root" data-user-id="{{ auth()->id() }}"></div>
                     <a href="{{ route('profile.edit') }}" class="avatar-only" aria-label="Ouvrir le profil">
                         @if(auth()->user()->avatar)
                             <img class="profile-avatar" src="{{ auth()->user()->avatar }}" alt="Avatar">
