@@ -43,11 +43,11 @@
                 </div>
             </div>
 
-            <div class="topic-post-content">
-                <div class="topic-post-body bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
+            <div class="topic-post-content post-content">
+                <div class="topic-post-body topic-text bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
 
                 @if(!empty($topic->attachments))
-                    <div class="topic-post-media-wrap mt-3">
+                    <div class="topic-post-media-wrap media-wrapper post-media mt-3">
                         @foreach($topic->attachments as $attachment)
                             @php
                                 $filePath = is_array($attachment) ? ($attachment['url'] ?? null) : (is_string($attachment) ? str_replace('\\', '/', $attachment) : null);
@@ -57,11 +57,11 @@
                             @endphp
 
                             @if($mediaUrl && $isImage)
-                                <div class="topic-post-media-frame">
+                                <div class="topic-post-media-frame video-wrapper">
                                     <img src="{{ $mediaUrl }}" alt="Image jointe" class="topic-post-image">
                                 </div>
                             @elseif($mediaUrl && $isVideo)
-                                <div class="topic-post-media-frame">
+                                <div class="topic-post-media-frame video-wrapper">
                                     <video controls playsinline preload="metadata" class="topic-post-video">
                                         <source src="{{ $mediaUrl }}" type="video/mp4">
                                         Votre navigateur ne supporte pas la lecture vidéo.
@@ -98,18 +98,41 @@
             .topic-card,
             .reply-card {
                 width: 93% !important;
-                max-width: 93% !important;
-                margin-left: auto !important;
-                margin-right: auto !important;
+                margin: 0 auto !important;
                 border-radius: 16px !important;
+                overflow: hidden !important;
+            }
+            .post-content,
+            .topic-text,
+            .media-wrapper,
+            .video-wrapper,
+            .post-media {
+                width: 100% !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+            }
+            .post-media video,
+            .post-media img,
+            .video-wrapper video {
+                width: 100% !important;
+                border-radius: 0 !important;
+                margin: 0 !important;
             }
             .forum-page {
                 background-color: #e9eef5 !important;
             }
             .reply-card .reply-header {
-                margin-bottom: 4px !important;
+                margin-bottom: 0 !important;
+                padding-bottom: 8px !important;
             }
-            .reply-card .message-bubble {
+            .reply-card .reply-bubble,
+            .reply-card .message-content,
+            .reply-card .bg-gray-100 {
+                width: 100% !important;
+                margin: 0 !important;
+                border-radius: 0 0 16px 16px !important;
                 margin-top: 0 !important;
             }
             .topic-post-card {
