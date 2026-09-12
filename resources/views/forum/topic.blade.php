@@ -126,14 +126,23 @@
                 border-radius: 16px !important;
                 background-color: #e5e7eb !important;
             }
+            .topic-card,
+            .reply-card {
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 4px 10px rgba(0, 0, 0, 0.3) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            }
             .topic-card .p-4,
             .topic-card .p-3 {
                 padding-left: 0 !important;
                 padding-right: 0 !important;
             }
             .topic-card .post-text {
+                padding: 12px !important;
                 padding-left: 12px !important;
                 padding-right: 12px !important;
+                margin: 0 !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
             .topic-card .topic-post-content {
                 margin: 0 !important;
@@ -158,16 +167,20 @@
                 background: white !important;
             }
             .topic-card video,
-            .topic-card .video-wrapper {
-                background: black !important;
-                margin: 0 !important;
-                border-radius: 0 !important;
-            }
             .topic-card img,
-            .topic-card .media {
+            .topic-card .video-container,
+            .topic-card .video-wrapper,
+            .topic-card .media,
+            .topic-card .post-media {
                 width: 100% !important;
                 margin: 0 !important;
+                padding: 0 !important;
                 border-radius: 0 !important;
+                border: none !important;
+                background: black !important;
+                display: block !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
             .reply-card {
                 display: flex !important;
