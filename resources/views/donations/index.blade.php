@@ -3,6 +3,23 @@
 @section('title', 'Dons - ASBL Forum')
 
 @section('content')
+    <style>
+        .donation-form-card {
+            overflow: hidden;
+        }
+        .donation-form-carousel {
+            margin: -24px -24px 24px;
+            padding: 22px 24px;
+            background: #d1fae5;
+            border-bottom: 1px solid #a7f3d0;
+        }
+        .donation-form-carousel h3 {
+            margin: 0;
+            color: #115e59;
+            font-size: 28px;
+            font-weight: 800;
+        }
+    </style>
     <main class="container section" style="max-width: 860px;">
         <div class="card">
             <div class="badge">Soutenez l'ASBL</div>
@@ -56,18 +73,6 @@
                         </div>
                     @endif
                 @endauth
-
-                @if($unipayEnabled)
-                    <div style="margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #ecfdf5; border: 1px solid #bbf7d0; color: #065f46;">
-                        <strong>Paiement Unipay activé</strong>
-                        <div style="margin-top: 6px; font-size: 0.95rem;">Le don sera traité via l’API Unipay avec redirection vers le paiement sécurisé.</div>
-                    </div>
-                @else
-                    <div style="margin-top: 18px; padding: 14px 16px; border-radius: 12px; background: #fff7ed; border: 1px solid #fed7aa; color: #9a4d00;">
-                        <strong>Paiement Unipay en attente de configuration</strong>
-                        <div style="margin-top: 6px; font-size: 0.95rem;">Ajoute tes clés API Unipay dans le fichier .env pour activer le paiement direct.</div>
-                    </div>
-                @endif
 
                 @auth
                     @if((auth()->user()->role ?? null) === 'admin')
@@ -131,8 +136,10 @@
         </div>
 
         @auth
-            <div class="card" style="margin-top: 24px;">
-                <h3>Faire un don</h3>
+            <div class="card donation-form-card" style="margin-top: 24px;">
+                <div class="donation-form-carousel">
+                    <h3>Faire un don</h3>
+                </div>
                 <form method="POST" action="{{ route('donations.store') }}">
                     @csrf
 
