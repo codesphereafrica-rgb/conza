@@ -36,4 +36,9 @@ class Topic extends Model
     {
         return $this->hasMany(Post::class)->orderBy('created_at');
     }
+
+    public function reactions()
+    {
+        return $this->hasMany(Reaction::class);
+    }
 }

@@ -142,6 +142,30 @@ class ForumController extends Controller
         return back()->with('success', 'Réaction enregistrée.');
     }
 
+    public function reactTopic(Request $request, Topic $topic)
+    {
+        $validated = $request->validate([
+            'type' => ['required', 'in:like'],
+        ]);
+
+        $existing = Reaction::where('topic_id', $topic->id)
+            ->where('user_id', Auth::id())
+            ->where('type', $validated['type'])
+            ->first();
+
+        if ($existing) {
+            return back()->with('info', 'Vous avez déjà réagi à ce sujet.');
+        }
+
+        Reaction::create([
+            'user_id' => Auth::id(),
+            'topic_id' => $topic->id,
+            'type' => $validated['type'],
+        ]);
+
+        return back()->with('success', 'Réaction enregistrée.');
+    }
+
     public function destroyPost(Post $post)
     {
         abort_unless(Auth::check() && Auth::id() === $post->user_id, 403);

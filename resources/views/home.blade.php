@@ -128,9 +128,8 @@
         <ul class="list">
             @forelse($latestTopics as $topic)
                 @php
-                    $primaryPost = $topic->posts()->first();
-                    $likeCount = $primaryPost ? $primaryPost->reactions()->where('type', 'like')->count() : 0;
-                    $commentCount = max(0, $topic->posts()->count() - 1);
+                    $likeCount = $topic->reactions()->where('type', 'like')->count();
+                    $commentCount = $topic->posts()->count();
                     $thumb = null;
                     if(!empty($topic->attachments) && is_array($topic->attachments)){
                         foreach($topic->attachments as $att){
@@ -171,13 +170,11 @@
                             <p class="muted" style="margin:0 0 8px; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 160) }}</p>
 
                             <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:0;">
-                                @if($primaryPost)
-                                    <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
-                                        @csrf
-                                        <input type="hidden" name="type" value="like">
-                                        <button type="submit" class="btn small secondary" style="padding:7px 10px; font-size:0.78rem;">👍 Like <span>({{ $likeCount }})</span></button>
-                                    </form>
-                                @endif
+                                <form method="POST" action="{{ route('forum.topic.react', $topic->id) }}">
+                                    @csrf
+                                    <input type="hidden" name="type" value="like">
+                                    <button type="submit" class="btn small secondary" style="padding:7px 10px; font-size:0.78rem;">👍 Like <span>({{ $likeCount }})</span></button>
+                                </form>
                                 <button type="button" class="btn small secondary share-btn" style="padding:7px 10px; font-size:0.78rem;" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">Partager</button>
                             </div>
                         </div>

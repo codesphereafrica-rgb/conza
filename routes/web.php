@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/forum/sujet/{topic}', [ForumController::class, 'destroyTopic'])->name('forum.topic.destroy');
     Route::post('/forum/sujet/{topic}/repondre', [ForumController::class, 'storeReply'])->name('forum.reply');
+    Route::post('/forum/sujet/{topic}/reaction', [ForumController::class, 'reactTopic'])->name('forum.topic.react');
     Route::post('/forum/reaction/{post}', [ForumController::class, 'react'])->name('forum.react');
     Route::delete('/comments/{post}', [ForumController::class, 'destroyPost'])->name('forum.comment.destroy');
     Route::post('/account/delete', [AuthController::class, 'deleteAccount'])->name('account.delete');

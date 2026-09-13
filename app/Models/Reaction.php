@@ -12,6 +12,7 @@ class Reaction extends Model
     protected $fillable = [
         'user_id',
         'post_id',
+        'topic_id',
         'type',
     ];
 
@@ -23,5 +24,10 @@ class Reaction extends Model
     public function post()
     {
         return $this->belongsTo(Post::class);
+    }
+
+    public function topic()
+    {
+        return $this->belongsTo(Topic::class);
     }
 }

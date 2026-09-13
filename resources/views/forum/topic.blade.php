@@ -23,9 +23,8 @@
         </div>
 
         @php
-            $primaryPost = $topic->posts()->first();
-            $topicLikeCount = $primaryPost ? $primaryPost->reactions()->where('type', 'like')->count() : 0;
-            $topicCommentCount = max(0, $topic->posts()->count() - 1);
+            $topicLikeCount = $topic->reactions()->where('type', 'like')->count();
+            $topicCommentCount = $topic->posts->count();
         @endphp
 
         <article class="topic-post-card topic-card">
@@ -64,15 +63,11 @@
             </div>
 
             <div class="topic-post-actions card-actions border-t border-gray-200 pt-3 mt-3">
-                @if($primaryPost)
-                    <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
-                        @csrf
-                        <input type="hidden" name="type" value="like">
-                        <button type="submit" class="topic-post-action-btn">👍 J'aime <span>({{ $topicLikeCount }})</span></button>
-                    </form>
-                @else
-                    <button type="button" class="topic-post-action-btn" disabled title="La réaction sera disponible dès la première réponse">👍 J'aime <span>(0)</span></button>
-                @endif
+                <form method="POST" action="{{ route('forum.topic.react', $topic->id) }}">
+                    @csrf
+                    <input type="hidden" name="type" value="like">
+                    <button type="submit" class="topic-post-action-btn">👍 J'aime <span>({{ $topicLikeCount }})</span></button>
+                </form>
                 <button type="button" class="topic-post-action-btn scroll-to-comments">💬 Commenter <span>({{ $topicCommentCount }})</span></button>
                 <button type="button" class="topic-post-action-btn share-btn" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">🔗 Partager</button>
             </div>
@@ -540,7 +535,7 @@
 
         <h3 id="reponses">Réponses</h3>
         <ul class="list" id="reponses-list">
-            @forelse($topic->posts as $post)
+            @forelse($topic->posts as $commentNumber => $post)
                 <li id="comment-{{ $post->id }}" class="forum-comment-item reply-card">
                     <div class="forum-comment-header reply-header forum-comment-header-green border border-[#bcd9c8] rounded-t-xl">
                         <div class="reply-header-main">
@@ -553,7 +548,7 @@
                                 <span>{{ $post->user->name }}</span>
                             </div>
                             <div class="comment-menu">
-                                <span class="forum-comment-meta">{{ $post->created_at->diffForHumans() }}</span>
+                                <span class="forum-comment-meta">Commentaire {{ $commentNumber + 1 }} · {{ $post->created_at->diffForHumans() }}</span>
                                 @auth
                                     @if(auth()->id() === $post->user_id)
                                         <button type="button" class="comment-menu-toggle" aria-label="Options du commentaire" aria-expanded="false">⋮</button>
