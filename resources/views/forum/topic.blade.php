@@ -457,11 +457,16 @@
             .comment-menu-toggle {
                 border: 0;
                 background: transparent;
-                color: inherit;
+                color: #14532d;
                 font-size: 1.25rem;
                 line-height: 1;
                 padding: 2px 5px;
                 cursor: pointer;
+                opacity: 1;
+            }
+            .comment-menu-toggle:hover {
+                background: transparent;
+                color: #14532d;
             }
             .comment-menu-dropdown {
                 position: absolute;
