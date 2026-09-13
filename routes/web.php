@@ -84,6 +84,12 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('
     Route::get('/donations/archive', [AdminController::class, 'donationsArchive'])->name('admin.donations.archive');
     Route::post('/donations/archive/{id}/restore', [AdminController::class, 'restoreArchivedDonation'])->name('admin.donations.restore');
     Route::get('/users', [AdminController::class, 'usersList'])->name('admin.users');
+    Route::middleware(\App\Http\Middleware\SuperAdminOnly::class)->group(function () {
+        Route::get('/securite', [AdminController::class, 'security'])->name('admin.security');
+        Route::post('/securite/visiteurs/{visitorLog}/bloquer', [AdminController::class, 'blockVisitorIp'])->name('admin.security.block');
+        Route::delete('/securite/bloques/{blockedIp}', [AdminController::class, 'unblockIp'])->name('admin.security.unblock');
+        Route::delete('/securite/bloques', [AdminController::class, 'unblockAllIps'])->name('admin.security.unblock-all');
+    });
     Route::post('/users/{user}/make-admin', [AdminController::class, 'makeAdmin'])->name('admin.users.makeAdmin')->middleware(\App\Http\Middleware\EnsureSuperAdmin::class);
     Route::post('/users/{user}/update-role', [AdminController::class, 'updateRole'])->name('admin.users.updateRole')->middleware(\App\Http\Middleware\EnsureSuperAdmin::class);
     Route::post('/users/{user}/toggle-block', [AdminController::class, 'toggleBlock'])->name('admin.users.toggleBlock');

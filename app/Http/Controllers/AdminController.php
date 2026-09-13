@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\BlockedIp;
 use App\Models\Donation;
 use App\Models\DonationArchive;
 use App\Models\Setting;
 use App\Models\Topic;
 use App\Models\User;
+use App\Models\VisitorLog;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -87,6 +89,47 @@ class AdminController extends Controller
         $superAdminId = Setting::get('super_admin_id', null);
         $users = User::orderBy('created_at', 'desc')->paginate(50);
         return view('admin.users', compact('users', 'superAdminId'));
+    }
+
+    public function security()
+    {
+        $visitorLogs = VisitorLog::latest('last_seen')->take(200)->get();
+        $blockedIps = BlockedIp::active()->get()->keyBy('ip');
+        $blockedCount = $blockedIps->count();
+
+        return view('admin.security', compact('visitorLogs', 'blockedIps', 'blockedCount'));
+    }
+
+    public function blockVisitorIp(Request $request, VisitorLog $visitorLog)
+    {
+        if ($visitorLog->ip === $request->ip()) {
+            return back()->with('error', 'Impossible de bloquer votre propre adresse IP.');
+        }
+
+        BlockedIp::updateOrCreate(
+            ['ip' => $visitorLog->ip],
+            [
+                'raison' => 'Blocage manuel depuis le panneau de sécurité',
+                'blocked_by' => auth()->id(),
+                'expires_at' => now()->addHours(24),
+            ]
+        );
+
+        return back()->with('success', 'IP bloquée pendant 24 heures.');
+    }
+
+    public function unblockIp(BlockedIp $blockedIp)
+    {
+        $blockedIp->delete();
+
+        return back()->with('success', 'IP débloquée immédiatement.');
+    }
+
+    public function unblockAllIps()
+    {
+        BlockedIp::active()->delete();
+
+        return back()->with('success', 'Toutes les IP actives ont été débloquées.');
     }
 
     public function makeAdmin(User $user)

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\VisitorLog;
 use Cloudinary\Cloudinary;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -89,6 +90,7 @@ class AuthController extends Controller
                 'success' => false,
                 'created_at' => now(),
             ]);
+            $this->syncVisitorLoginAttempts($ip);
 
             $attempts = RateLimiter::hit($key, 60 * 60 * 24);
             if ($attempts >= 10) {
@@ -115,11 +117,24 @@ class AuthController extends Controller
             'success' => true,
             'created_at' => now(),
         ]);
+        $this->syncVisitorLoginAttempts($ip);
         RateLimiter::clear($key);
 
         $request->session()->regenerate();
 
         return redirect()->intended(route('home'));
+    }
+
+    private function syncVisitorLoginAttempts(string $ip): void
+    {
+        VisitorLog::where('ip', $ip)->update([
+            'nombre_tentatives_login' => DB::table('login_attempts')
+                ->where('ip', $ip)
+                ->where('success', false)
+                ->where('created_at', '>=', now()->subDay())
+                ->count(),
+            'last_seen' => now(),
+        ]);
     }
 
     public function logout(Request $request)

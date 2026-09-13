@@ -899,7 +899,9 @@
                 @auth
                     @php
                         $superAdminId = \App\Models\Setting::get('super_admin_id');
-                        $isAdmin = (auth()->id() == $superAdminId) || (auth()->user()->role ?? null) === 'admin';
+                        $isAdmin = (auth()->id() == $superAdminId)
+                            || in_array((auth()->user()->role ?? null), ['admin', 'super_admin'], true)
+                            || (bool) auth()->user()->is_super_admin;
                     @endphp
                     @if($isAdmin)
                         <a href="{{ route('forum.create-topic') }}">Nouveau sujet</a>

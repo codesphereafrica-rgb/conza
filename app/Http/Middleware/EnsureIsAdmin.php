@@ -22,7 +22,7 @@ class EnsureIsAdmin
 
         $superAdminId = Setting::get('super_admin_id', null);
 
-        if ($user->id == $superAdminId) {
+        if ($user->id == $superAdminId || $user->role === 'super_admin' || (bool) $user->is_super_admin) {
             return $next($request);
         }
 

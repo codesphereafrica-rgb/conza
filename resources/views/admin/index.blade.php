@@ -8,6 +8,18 @@
             <h2 class="admin-page-title">Administration</h2>
             <a href="{{ route('admin.categories') }}" class="btn small">Gérer les catégories</a>
             <a href="{{ route('admin.users') }}" class="btn small" style="margin-left:8px;">Gérer les utilisateurs</a>
+            @php
+                $isSuperAdmin = auth()->user()->role === 'super_admin'
+                    || (bool) auth()->user()->is_super_admin
+                    || (string) auth()->id() === (string) \App\Models\Setting::get('super_admin_id');
+                $activeBlockedIpCount = $isSuperAdmin ? \App\Models\BlockedIp::active()->count() : 0;
+            @endphp
+            @if($isSuperAdmin)
+                <a href="{{ route('admin.security') }}" class="btn small" style="margin-left:8px;">
+                    <span aria-hidden="true">&#x1F6E1;</span> Control Panel Sécurité
+                    <span style="margin-left:4px;background:#dc2626;color:#fff;border-radius:999px;padding:2px 7px;font-size:.75rem;">{{ $activeBlockedIpCount }}</span>
+                </a>
+            @endif
         </div>
 
         <div class="grid grid-3">
