@@ -31,19 +31,7 @@ Route::post('/deconnexion', [AuthController::class, 'logout'])->name('logout')->
 Route::get('/forum', [ForumController::class, 'index'])->name('forum.index');
 Route::get('/forum/categorie/{slug}', [ForumController::class, 'category'])->name('forum.category');
 Route::get('/forum/sujet/{id}', [ForumController::class, 'topic'])->name('forum.topic');
-Route::get('/post/{id}', function (Request $request, int $id) {
-    $post = \App\Models\Post::find($id);
-    $topicId = $post?->topic_id ?? \App\Models\Topic::find($id)?->id;
-
-    if (!$topicId) {
-        return redirect()->route('notifications.index', array_filter([
-            'content_missing' => 1,
-            'notification_id' => $request->query('notification_id'),
-        ]));
-    }
-
-    return redirect()->route('forum.topic', $topicId)->withFragment('comment-' . $id);
-});
+Route::get('/post/{id}', [NotificationController::class, 'redirectToPost']);
 Route::get('/recherche', [ForumController::class, 'search'])->name('forum.search');
 Route::get('/notifications', [NotificationController::class, 'index'])->middleware('auth')->name('notifications.index');
 
