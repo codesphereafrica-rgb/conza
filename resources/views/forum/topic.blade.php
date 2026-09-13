@@ -29,6 +29,8 @@
         @endphp
 
         <article class="topic-post-card topic-card">
+            <div class="topic-post-time muted">{{ $topic->created_at->diffForHumans() }}</div>
+
             <div class="topic-post-content post-content">
                 <div class="topic-post-body topic-text post-text bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
 
@@ -153,6 +155,11 @@
             .topic-card .topic-post-content {
                 margin: 0 !important;
                 padding: 0 !important;
+            }
+            .topic-post-time {
+                align-self: flex-end;
+                padding: 10px 14px 0;
+                font-size: 0.82rem;
             }
             .topic-card .card-actions {
                 background: white !important;
