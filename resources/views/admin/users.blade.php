@@ -9,26 +9,29 @@
             <a href="{{ route('admin.index') }}" class="btn small secondary">Retour</a>
         </div>
 
-        <div class="card">
-            <table style="width:100%;border-collapse:collapse;">
+        <div class="card admin-table-card">
+            <div class="admin-table-wrap">
+            <table class="admin-users-table">
                 <thead>
                     <tr>
-                        <th style="text-align:left;padding:6px;border-bottom:1px solid #eee;">ID</th>
-                        <th style="text-align:left;padding:6px;border-bottom:1px solid #eee;">Nom</th>
-                        <th style="text-align:left;padding:6px;border-bottom:1px solid #eee;">Email</th>
-                        <th style="text-align:left;padding:6px;border-bottom:1px solid #eee;">Rôle</th>
-                        <th style="padding:6px;border-bottom:1px solid #eee;">Actions</th>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($users as $u)
                         <tr>
-                            <td style="padding:6px;border-bottom:1px solid #f6f6f6;">{{ $u->id }}</td>
-                            <td style="padding:6px;border-bottom:1px solid #f6f6f6;">{{ $u->name }}</td>
-                            <td style="padding:6px;border-bottom:1px solid #f6f6f6;">{{ $u->email }}</td>
-                            <td style="padding:6px;border-bottom:1px solid #f6f6f6;">{{ $u->role }}</td>
-                            <td style="padding:6px;border-bottom:1px solid #f6f6f6;">{{ $u->status ?? 'active' }}</td>
-                            <td style="padding:6px;border-bottom:1px solid #f6f6f6;">
+                            <td>{{ $u->id }}</td>
+                            <td class="admin-user-name">{{ $u->name }}</td>
+                            <td class="admin-user-email">{{ $u->email }}</td>
+                            <td>{{ $u->role }}</td>
+                            <td>{{ $u->status ?? 'active' }}</td>
+                            <td class="admin-user-actions">
+                                <div class="admin-action-row">
                                 {{-- Role editor (only super-admin) --}}
                                 @if(auth()->id() == $superAdminId)
                                     @if($u->id == $superAdminId)
@@ -65,11 +68,13 @@
                                         </form>
                                     @endif
                                 @endif
+                                </div>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+            </div>
 
             <div style="margin-top:12px;">{{ $users->links() }}</div>
         </div>

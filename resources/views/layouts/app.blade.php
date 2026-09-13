@@ -337,6 +337,52 @@
         .admin-card-title {
             font-size: 1.2rem;
         }
+        .admin-table-wrap {
+            overflow-x: auto;
+        }
+        .admin-users-table {
+            width: 100%;
+            min-width: 760px;
+            border-collapse: collapse;
+        }
+        .admin-users-table th {
+            padding: 12px 10px;
+            text-align: left;
+            background: #f0fdf4;
+            color: var(--primary-dark);
+            border-bottom: 2px solid #bbf7d0;
+            font-size: 0.85rem;
+        }
+        .admin-users-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #ecfdf5;
+            vertical-align: middle;
+        }
+        .admin-users-table tbody tr:hover {
+            background: #f8fafc;
+        }
+        .admin-user-name {
+            font-weight: 700;
+        }
+        .admin-user-email {
+            color: var(--muted);
+        }
+        .admin-user-actions {
+            white-space: nowrap;
+        }
+        .admin-action-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .admin-action-row form {
+            display: inline-flex !important;
+            margin: 0 !important;
+        }
+        .admin-category-card form:first-child {
+            margin-bottom: 0;
+        }
         .hero {
             position: relative;
             overflow: hidden;

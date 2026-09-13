@@ -31,8 +31,8 @@
         <div style="margin-top: 24px;">
             <ul class="list">
                 @foreach($categories as $category)
-                    <li class="list-item">
-                        <form method="POST" action="{{ route('admin.categories.update', $category->id) }}">
+                    <li class="list-item admin-category-card">
+                        <form id="category-update-{{ $category->id }}" method="POST" action="{{ route('admin.categories.update', $category->id) }}">
                             @csrf
                             @method('PUT')
                             <div class="form-group">
@@ -43,13 +43,15 @@
                                 <label for="category-description-{{ $category->id }}">Description</label>
                                 <textarea id="category-description-{{ $category->id }}" name="description">{{ $category->description }}</textarea>
                             </div>
-                            <button type="submit" class="btn small">Modifier</button>
                         </form>
-                        <form method="POST" action="{{ route('admin.categories.destroy', $category->id) }}" onsubmit="return confirm('Supprimer cette catégorie ?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn small" style="background:#dc2626;">Supprimer</button>
-                        </form>
+                        <div class="admin-action-row">
+                            <button type="submit" form="category-update-{{ $category->id }}" class="btn small">Modifier</button>
+                            <form method="POST" action="{{ route('admin.categories.destroy', $category->id) }}" onsubmit="return confirm('Supprimer cette catégorie ?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn small" style="background:#dc2626;">Supprimer</button>
+                            </form>
+                        </div>
                     </li>
                 @endforeach
             </ul>
