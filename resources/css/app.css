@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
+body, p, article, .prose { font-family: 'Merriweather', Georgia, 'Times New Roman', serif !important; }
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
