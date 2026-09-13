@@ -26,6 +26,12 @@
                     @enderror
                 </div>
 
+                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                <div class="cf-turnstile" data-sitekey="{{ env('TURNSTILE_SITE_KEY') }}"></div>
+                @error('captcha')
+                    <div class="alert alert-error" style="margin-top: 8px;">{{ $message }}</div>
+                @enderror
+
                 <div class="login-actions">
                     <button type="submit" class="btn">Se connecter</button>
                     <a href="{{ route('password.request') }}" class="form-link">Mot de passe oublié ?</a>

@@ -53,6 +53,12 @@
                     @enderror
                 </div>
 
+                <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                <div class="cf-turnstile" data-sitekey="{{ env('TURNSTILE_SITE_KEY') }}"></div>
+                @error('captcha')
+                    <div class="alert alert-error" style="margin-top: 8px;">{{ $message }}</div>
+                @enderror
+
                 <button id="register-submit" type="submit" class="btn" disabled>S'inscrire</button>
             </form>
         </div>

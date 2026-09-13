@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\ValidationException;
 
@@ -21,6 +22,10 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        if (! $this->turnstileIsValid($request)) {
+            return back()->withErrors(['captcha' => 'Vérification robot échouée.']);
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'unique:users,email'],
@@ -59,6 +64,10 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        if (! $this->turnstileIsValid($request)) {
+            return back()->withErrors(['captcha' => 'Vérification robot échouée.']);
+        }
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -123,6 +132,29 @@ class AuthController extends Controller
         $request->session()->regenerate();
 
         return redirect()->intended(route('home'));
+    }
+
+    private function turnstileIsValid(Request $request): bool
+    {
+        $token = $request->input('cf-turnstile-response');
+        $secret = env('TURNSTILE_SECRET_KEY');
+
+        if (! filled($token) || ! filled($secret)) {
+            return false;
+        }
+
+        try {
+            return (bool) Http::asForm()
+                ->timeout(5)
+                ->post('https://challenges.cloudflare.com/turnstile/v0/siteverify', [
+                    'secret' => $secret,
+                    'response' => $token,
+                    'remoteip' => $request->ip(),
+                ])
+                ->json('success', false);
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     private function syncVisitorLoginAttempts(string $ip): void
