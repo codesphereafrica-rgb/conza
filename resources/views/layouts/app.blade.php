@@ -326,6 +326,17 @@
             padding: 8px 12px;
             font-size: 0.9rem;
         }
+        .admin-page-title,
+        .admin-card-title {
+            color: var(--primary-dark);
+            font-weight: 800;
+        }
+        .admin-page-title {
+            font-size: 2rem;
+        }
+        .admin-card-title {
+            font-size: 1.2rem;
+        }
         .hero {
             position: relative;
             overflow: hidden;

@@ -5,7 +5,7 @@
 @section('content')
     <main class="container section" style="max-width: 760px;">
         <div class="toolbar">
-            <h2>Catégories</h2>
+            <h2 class="admin-page-title">Catégories</h2>
             <a href="{{ route('admin.index') }}" class="btn small secondary">Retour</a>
         </div>
 
@@ -32,8 +32,24 @@
             <ul class="list">
                 @foreach($categories as $category)
                     <li class="list-item">
-                        <h3>{{ $category->name }}</h3>
-                        <p class="muted">{{ $category->description ?: 'Pas de description' }}</p>
+                        <form method="POST" action="{{ route('admin.categories.update', $category->id) }}">
+                            @csrf
+                            @method('PUT')
+                            <div class="form-group">
+                                <label for="category-name-{{ $category->id }}">Nom</label>
+                                <input id="category-name-{{ $category->id }}" name="name" type="text" value="{{ $category->name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="category-description-{{ $category->id }}">Description</label>
+                                <textarea id="category-description-{{ $category->id }}" name="description">{{ $category->description }}</textarea>
+                            </div>
+                            <button type="submit" class="btn small">Modifier</button>
+                        </form>
+                        <form method="POST" action="{{ route('admin.categories.destroy', $category->id) }}" onsubmit="return confirm('Supprimer cette catégorie ?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn small" style="background:#dc2626;">Supprimer</button>
+                        </form>
                     </li>
                 @endforeach
             </ul>

@@ -221,4 +221,27 @@ class AdminController extends Controller
 
         return back()->with('success', 'Catégorie créée.');
     }
+
+    public function updateCategory(Request $request, Category $category)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+        ]);
+
+        $category->update([
+            'name' => $validated['name'],
+            'slug' => str($validated['name'])->slug()->value(),
+            'description' => $validated['description'] ?? null,
+        ]);
+
+        return back()->with('success', 'Catégorie modifiée.');
+    }
+
+    public function destroyCategory(Category $category)
+    {
+        $category->delete();
+
+        return back()->with('success', 'Catégorie supprimée.');
+    }
 }

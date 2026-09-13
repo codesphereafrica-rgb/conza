@@ -5,26 +5,26 @@
 @section('content')
     <main class="container section">
         <div class="toolbar">
-            <h2>Administration</h2>
+            <h2 class="admin-page-title">Administration</h2>
             <a href="{{ route('admin.categories') }}" class="btn small">Gérer les catégories</a>
             <a href="{{ route('admin.users') }}" class="btn small" style="margin-left:8px;">Gérer les utilisateurs</a>
         </div>
 
         <div class="grid grid-3">
             <div class="card">
-                <h3>Utilisateurs</h3>
+                <h3 class="admin-card-title">Utilisateurs</h3>
                 <p class="muted">{{ $stats['users'] }} comptes</p>
             </div>
             <div class="card">
-                <h3>Sujets</h3>
+                <h3 class="admin-card-title">Sujets</h3>
                 <p class="muted">{{ $stats['topics'] }} discussions</p>
             </div>
             <div class="card">
-                <h3>Catégories</h3>
+                <h3 class="admin-card-title">Catégories</h3>
                 <p class="muted">{{ $stats['categories'] }} catégories</p>
             </div>
             <div class="card">
-                <h3>Objectif de collecte</h3>
+                <h3 class="admin-card-title">Objectif de collecte</h3>
                 <p class="muted">{{ $goal ? number_format((float)$goal, 2, ',', ' ') . ' €' : 'Non défini' }}</p>
                 <form method="POST" action="{{ route('admin.goal.update') }}" style="margin-top:10px;">
                     @csrf
@@ -37,11 +37,11 @@
                 </form>
             </div>
             <div class="card">
-                <h3>Montant payé</h3>
+                <h3 class="admin-card-title">Montant payé</h3>
                 <p class="muted">{{ number_format((float)($paidTotal ?? 0), 2, ',', ' ') }} €</p>
             </div>
             <div class="card">
-                <h3>Pending</h3>
+                <h3 class="admin-card-title">En cours</h3>
                 <p class="muted">{{ number_format((float)($pendingTotal ?? 0), 2, ',', ' ') }} €</p>
                 <small>{{ $pendingCount ?? 0 }} dons en attente</small>
                 @if($pendingDonation)
@@ -61,7 +61,7 @@
                     <button type="submit" class="btn small secondary">Réinitialiser l'objectif</button>
                 </form>
 
-                <form method="POST" action="{{ route('admin.reset.paid') }}" onsubmit="return confirm('Remettre tous les dons payés en pending (efface le total payé) ?');">
+                <form method="POST" action="{{ route('admin.reset.paid') }}" onsubmit="return confirm('Remettre tous les dons payés en cours (efface le total payé) ?');">
                     @csrf
                     <button type="submit" class="btn small" style="background:#dc2626;">Réinitialiser montants payés</button>
                 </form>

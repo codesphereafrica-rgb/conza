@@ -5,7 +5,7 @@
 @section('content')
     <main class="container section">
         <div class="toolbar">
-            <h2>Utilisateurs</h2>
+            <h2 class="admin-page-title">Utilisateurs</h2>
             <a href="{{ route('admin.index') }}" class="btn small secondary">Retour</a>
         </div>
 

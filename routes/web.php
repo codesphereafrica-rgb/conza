@@ -74,6 +74,8 @@ Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');
     Route::get('/categories', [AdminController::class, 'categories'])->name('admin.categories');
     Route::post('/categories', [AdminController::class, 'storeCategory'])->name('admin.categories.store');
+    Route::put('/categories/{category}', [AdminController::class, 'updateCategory'])->name('admin.categories.update');
+    Route::delete('/categories/{category}', [AdminController::class, 'destroyCategory'])->name('admin.categories.destroy');
     Route::post('/goal', [AdminController::class, 'updateGoal'])->name('admin.goal.update');
     Route::post('/donations/{donation}/mark-paid', [\App\Http\Controllers\DonationController::class, 'markPaid'])->name('admin.donations.markPaid');
     Route::post('/donations/{donation}/mark-pending', [\App\Http\Controllers\DonationController::class, 'markPending'])->name('admin.donations.markPending');
