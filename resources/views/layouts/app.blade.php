@@ -676,6 +676,7 @@
         }
         .truncate-toggle {
             display: none;
+            width: 100%;
             margin-top: 6px;
             padding: 0;
             border: 0;
@@ -683,6 +684,7 @@
             color: var(--primary-dark);
             cursor: pointer;
             font-weight: 700;
+            text-align: right;
         }
         .truncate-toggle.is-visible {
             display: inline-block;
