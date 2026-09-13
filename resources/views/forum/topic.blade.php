@@ -454,7 +454,7 @@
                 gap: 10px;
             }
             .comment-menu { position: relative; margin-left: auto; }
-            .comment-menu-toggle {
+            .reply-card button.comment-menu-toggle {
                 border: 0;
                 background: transparent !important;
                 background-color: transparent !important;
@@ -465,14 +465,14 @@
                 cursor: pointer;
                 opacity: 1;
             }
-            .comment-menu-toggle:hover {
+            .reply-card button.comment-menu-toggle:hover {
                 background: transparent !important;
                 background-color: transparent !important;
                 color: #14532d;
             }
-            .comment-menu-toggle:focus,
-            .comment-menu-toggle:focus-visible,
-            .comment-menu-toggle:active {
+            .reply-card button.comment-menu-toggle:focus,
+            .reply-card button.comment-menu-toggle:focus-visible,
+            .reply-card button.comment-menu-toggle:active {
                 background: transparent !important;
                 background-color: transparent !important;
                 color: #14532d;
