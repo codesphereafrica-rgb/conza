@@ -6,9 +6,10 @@
     @php
         $adsenseClientId = env('ADSENSE_CLIENT_ID', 'ca-pub-3688942362866671');
         $adsenseAdSlot = env('ADSENSE_AD_SLOT');
-        $adsenseEnabled = filled($adsenseClientId) && filled($adsenseAdSlot);
+        $adsenseAllowed = !request()->routeIs('login', 'register');
+        $adsenseEnabled = $adsenseAllowed && filled($adsenseClientId) && filled($adsenseAdSlot);
     @endphp
-    @if(filled($adsenseClientId))
+    @if($adsenseAllowed && filled($adsenseClientId))
         <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ $adsenseClientId }}" crossorigin="anonymous"></script>
     @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
