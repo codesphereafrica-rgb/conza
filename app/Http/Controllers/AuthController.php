@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -92,13 +93,15 @@ class AuthController extends Controller
         }
 
         if (! Auth::attempt($credentials)) {
-            DB::table('login_attempts')->insert([
-                'email' => $email,
-                'ip' => $ip,
-                'user_agent' => $request->userAgent(),
-                'success' => false,
-                'created_at' => now(),
-            ]);
+            if (Schema::hasTable('login_attempts')) {
+                DB::table('login_attempts')->insert([
+                    'email' => $email,
+                    'ip' => $ip,
+                    'user_agent' => $request->userAgent(),
+                    'success' => false,
+                    'created_at' => now(),
+                ]);
+            }
             $this->syncVisitorLoginAttempts($ip);
 
             $attempts = RateLimiter::hit($key, 60 * 60 * 24);
@@ -119,13 +122,15 @@ class AuthController extends Controller
             ]);
         }
 
-        DB::table('login_attempts')->insert([
-            'email' => $email,
-            'ip' => $ip,
-            'user_agent' => $request->userAgent(),
-            'success' => true,
-            'created_at' => now(),
-        ]);
+        if (Schema::hasTable('login_attempts')) {
+            DB::table('login_attempts')->insert([
+                'email' => $email,
+                'ip' => $ip,
+                'user_agent' => $request->userAgent(),
+                'success' => true,
+                'created_at' => now(),
+            ]);
+        }
         $this->syncVisitorLoginAttempts($ip);
         RateLimiter::clear($key);
 
@@ -159,6 +164,10 @@ class AuthController extends Controller
 
     private function syncVisitorLoginAttempts(string $ip): void
     {
+        if (! Schema::hasTable('visitors_logs') || ! Schema::hasTable('login_attempts')) {
+            return;
+        }
+
         VisitorLog::where('ip', $ip)->update([
             'nombre_tentatives_login' => DB::table('login_attempts')
                 ->where('ip', $ip)

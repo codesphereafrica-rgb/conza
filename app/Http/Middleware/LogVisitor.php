@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 use Jenssegers\Agent\Agent;
 
 class LogVisitor
@@ -15,6 +16,10 @@ class LogVisitor
     public function handle(Request $request, Closure $next)
     {
         if ($request->is('up')) {
+            return $next($request);
+        }
+
+        if (! Schema::hasTable('visitors_logs')) {
             return $next($request);
         }
 
@@ -41,11 +46,13 @@ class LogVisitor
         $visitor->page_visitee = mb_substr($request->fullUrl(), 0, 2048);
         $visitor->user_id = Auth::id() ?: $visitor->user_id;
         $visitor->is_connected = Auth::check();
-        $visitor->nombre_tentatives_login = DB::table('login_attempts')
-            ->where('ip', $ip)
-            ->where('success', false)
-            ->where('created_at', '>=', now()->subDay())
-            ->count();
+        $visitor->nombre_tentatives_login = Schema::hasTable('login_attempts')
+            ? DB::table('login_attempts')
+                ->where('ip', $ip)
+                ->where('success', false)
+                ->where('created_at', '>=', now()->subDay())
+                ->count()
+            : 0;
         $visitor->last_seen = $now;
         $visitor->save();
 

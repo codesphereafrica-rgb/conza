@@ -5,12 +5,17 @@ namespace App\Http\Middleware;
 use App\Models\BlockedIp;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 
 class CheckBlockedIp
 {
     public function handle(Request $request, Closure $next)
     {
         if ($request->is('up')) {
+            return $next($request);
+        }
+
+        if (! Schema::hasTable('blocked_ips')) {
             return $next($request);
         }
 
