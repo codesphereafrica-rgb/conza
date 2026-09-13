@@ -82,6 +82,8 @@
                         <input type="hidden" name="type" value="like">
                         <button type="submit" class="topic-post-action-btn">👍 J'aime <span>({{ $topicLikeCount }})</span></button>
                     </form>
+                @else
+                    <button type="button" class="topic-post-action-btn" disabled title="La réaction sera disponible dès la première réponse">👍 J'aime <span>(0)</span></button>
                 @endif
                 <button type="button" class="topic-post-action-btn scroll-to-comments">💬 Commenter <span>({{ $topicCommentCount }})</span></button>
                 <button type="button" class="topic-post-action-btn share-btn" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">🔗 Partager</button>
