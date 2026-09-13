@@ -19,42 +19,46 @@ class LogVisitor
             return $next($request);
         }
 
-        if (! Schema::hasTable('visitors_logs')) {
-            return $next($request);
+        try {
+            if (! Schema::hasTable('visitors_logs')) {
+                return $next($request);
+            }
+
+            $ip = (string) $request->ip();
+            $agent = new Agent();
+            $agent->setUserAgent($request->userAgent() ?? '');
+            $visitor = VisitorLog::firstOrNew(['ip' => $ip]);
+            $now = now();
+
+            if ($visitor->exists && $visitor->last_seen) {
+                $visitor->temps_passe += min(max($visitor->last_seen->diffInSeconds($now), 0), 300);
+            }
+
+            if (! $visitor->exists || (! $visitor->country && ! $visitor->city)) {
+                $location = $this->locate($ip);
+                $visitor->country = $location['country'] ?? $visitor->country;
+                $visitor->city = $location['city'] ?? $visitor->city;
+                $visitor->isp = $location['isp'] ?? $visitor->isp;
+            }
+
+            $visitor->user_agent = $request->userAgent();
+            $visitor->device_model = $agent->device() ?: $visitor->device_model;
+            $visitor->platform = $agent->platform() ?: $visitor->platform;
+            $visitor->page_visitee = mb_substr($request->fullUrl(), 0, 2048);
+            $visitor->user_id = Auth::id() ?: $visitor->user_id;
+            $visitor->is_connected = Auth::check();
+            $visitor->nombre_tentatives_login = Schema::hasTable('login_attempts')
+                ? DB::table('login_attempts')
+                    ->where('ip', $ip)
+                    ->where('success', false)
+                    ->where('created_at', '>=', now()->subDay())
+                    ->count()
+                : 0;
+            $visitor->last_seen = $now;
+            $visitor->save();
+        } catch (\Throwable) {
+            // Tracking must never prevent the requested page from loading.
         }
-
-        $ip = (string) $request->ip();
-        $agent = new Agent();
-        $agent->setUserAgent($request->userAgent() ?? '');
-        $visitor = VisitorLog::firstOrNew(['ip' => $ip]);
-        $now = now();
-
-        if ($visitor->exists && $visitor->last_seen) {
-            $visitor->temps_passe += min(max($visitor->last_seen->diffInSeconds($now), 0), 300);
-        }
-
-        if (! $visitor->exists || (! $visitor->country && ! $visitor->city)) {
-            $location = $this->locate($ip);
-            $visitor->country = $location['country'] ?? $visitor->country;
-            $visitor->city = $location['city'] ?? $visitor->city;
-            $visitor->isp = $location['isp'] ?? $visitor->isp;
-        }
-
-        $visitor->user_agent = $request->userAgent();
-        $visitor->device_model = $agent->device() ?: $visitor->device_model;
-        $visitor->platform = $agent->platform() ?: $visitor->platform;
-        $visitor->page_visitee = mb_substr($request->fullUrl(), 0, 2048);
-        $visitor->user_id = Auth::id() ?: $visitor->user_id;
-        $visitor->is_connected = Auth::check();
-        $visitor->nombre_tentatives_login = Schema::hasTable('login_attempts')
-            ? DB::table('login_attempts')
-                ->where('ip', $ip)
-                ->where('success', false)
-                ->where('created_at', '>=', now()->subDay())
-                ->count()
-            : 0;
-        $visitor->last_seen = $now;
-        $visitor->save();
 
         return $next($request);
     }

@@ -15,16 +15,20 @@ class CheckBlockedIp
             return $next($request);
         }
 
-        if (! Schema::hasTable('blocked_ips')) {
-            return $next($request);
-        }
+        try {
+            if (! Schema::hasTable('blocked_ips')) {
+                return $next($request);
+            }
 
-        $blocked = BlockedIp::active()
-            ->where('ip', $request->ip())
-            ->exists();
+            $blocked = BlockedIp::active()
+                ->where('ip', $request->ip())
+                ->exists();
 
-        if ($blocked) {
-            return response()->view('blocked-ip', status: 403);
+            if ($blocked) {
+                return response()->view('blocked-ip', status: 403);
+            }
+        } catch (\Throwable) {
+            // Do not take the entire site down if the security table is unavailable.
         }
 
         return $next($request);
