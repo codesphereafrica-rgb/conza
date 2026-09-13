@@ -189,7 +189,30 @@
             60% { transform: rotate(-8deg); }
             80% { transform: rotate(5deg); }
         }
-        .notifications-page h1 { margin-top: 0; color: var(--primary-dark); }
+        .notifications-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 18px;
+        }
+        .notifications-page h1 {
+            margin: 0;
+            color: var(--primary-dark);
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .notifications-clear-button {
+            border: 1px solid var(--primary-dark);
+            border-radius: 7px;
+            padding: 9px 14px;
+            background: var(--primary-dark);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .notifications-clear-button:hover { background: #0f766e; }
+        .notifications-clear-button:disabled { opacity: .55; cursor: not-allowed; }
         .notifications-list { display: grid; gap: 10px; }
         .notification-row {
             display: flex;
@@ -220,6 +243,41 @@
         }
         .notification-row-content { display: grid; gap: 4px; }
         .notification-row-content small { color: var(--muted); font-size: .78rem; }
+        .notification-menu { position: relative; margin-left: auto; align-self: flex-start; }
+        .notification-menu-toggle {
+            border: 0;
+            padding: 2px 6px;
+            background: transparent !important;
+            color: var(--primary-dark);
+            font-size: 1.35rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+        .notification-menu-toggle:hover,
+        .notification-menu-toggle:focus,
+        .notification-menu-toggle:active {
+            background: transparent !important;
+            color: var(--primary-dark);
+        }
+        .notification-menu-delete {
+            position: absolute;
+            top: calc(100% + 4px);
+            right: 0;
+            z-index: 10;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            padding: 8px 12px;
+            background: white;
+            color: #dc2626;
+            white-space: nowrap;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(15, 23, 42, .16);
+        }
+        .notification-menu-delete:hover { background: #fef2f2; }
+        @media (max-width: 640px) {
+            .notifications-heading { align-items: flex-start; flex-direction: column; }
+            .notifications-clear-button { width: 100%; }
+        }
         .notification-bell::after {
             content: "";
             position: absolute;
