@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
     @php
         $adsenseClientId = env('ADSENSE_CLIENT_ID', 'ca-pub-3688942362866671');
         $adsenseAdSlot = env('ADSENSE_AD_SLOT');
@@ -970,5 +972,13 @@
             </div>
         </div>
     </section>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('/service-worker.js');
+            });
+        }
+    </script>
 </body>
 </html>
