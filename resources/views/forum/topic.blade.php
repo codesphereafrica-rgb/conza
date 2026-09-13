@@ -31,7 +31,10 @@
             <div class="topic-post-time muted">{{ $topic->created_at->diffForHumans() }}</div>
 
             <div class="topic-post-content post-content">
-                <div class="topic-post-body topic-text post-text bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
+                <x-truncated-text
+                    :text="$topic->content"
+                    content-class="topic-post-body topic-text post-text bg-gray-100 border border-gray-200 rounded-xl p-3"
+                />
 
                 @if(!empty($topic->attachments))
                     <div class="topic-post-media-wrap media-wrapper media post-media mt-3">
@@ -564,7 +567,10 @@
                             </div>
                         </div>
                     </div>
-                    <div class="forum-comment-body message-bubble reply-bubble bg-gray-100 border border-gray-200 rounded-lg p-3">{{ $post->content }}</div>
+                    <x-truncated-text
+                        :text="$post->content"
+                        content-class="forum-comment-body message-bubble reply-bubble bg-gray-100 border border-gray-200 rounded-lg p-3"
+                    />
 
                     @auth
                         <div class="forum-comment-actions">

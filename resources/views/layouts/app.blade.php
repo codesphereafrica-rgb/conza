@@ -653,6 +653,49 @@
             margin: 0 0 4px;
             line-height: 1.6;
         }
+        .truncated-text {
+            min-width: 0;
+        }
+        .truncate-text {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-height: 7.2em;
+            transition: max-height .3s ease;
+        }
+        .truncate-text.is-expanded {
+            display: block;
+            max-height: 2000px;
+        }
+        .truncate-text p:first-child {
+            margin-top: 0;
+        }
+        .truncate-text p:last-child {
+            margin-bottom: 0;
+        }
+        .truncate-toggle {
+            display: none;
+            margin-top: 6px;
+            padding: 0;
+            border: 0;
+            background: transparent;
+            color: var(--primary-dark);
+            cursor: pointer;
+            font-weight: 700;
+        }
+        .truncate-toggle.is-visible {
+            display: inline-block;
+        }
+        .truncate-toggle:hover,
+        .truncate-toggle:focus {
+            text-decoration: underline;
+        }
+        .home-discussion-text {
+            margin: 0 0 8px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
         .forum-post-media-link {
             display: block;
             width: 100%;
@@ -980,6 +1023,24 @@
     </section>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('[data-truncated-text]').forEach(function (wrapper) {
+                const content = wrapper.querySelector('[data-truncated-content]');
+                const toggle = wrapper.querySelector('[data-truncated-toggle]');
+                if (!content || !toggle) return;
+
+                if (content.scrollHeight > content.clientHeight + 1) {
+                    toggle.classList.add('is-visible');
+                }
+
+                toggle.addEventListener('click', function () {
+                    const expanded = content.classList.toggle('is-expanded');
+                    toggle.setAttribute('aria-expanded', String(expanded));
+                    toggle.textContent = expanded ? 'Voir moins' : 'Voir plus...';
+                });
+            });
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
                 navigator.serviceWorker.register('/service-worker.js');

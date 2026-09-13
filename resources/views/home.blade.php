@@ -167,7 +167,10 @@
                         @endif
 
                         <div style="flex:1; min-width:0; display:flex; flex-direction:column;">
-                            <p class="muted" style="margin:0 0 8px; font-size:0.9rem; line-height:1.5;">{{ Str::limit($topic->content ?: 'Aucune description disponible.', 160) }}</p>
+                            <x-truncated-text
+                                :text="$topic->content ?: 'Aucune description disponible.'"
+                                class="muted home-discussion-text"
+                            />
 
                             <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:0;">
                                 <form method="POST" action="{{ route('forum.topic.react', $topic->id) }}">
