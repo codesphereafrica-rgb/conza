@@ -456,7 +456,8 @@
             .comment-menu { position: relative; margin-left: auto; }
             .comment-menu-toggle {
                 border: 0;
-                background: transparent;
+                background: transparent !important;
+                background-color: transparent !important;
                 color: #14532d;
                 font-size: 1.25rem;
                 line-height: 1;
@@ -465,7 +466,15 @@
                 opacity: 1;
             }
             .comment-menu-toggle:hover {
-                background: transparent;
+                background: transparent !important;
+                background-color: transparent !important;
+                color: #14532d;
+            }
+            .comment-menu-toggle:focus,
+            .comment-menu-toggle:focus-visible,
+            .comment-menu-toggle:active {
+                background: transparent !important;
+                background-color: transparent !important;
                 color: #14532d;
             }
             .comment-menu-dropdown {
