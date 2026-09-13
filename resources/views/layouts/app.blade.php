@@ -680,13 +680,19 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            border: 1px solid var(--border);
-            background: #f8fafc;
-            color: var(--text);
+            border: 1px solid var(--primary);
+            background: var(--primary);
+            color: white;
             border-radius: 999px;
             padding: 8px 12px;
             font-size: 0.875rem;
             font-weight: 700;
+        }
+        .forum-post-action:hover,
+        .forum-post-action:focus {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            color: white;
         }
         .home-discussion-row {
             display: flex;
