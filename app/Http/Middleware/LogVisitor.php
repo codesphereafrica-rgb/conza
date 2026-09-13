@@ -14,6 +14,10 @@ class LogVisitor
 {
     public function handle(Request $request, Closure $next)
     {
+        if ($request->is('up')) {
+            return $next($request);
+        }
+
         $ip = (string) $request->ip();
         $agent = new Agent();
         $agent->setUserAgent($request->userAgent() ?? '');

@@ -10,6 +10,10 @@ class CheckBlockedIp
 {
     public function handle(Request $request, Closure $next)
     {
+        if ($request->is('up')) {
+            return $next($request);
+        }
+
         $blocked = BlockedIp::active()
             ->where('ip', $request->ip())
             ->exists();
