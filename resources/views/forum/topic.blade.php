@@ -29,20 +29,6 @@
         @endphp
 
         <article class="topic-post-card topic-card">
-            <div class="topic-post-header card-header topic-post-header-green border border-[#bcd9c8] rounded-t-2xl">
-                <div class="topic-post-user">
-                    @if($topic->user && $topic->user->avatar)
-                        <img src="{{ $topic->user->avatar }}" alt="Avatar de {{ $topic->user->name }}" class="topic-post-avatar">
-                    @else
-                        <span class="topic-post-avatar" aria-hidden="true">{{ strtoupper(substr(($topic->user->name ?? 'U'), 0, 1)) }}</span>
-                    @endif
-                    <div>
-                        <strong>{{ $topic->user->name }}</strong>
-                        <div class="muted" style="font-size:0.82rem;">{{ $topic->created_at->diffForHumans() }}</div>
-                    </div>
-                </div>
-            </div>
-
             <div class="topic-post-content post-content">
                 <div class="topic-post-body topic-text post-text bg-gray-100 border border-gray-200 rounded-xl p-3">{{ $topic->content }}</div>
 
@@ -142,8 +128,9 @@
                 overflow: hidden !important;
                 width: 93% !important;
                 margin: 0 auto 12px auto !important;
-                border-radius: 16px !important;
+                border-radius: 0 0 16px 16px !important;
                 background-color: #e5e7eb !important;
+                box-shadow: 0 12px 36px rgba(0, 0, 0, 0.42), 0 5px 14px rgba(0, 0, 0, 0.34) !important;
             }
             .topic-card,
             .reply-card {
