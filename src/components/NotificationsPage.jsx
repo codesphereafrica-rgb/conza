@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 export default function NotificationsPage({ userId }) {
     const [notifications, setNotifications] = useState([])
     const [openMenuId, setOpenMenuId] = useState(null)
+    const [contentMissing, setContentMissing] = useState(false)
 
     useEffect(() => {
         if (!userId || !supabase) return undefined
@@ -17,7 +18,27 @@ export default function NotificationsPage({ userId }) {
                 .eq('user_id', userId)
                 .order('created_at', { ascending: false })
 
-            if (!error && mounted) setNotifications(data || [])
+            if (!error && mounted) {
+                const notificationId = new URLSearchParams(window.location.search).get('notification_id')
+                const contentIsMissing = new URLSearchParams(window.location.search).get('content_missing') === '1'
+
+                if (contentIsMissing && notificationId) {
+                    const { error: deleteError } = await supabase
+                        .from('notifications')
+                        .delete()
+                        .eq('id', notificationId)
+                        .eq('user_id', userId)
+
+                    if (!deleteError) {
+                        setNotifications((data || []).filter((item) => String(item.id) !== notificationId))
+                        setContentMissing(true)
+                        window.history.replaceState({}, '', '/notifications')
+                        return
+                    }
+                }
+
+                setNotifications(data || [])
+            }
         }
 
         loadNotifications()
@@ -50,7 +71,11 @@ export default function NotificationsPage({ userId }) {
             await supabase.from('notifications').update({ is_read: true }).eq('id', notification.id)
         }
 
-        if (notification.link) window.location.href = notification.link
+        if (notification.link) {
+            const target = new URL(notification.link, window.location.origin)
+            target.searchParams.set('notification_id', notification.id)
+            window.location.href = target.pathname + target.search
+        }
     }
 
     async function deleteNotification(notificationId) {
@@ -92,6 +117,9 @@ export default function NotificationsPage({ userId }) {
                     Supprimer toutes les notifications
                 </button>
             </div>
+            {contentMissing && (
+                <p className="notification-empty">Ce contenu n'existe plus. La notification a été supprimée.</p>
+            )}
             {notifications.length === 0 ? (
                 <p className="notification-empty">Aucune notification.</p>
             ) : (

@@ -53,6 +53,12 @@ create policy "allow_update_notifications"
     for update
     using (true);
 
+drop policy if exists "allow_delete_notifications" on public.notifications;
+create policy "allow_delete_notifications"
+    on public.notifications
+    for delete
+    using (true);
+
 do $$
 begin
     if not exists (
