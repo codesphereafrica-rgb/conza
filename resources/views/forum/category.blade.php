@@ -28,7 +28,7 @@
             @forelse($topics as $topic)
                 @php
                     $primaryPost = $topic->posts()->first();
-                    $likeCount = $primaryPost ? $primaryPost->reactions()->where('type', 'like')->count() : 0;
+                    $likeCount = $topic->reactions()->where('type', 'like')->count();
                     $commentCount = max(0, $topic->posts()->count() - 1);
                     $thumb = null;
                     if(!empty($topic->attachments) && is_array($topic->attachments)){
@@ -68,13 +68,11 @@
                     @endif
 
                     <div class="forum-post-actions">
-                        @if($primaryPost)
-                            <form method="POST" action="{{ route('forum.react', $primaryPost->id) }}">
-                                @csrf
-                                <input type="hidden" name="type" value="like">
-                                <button type="submit" class="forum-post-action">👍 Like <span>({{ $likeCount }})</span></button>
-                            </form>
-                        @endif
+                        <form method="POST" action="{{ route('forum.topic.react', $topic->id) }}">
+                            @csrf
+                            <input type="hidden" name="type" value="like">
+                            <button type="submit" class="forum-post-action">👍 Like <span>({{ $likeCount }})</span></button>
+                        </form>
                         <a href="{{ route('forum.topic', $topic->id) }}#reponses" class="forum-post-action">💬 Commenter <span>({{ $commentCount }})</span></a>
                         <button type="button" class="forum-post-action share-btn" data-share-url="{{ route('forum.topic', $topic->id) }}" data-share-title="{{ $topic->title }}">🔗 Partager</button>
                     </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Accueil - Programme Conza')
+@section('title', 'Conza')
 
 @section('content')
     <section class="hero">
