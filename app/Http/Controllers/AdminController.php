@@ -23,12 +23,22 @@ class AdminController extends Controller
         ];
 
         $goal = Setting::get('fundraising_goal', null);
-        $paidTotal = Donation::where('status', 'paid')->sum('amount');
-        $pendingTotal = Donation::where('status', 'pending')->sum('amount');
+        $amountsByCurrency = function (string $status): array {
+            $query = Donation::where('status', $status);
+
+            return [
+                'USD' => (float) (clone $query)->where('currency', 'USD')->sum('amount'),
+                'CDF' => (float) (clone $query)->where(function ($currencyQuery) {
+                    $currencyQuery->where('currency', 'CDF')->orWhereNull('currency');
+                })->sum('amount'),
+            ];
+        };
+        $paidTotals = $amountsByCurrency('paid');
+        $pendingTotals = $amountsByCurrency('pending');
         $pendingCount = Donation::where('status', 'pending')->count();
         $pendingDonation = Donation::where('status', 'pending')->orderBy('created_at')->first();
 
-        return view('admin.index', compact('stats', 'goal', 'paidTotal', 'pendingTotal', 'pendingCount', 'pendingDonation'));
+        return view('admin.index', compact('stats', 'goal', 'paidTotals', 'pendingTotals', 'pendingCount', 'pendingDonation'));
     }
 
     public function updateGoal(Request $request)

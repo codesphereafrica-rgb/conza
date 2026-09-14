@@ -50,11 +50,17 @@
             </div>
             <div class="card">
                 <h3 class="admin-card-title">Montant payé</h3>
-                <p class="muted">{{ number_format((float)($paidTotal ?? 0), 2, ',', ' ') }} €</p>
+                <p class="muted">
+                    Montant en USD : {{ number_format((float)($paidTotals['USD'] ?? 0), 2, ',', ' ') }}<br>
+                    Montant en CDF : {{ number_format((float)($paidTotals['CDF'] ?? 0), 2, ',', ' ') }}
+                </p>
             </div>
             <div class="card">
                 <h3 class="admin-card-title">En cours</h3>
-                <p class="muted">{{ number_format((float)($pendingTotal ?? 0), 2, ',', ' ') }} €</p>
+                <p class="muted">
+                    Montant en USD : {{ number_format((float)($pendingTotals['USD'] ?? 0), 2, ',', ' ') }}<br>
+                    Montant en CDF : {{ number_format((float)($pendingTotals['CDF'] ?? 0), 2, ',', ' ') }}
+                </p>
                 <small>{{ $pendingCount ?? 0 }} dons en attente</small>
                 @if($pendingDonation)
                     <div style="margin-top:12px;">
