@@ -1065,7 +1065,7 @@
                         <span class="icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5" /><path d="M16 11.37a4 4 0 1 1-8 0 4 4 0 0 1 8 0z" /><path d="M17.5 6.5h.01" /></svg>
                         </span>
-                        <div><strong>Instagram</strong><a href="https://instagram.com" target="_blank" rel="noopener">Programme Conza</a></div>
+                        <div><strong>Instagram</strong><a href="https://www.instagram.com/conza_besty?stkn=MWwzdjZycmUyOTczOQ%3D%3D&utm_source=qr" target="_blank" rel="noopener">conza_besty</a></div>
                     </div>
                     <div class="contact-card">
                         <span class="icon">
