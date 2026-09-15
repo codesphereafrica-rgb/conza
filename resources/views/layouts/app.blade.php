@@ -1071,7 +1071,7 @@
                         <span class="icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5v9A2.5 2.5 0 0 0 5.5 19h13a2.5 2.5 0 0 0 2.5-2.5v-9A2.5 2.5 0 0 0 18.5 5h-13A2.5 2.5 0 0 0 3 7.5z" /><path d="M3 7.5l9 6 9-6" /></svg>
                         </span>
-                        <div><strong>Email</strong><a href="mailto:conzaasbl243@gmail.com">conzaasbl243@gmail.com</a></div>
+                        <div><strong>Email</strong><a href="mailto:kongozaire243@gmail.com">kongozaire243@gmail.com</a></div>
                     </div>
                     <div class="contact-card">
                         <span class="icon">
