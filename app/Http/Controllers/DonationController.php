@@ -91,11 +91,7 @@ class DonationController extends Controller
 
         if (($result['success'] ?? false) === true) {
             if (! empty($result['paymentUrl'])) {
-                return response()->view('payments.redirect', [
-                    'paymentUrl' => $result['paymentUrl'],
-                    'authToken' => $result['authToken'] ?? $result['reference'],
-                    'postBackUrl' => rtrim((string) env('APP_URL', config('app.url')), '/'),
-                ]);
+                return redirect()->away($result['paymentUrl']);
             }
 
             return redirect()->route('donations.index')->with('success', $result['message'] ?? 'Votre transaction a bien été initiée.');
