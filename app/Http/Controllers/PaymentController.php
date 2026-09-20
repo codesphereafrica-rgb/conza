@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use App\Services\EasyPayGateway;
 use App\Services\PaymentService;
-use App\Services\UniPayGateway;
 use Illuminate\Http\Request;
 
 class PaymentController extends Controller
@@ -14,7 +13,7 @@ class PaymentController extends Controller
     {
         $data = $request->validate([
             'orderId' => ['required', 'integer'],
-            'paymentMethod' => ['sometimes', 'string', 'in:EASYPAY,UNIPAY'],
+            'paymentMethod' => ['sometimes', 'string', 'in:EASYPAY'],
         ]);
 
         $order = Donation::whereKey($data['orderId'])
@@ -44,12 +43,7 @@ class PaymentController extends Controller
             ], 404);
         }
 
-        $unipayResult = $order?->provider === 'easypay'
-            ? null
-            : (new UniPayGateway())->checkStatus($reference);
-        $paid = $order?->provider === 'easypay'
-            ? (new EasyPayGateway())->verifyPayment($reference)
-            : data_get($unipayResult, 'response.status');
+        $paid = (new EasyPayGateway())->verifyPayment($reference);
         $paid = $paid === true || in_array(strtoupper((string) $paid), ['SUCCESS', 'PAID', 'COMPLETED', 'CONFIRMED'], true);
 
         if ($order && $paid) {

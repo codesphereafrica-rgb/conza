@@ -11,17 +11,8 @@ class PaymentService
     {
         $method = strtoupper($method);
 
-        if ($method === 'UNIPAY') {
-            $result = $this->createUniPayPayment($order);
-            if (($result['success'] ?? false) === true) {
-                $order->update(['provider' => 'unipay']);
-            }
-
-            return $result;
-        }
-
         if ($method !== 'EASYPAY') {
-            return ['success' => false, 'message' => 'Méthode de paiement inconnue.'];
+            return ['success' => false, 'message' => 'Seul le paiement EasyPay est disponible.'];
         }
 
         $reference = (string) ($order->external_reference ?: 'order_' . Str::uuid());
@@ -50,31 +41,6 @@ class PaymentService
             return $result;
         }
 
-        if (UniPayGateway::enabled()) {
-            $fallback = $this->createUniPayPayment($order);
-            if (($fallback['success'] ?? false) === true) {
-                $order->update([
-                    'provider' => 'unipay',
-                    'external_reference' => $fallback['reference'] ?? $order->external_reference,
-                ]);
-            }
-
-            return $fallback;
-        }
-
         return $result;
-    }
-
-    private function createUniPayPayment(Donation $order): array
-    {
-        return (new UniPayGateway())->createPayment(
-                (float) $order->amount,
-                (string) $order->external_reference,
-                request()->input('phone'),
-                request()->input('operator', 'orange'),
-                request()->input('direction', 'collect'),
-                (string) $order->currency,
-                request()->input('country', 'CD')
-            );
     }
 }

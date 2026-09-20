@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use App\Models\Setting;
 use App\Services\PaymentService;
-use App\Services\UniPayGateway;
+use App\Services\EasyPayGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -39,9 +39,7 @@ class DonationController extends Controller
                 ->get()
             : collect();
 
-        $unipayEnabled = UniPayGateway::enabled();
-
-        return view('donations.index', compact('target', 'collected', 'progress', 'byStatus', 'recentDonations', 'userPendingDonations', 'unipayEnabled'));
+        return view('donations.index', compact('target', 'collected', 'progress', 'byStatus', 'recentDonations', 'userPendingDonations'));
     }
 
     public function markPaid(Donation $donation)
@@ -74,21 +72,16 @@ class DonationController extends Controller
     {
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
-            'phone' => ['required', 'string', 'min:8'],
-            'operator' => ['required', 'string', 'in:orange,airtel,vodacom'],
-            'direction' => ['sometimes', 'string', 'in:collect,payout'],
             'currency' => ['required', 'string', 'in:CDF,USD'],
             'country' => ['required', 'string', 'in:CD'],
-            'payment_method' => ['sometimes', 'string', 'in:EASYPAY,UNIPAY'],
+            'payment_method' => ['sometimes', 'string', 'in:EASYPAY'],
         ]);
-
-        $phone = preg_replace('/\D+/', '', (string) $validated['phone']);
 
         $donation = Donation::create([
             'user_id' => Auth::id(),
             'amount' => $validated['amount'],
             'currency' => strtoupper($validated['currency']),
-            'provider' => strtoupper($validated['payment_method'] ?? 'EASYPAY') === 'UNIPAY' ? 'unipay' : 'easypay',
+            'provider' => 'easypay',
             'status' => 'pending',
             'external_reference' => 'don_' . time() . '_' . Auth::id(),
         ]);
@@ -129,31 +122,28 @@ class DonationController extends Controller
 
     public function checkStatus(Request $request, string $reference)
     {
-        $gateway = new UniPayGateway();
-        $result = $gateway->checkStatus($reference);
+        $donation = Donation::where('external_reference', $reference)->first();
+        $paid = $donation && $donation->provider === 'easypay'
+            ? (new EasyPayGateway())->verifyPayment($reference)
+            : false;
 
-        if (($result['success'] ?? false) === false) {
+        if (! $donation) {
             return response()->json([
                 'success' => false,
-                'message' => $result['message'] ?? 'Impossible de vérifier le statut du paiement.',
-            ], 400);
+                'message' => 'Paiement introuvable.',
+            ], 404);
         }
 
-        $payload = $result['response'] ?? [];
-        $status = strtolower((string) ($payload['status'] ?? $payload['state'] ?? 'pending'));
-        $donation = Donation::where('external_reference', $reference)->first();
-
-        if ($donation) {
-            $donation->status = in_array($status, ['paid', 'success', 'completed', 'confirmed'], true) ? 'paid' : 'pending';
+        if ($paid) {
+            $donation->status = 'paid';
             $donation->save();
         }
 
         return response()->json([
-            'success' => true,
-            'status' => $status,
+            'success' => $paid,
+            'status' => $donation->fresh()->status,
             'reference' => $reference,
-            'payload' => $payload,
-        ]);
+        ], $paid ? 200 : 422);
     }
 
     public function mobileCallback(Request $request)

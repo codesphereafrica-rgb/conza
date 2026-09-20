@@ -144,20 +144,6 @@
                     @csrf
 
                     <div class="form-group">
-                        <label for="operator">Opérateur</label>
-                        <select id="operator" name="operator" required>
-                            <option value="orange">Orange Money</option>
-                            <option value="airtel">Airtel Money</option>
-                            <option value="vodacom">Vodacom M-Pesa</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">Numéro de téléphone</label>
-                        <input id="phone" name="phone" type="tel" placeholder="0970000000" required>
-                    </div>
-
-                    <div class="form-group">
                         <label for="amount">Montant</label>
                         <input id="amount" name="amount" type="number" min="1" step="1" placeholder="1000" required>
                     </div>
@@ -177,17 +163,8 @@
                         </select>
                     </div>
 
-                    <fieldset class="form-group">
-                        <legend>Méthode de paiement</legend>
-                        <label style="display:block; margin:8px 0;">
-                            <input type="radio" name="payment_method" value="EASYPAY" checked>
-                            EasyPay <strong>(Recommandé)</strong>
-                        </label>
-                        <label style="display:block; margin:8px 0;">
-                            <input type="radio" name="payment_method" value="UNIPAY">
-                            UniPay
-                        </label>
-                    </fieldset>
+                    <input type="hidden" name="payment_method" value="EASYPAY">
+                    <p class="muted">Paiement sécurisé par EasyPay.</p>
 
                     <button type="submit" class="btn">Valider le don</button>
                 </form>
