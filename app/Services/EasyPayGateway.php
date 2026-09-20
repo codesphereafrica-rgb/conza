@@ -44,71 +44,30 @@ class EasyPayGateway
         $data = json_decode($rawBody, true);
         $data = is_array($data) ? $data : [];
         $reference = $data['reference'] ?? data_get($data, 'data.reference');
+        $code = (int) ($data['code'] ?? data_get($data, 'data.code', 0));
 
-        if (! $response->successful() || ! $reference) {
+        if (! $response->successful() || $code !== 1 || ! $reference) {
             Log::error('EasyPay initialization rejected.', [
                 'status' => $response->status(),
+                'code' => $data['code'] ?? data_get($data, 'data.code'),
                 'message' => $data['message'] ?? null,
             ]);
 
             return [
                 'success' => false,
-                'message' => $data['message'] ?? 'Échec de l\'initialisation EasyPay.',
+                'message' => $data['message'] ?? 'Échec de l\'initialisation EasyPay (code inattendu).',
                 'response' => $data,
             ];
         }
 
-        $paymentUrl = $data['checkout_url']
-            ?? $data['payment_url']
-            ?? $data['redirect_url']
-            ?? $data['url']
-            ?? data_get($data, 'data.checkout_url')
-            ?? data_get($data, 'data.payment_url')
-            ?? data_get($data, 'data.redirect_url')
-            ?? data_get($data, 'data.url');
+        $paymentUrl = rtrim((string) config('services.easypay.base_url'), '/')
+            . '/' . trim((string) config('services.easypay.version'), '/')
+            . '/payment/initialization?reference=' . rawurlencode((string) $reference);
 
         return [
             'success' => true,
             'paymentUrl' => $paymentUrl,
             'reference' => (string) $reference,
-            'authToken' => $data['auth_token'] ?? data_get($data, 'data.auth_token'),
-            'response' => $data,
-        ];
-    }
-
-    public function pushPayment(string $reference, string $phone, string $channel): array
-    {
-        if (! self::enabled() || $reference === '' || $phone === '' || $channel === '') {
-            return ['success' => false, 'message' => 'Paramètres EasyPay mobile-money incomplets.'];
-        }
-
-        $endpoint = rtrim((string) config('services.easypay.base_url'), '/')
-            . '/' . trim((string) config('services.easypay.version'), '/')
-            . '/payment/' . rawurlencode($reference) . '/mobile-money';
-
-        try {
-            $response = Http::acceptJson()->timeout(15)->post($endpoint, [
-                'phone' => $phone,
-                'channel' => $channel,
-            ]);
-        } catch (\Throwable $exception) {
-            Log::error('EasyPay mobile-money push failed.', [
-                'exception' => $exception::class,
-                'message' => $exception->getMessage(),
-            ]);
-
-            return ['success' => false, 'message' => 'Le push USSD EasyPay est indisponible.'];
-        }
-
-        $rawBody = $response->body();
-        Log::info('EasyPay mobile-money push response.', ['body' => $rawBody]);
-        $data = json_decode($rawBody, true);
-        $data = is_array($data) ? $data : [];
-        $success = $response->successful() && (($data['success'] ?? true) !== false);
-
-        return [
-            'success' => $success,
-            'message' => $data['message'] ?? ($success ? 'Push USSD EasyPay envoyé.' : 'Échec du push USSD EasyPay.'),
             'response' => $data,
         ];
     }
