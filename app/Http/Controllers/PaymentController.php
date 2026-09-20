@@ -35,6 +35,15 @@ class PaymentController extends Controller
     public function verify(string $reference)
     {
         $order = Donation::where('external_reference', $reference)->first();
+        if (! $order) {
+            return response()->json([
+                'success' => false,
+                'status' => 'unknown',
+                'reference' => $reference,
+                'message' => 'Paiement introuvable.',
+            ], 404);
+        }
+
         $unipayResult = $order?->provider === 'easypay'
             ? null
             : (new UniPayGateway())->checkStatus($reference);

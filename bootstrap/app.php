@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             CheckBlockedIp::class,
             LogVisitor::class,
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'api/payments/init',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

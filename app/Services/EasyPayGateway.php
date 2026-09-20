@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class EasyPayGateway
 {
@@ -27,12 +28,26 @@ class EasyPayGateway
                 'token' => config('services.easypay.token'),
             ]);
 
-        $response = Http::acceptJson()->timeout(15)->post($endpoint, $payload);
+        try {
+            $response = Http::acceptJson()->timeout(15)->post($endpoint, $payload);
+        } catch (\Throwable $exception) {
+            Log::error('EasyPay initialization request failed.', [
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return ['success' => false, 'message' => 'EasyPay est momentanément indisponible.'];
+        }
 
         $data = $response->json() ?? [];
         $reference = $data['reference'] ?? data_get($data, 'data.reference');
 
         if (! $response->successful() || ! $reference) {
+            Log::error('EasyPay initialization rejected.', [
+                'status' => $response->status(),
+                'message' => $data['message'] ?? null,
+            ]);
+
             return [
                 'success' => false,
                 'message' => $data['message'] ?? 'Échec de l\'initialisation EasyPay.',
@@ -65,9 +80,25 @@ class EasyPayGateway
             . '/' . trim((string) config('services.easypay.version'), '/')
             . '/payment/' . rawurlencode($reference) . '/checking-status';
 
-        $response = Http::acceptJson()->timeout(15)->get($endpoint);
+        try {
+            $response = Http::acceptJson()->timeout(15)->get($endpoint);
+        } catch (\Throwable $exception) {
+            Log::error('EasyPay status request failed.', [
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return false;
+        }
         $data = $response->json() ?? [];
         $status = strtoupper((string) ($data['status'] ?? data_get($data, 'data.status') ?? ''));
+
+        if (! $response->successful()) {
+            Log::error('EasyPay status request rejected.', [
+                'status' => $response->status(),
+                'message' => $data['message'] ?? null,
+            ]);
+        }
 
         return $response->successful() && in_array($status, ['SUCCESS', 'PAID'], true);
     }

@@ -32,14 +32,12 @@ class CreateDefaultAdminSeeder extends Seeder
                 'status' => 'active',
             ]);
         } else {
+            $user->password = Hash::make($password);
             $user->role = 'super_admin';
             $user->is_super_admin = true;
             $user->save();
         }
 
-        // store super admin id in settings if missing
-        if (! Setting::get('super_admin_id')) {
-            Setting::set('super_admin_id', (string) $user->id);
-        }
+        Setting::set('super_admin_id', (string) $user->id);
     }
 }
