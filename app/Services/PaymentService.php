@@ -40,6 +40,10 @@ class PaymentService
                 'external_reference' => $result['reference'],
             ]);
 
+            if (! empty($result['paymentUrl'])) {
+                return $result;
+            }
+
             $push = (new EasyPayGateway())->pushPayment($result['reference'], $normalizedPhone, $channel);
             if (($push['success'] ?? false) !== true) {
                 return [

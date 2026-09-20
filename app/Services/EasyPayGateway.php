@@ -40,8 +40,9 @@ class EasyPayGateway
         }
 
         $rawBody = $response->body();
-        Log::info('EasyPay initialization response.', ['body' => $rawBody]);
-        $data = $response->json() ?? [];
+        Log::info('[EASYPAY INIT RAW] ' . $rawBody);
+        $data = json_decode($rawBody, true);
+        $data = is_array($data) ? $data : [];
         $reference = $data['reference'] ?? data_get($data, 'data.reference');
 
         if (! $response->successful() || ! $reference) {
@@ -57,14 +58,20 @@ class EasyPayGateway
             ];
         }
 
-        $paymentUrl = rtrim((string) config('services.easypay.base_url'), '/')
-                . '/' . trim((string) config('services.easypay.version'), '/')
-                . '/payment?reference=' . rawurlencode((string) $reference);
+        $paymentUrl = $data['checkout_url']
+            ?? $data['payment_url']
+            ?? $data['redirect_url']
+            ?? $data['url']
+            ?? data_get($data, 'data.checkout_url')
+            ?? data_get($data, 'data.payment_url')
+            ?? data_get($data, 'data.redirect_url')
+            ?? data_get($data, 'data.url');
 
         return [
             'success' => true,
             'paymentUrl' => $paymentUrl,
             'reference' => (string) $reference,
+            'authToken' => $data['auth_token'] ?? data_get($data, 'data.auth_token'),
             'response' => $data,
         ];
     }
@@ -95,7 +102,8 @@ class EasyPayGateway
 
         $rawBody = $response->body();
         Log::info('EasyPay mobile-money push response.', ['body' => $rawBody]);
-        $data = $response->json() ?? [];
+        $data = json_decode($rawBody, true);
+        $data = is_array($data) ? $data : [];
         $success = $response->successful() && (($data['success'] ?? true) !== false);
 
         return [

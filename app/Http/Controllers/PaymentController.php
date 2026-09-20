@@ -29,6 +29,7 @@ class PaymentController extends Controller
         return response()->json([
             'paymentUrl' => $result['paymentUrl'] ?? null,
             'reference' => $result['reference'] ?? $order->external_reference,
+            'authToken' => $result['authToken'] ?? ($result['reference'] ?? $order->external_reference),
         ]);
     }
 
