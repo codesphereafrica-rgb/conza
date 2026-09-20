@@ -39,6 +39,8 @@ class EasyPayGateway
             return ['success' => false, 'message' => 'EasyPay est momentanément indisponible.'];
         }
 
+        $rawBody = $response->body();
+        Log::info('EasyPay initialization response.', ['body' => $rawBody]);
         $data = $response->json() ?? [];
         $reference = $data['reference'] ?? data_get($data, 'data.reference');
 
@@ -55,17 +57,50 @@ class EasyPayGateway
             ];
         }
 
-        $paymentUrl = $data['payment_url']
-            ?? $data['paymentUrl']
-            ?? data_get($data, 'data.payment_url')
-            ?? rtrim((string) config('services.easypay.base_url'), '/')
+        $paymentUrl = rtrim((string) config('services.easypay.base_url'), '/')
                 . '/' . trim((string) config('services.easypay.version'), '/')
-                . '/payment/initialization?reference=' . rawurlencode((string) $reference);
+                . '/payment?reference=' . rawurlencode((string) $reference);
 
         return [
             'success' => true,
             'paymentUrl' => $paymentUrl,
             'reference' => (string) $reference,
+            'response' => $data,
+        ];
+    }
+
+    public function pushPayment(string $reference, string $phone, string $channel): array
+    {
+        if (! self::enabled() || $reference === '' || $phone === '' || $channel === '') {
+            return ['success' => false, 'message' => 'Paramètres EasyPay mobile-money incomplets.'];
+        }
+
+        $endpoint = rtrim((string) config('services.easypay.base_url'), '/')
+            . '/' . trim((string) config('services.easypay.version'), '/')
+            . '/payment/' . rawurlencode($reference) . '/mobile-money';
+
+        try {
+            $response = Http::acceptJson()->timeout(15)->post($endpoint, [
+                'phone' => $phone,
+                'channel' => $channel,
+            ]);
+        } catch (\Throwable $exception) {
+            Log::error('EasyPay mobile-money push failed.', [
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return ['success' => false, 'message' => 'Le push USSD EasyPay est indisponible.'];
+        }
+
+        $rawBody = $response->body();
+        Log::info('EasyPay mobile-money push response.', ['body' => $rawBody]);
+        $data = $response->json() ?? [];
+        $success = $response->successful() && (($data['success'] ?? true) !== false);
+
+        return [
+            'success' => $success,
+            'message' => $data['message'] ?? ($success ? 'Push USSD EasyPay envoyé.' : 'Échec du push USSD EasyPay.'),
             'response' => $data,
         ];
     }

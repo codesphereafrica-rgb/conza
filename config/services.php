@@ -44,7 +44,7 @@ return [
     'easypay' => [
         'cid' => env('EASYPAY_CID'),
         'token' => env('EASYPAY_TOKEN'),
-        'version' => env('EASYPAY_VERSION', 'sandbox'),
+        'version' => env('EASYPAY_VERSION', 'Sandbox'),
         'base_url' => 'https://www.e-com-easypay.com',
     ],
 

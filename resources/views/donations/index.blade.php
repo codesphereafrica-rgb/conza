@@ -144,6 +144,11 @@
                     @csrf
 
                     <div class="form-group">
+                        <label for="phone">Numéro de téléphone pour le push USSD</label>
+                        <input id="phone" name="phone" type="tel" placeholder="0970000000" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="amount">Montant</label>
                         <input id="amount" name="amount" type="number" min="1" step="1" placeholder="1000" required>
                     </div>

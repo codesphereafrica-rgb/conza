@@ -72,6 +72,7 @@ class DonationController extends Controller
     {
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
+            'phone' => ['required', 'string', 'min:9'],
             'currency' => ['required', 'string', 'in:CDF,USD'],
             'country' => ['required', 'string', 'in:CD'],
             'payment_method' => ['sometimes', 'string', 'in:EASYPAY'],
@@ -86,7 +87,7 @@ class DonationController extends Controller
             'external_reference' => 'don_' . time() . '_' . Auth::id(),
         ]);
 
-        $result = (new PaymentService())->createPayment($donation, $validated['payment_method'] ?? 'EASYPAY');
+        $result = (new PaymentService())->createPayment($donation, $validated['phone'], $validated['payment_method'] ?? 'EASYPAY');
 
         if (($result['success'] ?? false) === true) {
             if (! empty($result['paymentUrl'])) {
@@ -101,6 +102,7 @@ class DonationController extends Controller
 
     public function callback(Request $request, string $reference)
     {
+        $reference = (string) $request->query('ref', $reference);
         $donation = Donation::where('external_reference', $reference)->first();
 
         if (!$donation) {

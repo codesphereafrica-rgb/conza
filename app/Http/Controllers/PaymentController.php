@@ -13,13 +13,14 @@ class PaymentController extends Controller
     {
         $data = $request->validate([
             'orderId' => ['required', 'integer'],
+            'phone' => ['required', 'string', 'min:9'],
             'paymentMethod' => ['sometimes', 'string', 'in:EASYPAY'],
         ]);
 
         $order = Donation::whereKey($data['orderId'])
             ->where('user_id', $request->user()->id)
             ->firstOrFail();
-        $result = (new PaymentService())->createPayment($order, $data['paymentMethod'] ?? 'EASYPAY');
+        $result = (new PaymentService())->createPayment($order, $data['phone'], $data['paymentMethod'] ?? 'EASYPAY');
 
         if (($result['success'] ?? false) !== true) {
             return response()->json($result, 422);
@@ -59,7 +60,7 @@ class PaymentController extends Controller
 
     public function success(Request $request)
     {
-        $reference = (string) $request->query('reference', '');
+        $reference = (string) $request->query('ref', $request->query('reference', ''));
         $paid = $reference !== '' && (new EasyPayGateway())->verifyPayment($reference);
         $order = Donation::where('external_reference', $reference)->first();
 

@@ -3,11 +3,10 @@
 namespace App\Services;
 
 use App\Models\Donation;
-use Illuminate\Support\Str;
 
 class PaymentService
 {
-    public function createPayment(Donation $order, string $method = 'EASYPAY'): array
+    public function createPayment(Donation $order, string $phone, string $method = 'EASYPAY'): array
     {
         $method = strtoupper($method);
 
@@ -15,21 +14,24 @@ class PaymentService
             return ['success' => false, 'message' => 'Seul le paiement EasyPay est disponible.'];
         }
 
-        $reference = (string) ($order->external_reference ?: 'order_' . Str::uuid());
+        $reference = $order->id . '-' . (int) floor(microtime(true) * 1000);
         $appUrl = rtrim((string) env('APP_URL', config('app.url')), '/');
+        $normalizedPhone = $this->normalizePhone($phone);
+        $channel = $this->detectChannel($normalizedPhone);
 
         $result = (new EasyPayGateway())->initPayment([
             'order_ref' => $reference,
-            'amount' => (float) $order->amount,
-            'currency' => strtoupper((string) $order->currency),
+            'amount' => (int) round((float) $order->amount),
+            'currency' => 'CDF',
             'description' => 'Don Conza #' . $order->id,
-            'success_url' => $appUrl . '/payment/success?reference=' . rawurlencode($reference) . '&provider=EASYPAY',
+            'customer_name' => optional($order->user)->name,
+            'customer_email' => optional($order->user)->email,
+            'customer_phone' => $normalizedPhone,
+            'success_url' => $appUrl . '/payment/success?ref=' . rawurlencode($reference),
             'error_url' => $appUrl . '/payment/error',
             'cancel_url' => $appUrl . '/payment/cancel',
             'language' => 'fr',
-            'channels' => request()->input('channels', ['mobile_money']),
-            'customer_name' => optional($order->user)->name,
-            'customer_email' => optional($order->user)->email,
+            'channels' => ['AIRTEL_MONEY', 'ORANGE_MONEY', 'M_PESA'],
         ]);
 
         if (($result['success'] ?? false) === true) {
@@ -38,9 +40,40 @@ class PaymentService
                 'external_reference' => $result['reference'],
             ]);
 
-            return $result;
+            $push = (new EasyPayGateway())->pushPayment($result['reference'], $normalizedPhone, $channel);
+            if (($push['success'] ?? false) !== true) {
+                return [
+                    'success' => false,
+                    'message' => $push['message'] ?? 'Le paiement est initialisé mais le push USSD a échoué.',
+                    'reference' => $result['reference'],
+                ];
+            }
+
+            return $result + ['push' => $push];
         }
 
         return $result;
+    }
+
+    private function normalizePhone(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone);
+
+        if (str_starts_with($digits, '0')) {
+            return '243' . substr($digits, 1);
+        }
+
+        return str_starts_with($digits, '243') ? $digits : '243' . $digits;
+    }
+
+    private function detectChannel(string $phone): string
+    {
+        $localNumber = substr($phone, 3, 2);
+
+        return match (true) {
+            in_array($localNumber, ['97', '99'], true) => 'AIRTEL_MONEY',
+            in_array($localNumber, ['80', '81', '82', '83'], true) => 'M_PESA',
+            default => 'ORANGE_MONEY',
+        };
     }
 }
