@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +58,13 @@ Route::match(['get', 'post'], '/api/payment/callback', [DonationController::clas
 Route::match(['get', 'post'], '/callback', [DonationController::class, 'mobileCallback'])->name('payment.callback');
 Route::match(['get', 'post'], '/dons/callback/{reference}', [DonationController::class, 'callback'])->name('donations.callback');
 Route::post('/dons', [DonationController::class, 'store'])->middleware('auth')->name('donations.store');
+Route::middleware('auth')->prefix('api/payments')->group(function () {
+    Route::post('/init', [PaymentController::class, 'init'])->name('payments.init');
+});
+Route::get('/api/payments/verify/{reference}', [PaymentController::class, 'verify'])->name('payments.verify');
+Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/payment/error', fn (Request $request) => app(PaymentController::class)->failure($request, 'error'))->name('payment.error');
+Route::get('/payment/cancel', fn (Request $request) => app(PaymentController::class)->failure($request, 'cancel'))->name('payment.cancel');
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');

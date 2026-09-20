@@ -18,7 +18,7 @@ class UniPayGatewayTest extends TestCase
             ], 200),
         ]);
 
-        config()->set('services.unipay.api_key', 'up_72618c931ad3be0753277feeaecdda0c');
+        config()->set('services.unipay.api_key', 'test-key');
         config()->set('services.unipay.base_url', 'https://unipay-api.onrender.com');
 
         $gateway = new \App\Services\UniPayGateway();
@@ -37,7 +37,7 @@ class UniPayGatewayTest extends TestCase
 
         Http::assertSent(function ($request) {
             $this->assertSame('https://unipay-api.onrender.com/v1/payment/initiate', $request->url());
-            $this->assertSame('up_72618c931ad3be0753277feeaecdda0c', $request->header('X-API-Key')[0] ?? null);
+            $this->assertSame('test-key', $request->header('X-API-Key')[0] ?? null);
             $this->assertSame('orange', data_get($request->data(), 'operator'));
             $this->assertSame('collect', data_get($request->data(), 'direction'));
             $this->assertSame('CDF', data_get($request->data(), 'currency'));

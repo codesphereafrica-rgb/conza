@@ -177,6 +177,18 @@
                         </select>
                     </div>
 
+                    <fieldset class="form-group">
+                        <legend>Méthode de paiement</legend>
+                        <label style="display:block; margin:8px 0;">
+                            <input type="radio" name="payment_method" value="EASYPAY" checked>
+                            EasyPay <strong>(Recommandé)</strong>
+                        </label>
+                        <label style="display:block; margin:8px 0;">
+                            <input type="radio" name="payment_method" value="UNIPAY">
+                            UniPay
+                        </label>
+                    </fieldset>
+
                     <button type="submit" class="btn">Valider le don</button>
                 </form>
             </div>

@@ -41,4 +41,11 @@ return [
         'currency' => env('UNIPAY_CURRENCY', 'CDF'),
     ],
 
+    'easypay' => [
+        'cid' => env('EASYPAY_CID'),
+        'token' => env('EASYPAY_TOKEN'),
+        'version' => env('EASYPAY_VERSION', 'sandbox'),
+        'base_url' => 'https://www.e-com-easypay.com',
+    ],
+
 ];

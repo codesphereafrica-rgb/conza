@@ -6,26 +6,34 @@ use App\Models\User;
 use App\Models\Setting;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class CreateDefaultAdminSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
-        $email = env('DEFAULT_ADMIN_EMAIL', 'admin@conza.local');
-        $password = env('DEFAULT_ADMIN_PASSWORD', 'admin123');
+        $email = trim((string) env('SUPER_ADMIN'));
+        $password = (string) env('MDP_SUPER_ADMIN');
+
+        if ($email === '' || $password === '') {
+            Log::error('Super admin non créé : SUPER_ADMIN et MDP_SUPER_ADMIN sont obligatoires.');
+
+            return;
+        }
 
         $user = User::where('email', $email)->first();
         if (! $user) {
             $user = User::create([
-                'name' => 'Administrateur',
+                'name' => 'Super administrateur',
                 'email' => $email,
                 'password' => Hash::make($password),
-                'role' => 'admin',
+                'role' => 'super_admin',
+                'is_super_admin' => true,
                 'status' => 'active',
             ]);
         } else {
-            // ensure role is admin
-            $user->role = 'admin';
+            $user->role = 'super_admin';
+            $user->is_super_admin = true;
             $user->save();
         }
 

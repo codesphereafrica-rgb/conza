@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Donation;
 use App\Models\Setting;
+use App\Services\PaymentService;
 use App\Services\UniPayGateway;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +79,7 @@ class DonationController extends Controller
             'direction' => ['sometimes', 'string', 'in:collect,payout'],
             'currency' => ['required', 'string', 'in:CDF,USD'],
             'country' => ['required', 'string', 'in:CD'],
+            'payment_method' => ['sometimes', 'string', 'in:EASYPAY,UNIPAY'],
         ]);
 
         $phone = preg_replace('/\D+/', '', (string) $validated['phone']);
@@ -86,38 +88,22 @@ class DonationController extends Controller
             'user_id' => Auth::id(),
             'amount' => $validated['amount'],
             'currency' => strtoupper($validated['currency']),
-            'provider' => 'unipay',
+            'provider' => strtoupper($validated['payment_method'] ?? 'EASYPAY') === 'UNIPAY' ? 'unipay' : 'easypay',
             'status' => 'pending',
             'external_reference' => 'don_' . time() . '_' . Auth::id(),
         ]);
 
-        if (UniPayGateway::enabled()) {
-            $gateway = new UniPayGateway();
-            $result = $gateway->createPayment(
-                (float) $validated['amount'],
-                $donation->external_reference,
-                $phone,
-                $validated['operator'],
-                $validated['direction'] ?? 'collect',
-                $validated['currency'],
-                $validated['country']
-            );
+        $result = (new PaymentService())->createPayment($donation, $validated['payment_method'] ?? 'EASYPAY');
 
-            if (($result['success'] ?? false) === true) {
-                $donation->update([
-                    'provider' => 'unipay',
-                    'external_reference' => $result['reference'] ?? $donation->external_reference,
-                ]);
-
-                return redirect()->route('donations.index')->with('success', $result['message'] ?? 'Votre transaction a bien été initiée.');
+        if (($result['success'] ?? false) === true) {
+            if (! empty($result['paymentUrl'])) {
+                return redirect()->away($result['paymentUrl']);
             }
 
-            return back()->with('error', $result['message'] ?? 'Le paiement Unipay est indisponible pour le moment.');
+            return redirect()->route('donations.index')->with('success', $result['message'] ?? 'Votre transaction a bien été initiée.');
         }
 
-        $donation->update(['provider' => 'manual']);
-
-        return redirect()->route('donations.index')->with('success', 'Votre contribution a bien été enregistrée en attente de validation.');
+        return back()->withInput()->with('error', $result['message'] ?? 'Le paiement est indisponible pour le moment.');
     }
 
     public function callback(Request $request, string $reference)
