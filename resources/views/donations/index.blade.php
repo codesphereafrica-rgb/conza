@@ -199,7 +199,7 @@
             const testPhones = {
                 VODACOM: '243815000001',
                 ORANGE: '243898000001',
-                AIRTEL: '243990000001',
+                AIRTEL: '243992000001',
                 AFRICELL: '243900000001'
             };
             if (phoneInput && providerInput && @json(app()->environment('local'))) {
@@ -243,7 +243,7 @@
                             provider: {
                                 VODACOM: 'MPESA_COD',
                                 ORANGE: 'ORANGE_COD',
-                                AIRTEL: 'AIRTEL_COD',
+                                AIRTEL: 'AIRTEL_OAPI_COD',
                                 AFRICELL: 'AFRICELL_COD'
                             }[donation.dataset.provider] || donation.dataset.provider,
                             amount: Number(donation.dataset.amount)

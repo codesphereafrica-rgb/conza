@@ -10,22 +10,27 @@ use Throwable;
 
 class PawaPayService
 {
-    private const PROVIDERS = ['VODACOM', 'ORANGE', 'AIRTEL', 'AFRICELL', 'AIRTEL_OAPI_COD', 'ORANGE_COD', 'VODACOM_COD', 'AFRICELL_COD', 'MTN_MOMO_COD'];
+    private const PROVIDER_MAP = [
+        'VODACOM' => 'MPESA_COD',
+        'VODACOM_COD' => 'MPESA_COD',
+        'MPESA' => 'MPESA_COD',
+        'MPESA_COD' => 'MPESA_COD',
+        'AIRTEL' => 'AIRTEL_OAPI_COD',
+        'AIRTEL_COD' => 'AIRTEL_OAPI_COD',
+        'AIRTEL_OAPI_COD' => 'AIRTEL_OAPI_COD',
+        'ORANGE' => 'ORANGE_COD',
+        'ORANGE_COD' => 'ORANGE_COD',
+        'AFRICELL' => 'AFRICELL_COD',
+        'AFRICELL_COD' => 'AFRICELL_COD',
+        'MTN' => 'MTN_MOMO_COD',
+        'MTN_MOMO_COD' => 'MTN_MOMO_COD',
+    ];
 
     public function createDeposit(string $phone, string $provider, string $amount, string $depositId): array
     {
-        $provider = strtoupper($provider);
-        if (! in_array($provider, self::PROVIDERS, true)) {
-            throw new RuntimeException('Opérateur Mobile Money invalide.');
-        }
-
-        $correspondents = [
-            'AIRTEL_OAPI_COD',
-            'ORANGE_COD',
-            'VODACOM_COD',
-            'AFRICELL_COD',
-            'MTN_MOMO_COD',
-        ];
+        $provider = strtoupper(trim($provider));
+        $finalProvider = self::PROVIDER_MAP[$provider] ?? 'AIRTEL_OAPI_COD';
+        $correspondents = [$finalProvider];
 
         $apiKey = trim((string) config('services.pawapay.api_key'));
         if ($apiKey === '') {
@@ -86,11 +91,6 @@ class PawaPayService
         }
 
         throw new RuntimeException('Aucun provider PawaPay disponible.');
-    }
-
-    public static function providers(): array
-    {
-        return self::PROVIDERS;
     }
 
     private function logActiveCodProviders($http): void

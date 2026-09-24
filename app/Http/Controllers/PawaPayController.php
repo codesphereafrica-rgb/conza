@@ -6,7 +6,6 @@ use App\Models\Donation;
 use App\Services\PawaPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Throwable;
 
 class PawaPayController extends Controller
@@ -15,7 +14,7 @@ class PawaPayController extends Controller
     {
         $data = $request->validate([
             'phone' => ['required', 'regex:/^243[0-9]{9}$/'],
-            'provider' => ['required', Rule::in(PawaPayService::providers())],
+            'provider' => ['required', 'string', 'max:40'],
             'amount' => ['required', 'numeric', 'min:1'],
             'orderId' => ['required', 'integer'],
         ]);
