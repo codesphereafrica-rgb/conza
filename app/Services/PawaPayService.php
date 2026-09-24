@@ -11,13 +11,14 @@ use Throwable;
 class PawaPayService
 {
     private const PROVIDER_MAP = [
-        'VODACOM' => 'MPESA_COD',
-        'VODACOM_COD' => 'MPESA_COD',
-        'MPESA' => 'MPESA_COD',
-        'MPESA_COD' => 'MPESA_COD',
-        'AIRTEL' => 'AIRTEL_OAPI_COD',
-        'AIRTEL_COD' => 'AIRTEL_OAPI_COD',
-        'AIRTEL_OAPI_COD' => 'AIRTEL_OAPI_COD',
+        'VODACOM' => 'VODACOM_MPESA_COD',
+        'VODACOM_COD' => 'VODACOM_MPESA_COD',
+        'VODACOM_MPESA_COD' => 'VODACOM_MPESA_COD',
+        'MPESA' => 'VODACOM_MPESA_COD',
+        'MPESA_COD' => 'VODACOM_MPESA_COD',
+        'AIRTEL' => 'AIRTEL_COD',
+        'AIRTEL_COD' => 'AIRTEL_COD',
+        'AIRTEL_OAPI_COD' => 'AIRTEL_COD',
         'ORANGE' => 'ORANGE_COD',
         'ORANGE_COD' => 'ORANGE_COD',
         'AFRICELL' => 'AFRICELL_COD',
@@ -30,8 +31,6 @@ class PawaPayService
     {
         $provider = strtoupper(trim($provider));
         $finalProvider = self::PROVIDER_MAP[$provider] ?? 'AIRTEL_OAPI_COD';
-        $correspondents = [$finalProvider];
-
         $apiKey = trim((string) config('services.pawapay.api_key'));
         if ($apiKey === '') {
             Log::error('PawaPay API key missing on Render', [
@@ -51,46 +50,37 @@ class PawaPayService
         $this->logActiveCodProviders($http);
         $depositUrl = rtrim((string) config('services.pawapay.base_url'), '/') . '/v2/deposits';
 
-        foreach ($correspondents as $index => $correspondent) {
-            $depositId = Str::uuid()->toString();
-            $payload = [
-                'depositId' => $depositId,
-                'amount' => (string) $amount,
-                'currency' => 'CDF',
-                'payer' => [
-                    'type' => 'MMO',
-                    'accountDetails' => [
-                        'phoneNumber' => $phone,
-                        'provider' => $correspondent,
-                    ],
+        $depositId = Str::uuid()->toString();
+        $payload = [
+            'depositId' => $depositId,
+            'amount' => (string) $amount,
+            'currency' => 'CDF',
+            'payer' => [
+                'type' => 'MMO',
+                'accountDetails' => [
+                    'phoneNumber' => $phone,
+                    'provider' => $finalProvider,
                 ],
-                'customerMessage' => 'CONZA Don',
-            ];
+            ],
+        ];
 
-            $response = $http->post($depositUrl, $payload);
-            if (! $response->failed()) {
-                $result = $response->json() ?? [];
-                $result['depositId'] = $depositId;
-                return $result;
-            }
-
-            $rawError = $response->body();
-            Log::error('PAWAPAY RAW ERROR: ' . $rawError, [
-                'http_status' => $response->status(),
-                'deposit_id' => $depositId,
-                'correspondent' => $correspondent,
-                'amount' => $amount,
-                'phone' => $phone,
-            ]);
-
-            $canTryNextProvider = $index < count($correspondents) - 1
-                && str_contains(strtoupper($rawError), 'PROVIDER_NOT_FOUND');
-            if (! $canTryNextProvider) {
-                throw new RuntimeException('PawaPay a refusé la demande (' . $response->status() . '): ' . $rawError);
-            }
+        $response = $http->post($depositUrl, $payload);
+        if (! $response->failed()) {
+            $result = $response->json() ?? [];
+            $result['depositId'] = $depositId;
+            return $result;
         }
 
-        throw new RuntimeException('Aucun provider PawaPay disponible.');
+        $rawError = $response->body();
+        Log::error('PAWAPAY RAW ERROR: ' . $rawError, [
+            'http_status' => $response->status(),
+            'deposit_id' => $depositId,
+            'provider' => $finalProvider,
+            'amount' => $amount,
+            'phone' => $phone,
+        ]);
+
+        throw new RuntimeException('PawaPay a refusé la demande (' . $response->status() . '): ' . $rawError);
     }
 
     private function logActiveCodProviders($http): void

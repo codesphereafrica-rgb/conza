@@ -198,7 +198,7 @@
             const providerInput = document.querySelector('#provider');
             const testPhones = {
                 VODACOM: '243815000001',
-                ORANGE: '243898000001',
+                ORANGE: '243899000001',
                 AIRTEL: '243992000001',
                 AFRICELL: '243900000001'
             };
@@ -241,11 +241,11 @@
                             orderId: donation.dataset.orderId,
                             phone: donation.dataset.phone,
                             provider: {
-                                VODACOM: 'MPESA_COD',
+                                VODACOM: 'VODACOM_MPESA_COD',
                                 ORANGE: 'ORANGE_COD',
-                                AIRTEL: 'AIRTEL_OAPI_COD',
+                                AIRTEL: 'AIRTEL_COD',
                                 AFRICELL: 'AFRICELL_COD'
-                            }[donation.dataset.provider] || donation.dataset.provider,
+                            }[String(donation.dataset.provider || '').toUpperCase()] || donation.dataset.provider,
                             amount: Number(donation.dataset.amount)
                         })
                     })
