@@ -18,11 +18,11 @@ class PawaPayService
             throw new RuntimeException('Opérateur Mobile Money invalide.');
         }
 
-        $correspondent = match ($provider) {
-            'VODACOM', 'MPESA_COD' => 'MPESA_COD',
-            'AIRTEL', 'AIRTEL_COD' => 'AIRTEL_COD',
-            'ORANGE', 'ORANGE_COD' => 'ORANGE_COD',
-            'AFRICELL', 'AFRICELL_COD' => 'AFRICELL_COD',
+        $correspondents = match ($provider) {
+            'VODACOM', 'MPESA_COD' => ['MPESA_COD', 'VODACOM_COD'],
+            'AIRTEL', 'AIRTEL_COD' => ['AIRTEL_COD', 'AIRTEL_OAPI_COD'],
+            'ORANGE', 'ORANGE_COD' => ['ORANGE_COD'],
+            'AFRICELL', 'AFRICELL_COD' => ['AFRICELL_COD'],
         };
 
         $apiKey = trim((string) config('services.pawapay.api_key'));
@@ -34,30 +34,38 @@ class PawaPayService
             throw new RuntimeException('Clé API manquante sur Render');
         }
 
-        $payload = [
-            'depositId' => $depositId,
-            'amount' => (string) $amount,
-            'currency' => 'CDF',
-            'country' => 'COD',
-            'correspondent' => $correspondent,
-            'payer' => [
-                'type' => 'MSISDN',
-                'address' => ['value' => $phone],
-            ],
-            'customerTimestamp' => now()->utc()->toISOString(),
-            'statementDescription' => 'CONZA Don',
-        ];
-
         $http = Http::withHeaders([
             'Authorization' => 'Bearer ' . $apiKey,
+            'Content-Type' => 'application/json',
         ])
             ->acceptJson()
             ->asJson()
             ->timeout((int) config('services.pawapay.timeout', 20));
         $depositUrl = rtrim((string) config('services.pawapay.base_url'), '/') . '/v2/deposits';
-        $response = $http->post($depositUrl, $payload);
 
-        if ($response->failed()) {
+        foreach ($correspondents as $index => $correspondent) {
+            $depositId = Str::uuid()->toString();
+            $payload = [
+                'depositId' => $depositId,
+                'amount' => (string) $amount,
+                'currency' => 'CDF',
+                'payer' => [
+                    'type' => 'MMO',
+                    'accountDetails' => [
+                        'phoneNumber' => $phone,
+                        'provider' => $correspondent,
+                    ],
+                ],
+                'customerMessage' => 'CONZA Don',
+            ];
+
+            $response = $http->post($depositUrl, $payload);
+            if (! $response->failed()) {
+                $result = $response->json() ?? [];
+                $result['depositId'] = $depositId;
+                return $result;
+            }
+
             $rawError = $response->body();
             Log::error('PAWAPAY RAW ERROR: ' . $rawError, [
                 'http_status' => $response->status(),
@@ -67,33 +75,14 @@ class PawaPayService
                 'phone' => $phone,
             ]);
 
-            if ($response->status() === 400 && str_contains(strtolower($rawError), 'parameter \'type\'')) {
-                $depositId = 'CONZA-' . now()->valueOf() . '-' . Str::lower(Str::random(8));
-                $payload['depositId'] = $depositId;
-                unset($payload['payer']['type']);
-
-                $response = $http->post($depositUrl, $payload);
-
-                if (! $response->failed()) {
-                    $result = $response->json() ?? [];
-                    $result['depositId'] = $depositId;
-                    return $result;
-                }
-
-                $rawError = $response->body();
-                Log::error('PAWAPAY RAW ERROR: ' . $rawError, [
-                    'http_status' => $response->status(),
-                    'deposit_id' => $depositId,
-                    'correspondent' => $correspondent,
-                    'amount' => $amount,
-                    'phone' => $phone,
-                ]);
+            $canTryNextProvider = $index < count($correspondents) - 1
+                && str_contains(strtoupper($rawError), 'PROVIDER_NOT_FOUND');
+            if (! $canTryNextProvider) {
+                throw new RuntimeException('PawaPay a refusé la demande (' . $response->status() . '): ' . $rawError);
             }
-
-            throw new RuntimeException('PawaPay a refusé la demande (' . $response->status() . '): ' . $rawError);
         }
 
-        return $response->json() ?? [];
+        throw new RuntimeException('Aucun provider PawaPay disponible.');
     }
 
     public static function providers(): array
