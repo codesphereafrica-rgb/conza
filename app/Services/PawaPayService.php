@@ -17,6 +17,8 @@ class PawaPayService
             throw new RuntimeException('Opérateur Mobile Money invalide.');
         }
 
+        $correspondent = $provider === 'VODACOM' ? 'MPESA_COD' : $provider;
+
         $apiKey = (string) config('services.pawapay.api_key');
         if ($apiKey === '') {
             Log::error('PawaPay API key missing on Render', [
@@ -32,10 +34,10 @@ class PawaPayService
             ->timeout((int) config('services.pawapay.timeout', 20))
             ->post(rtrim((string) config('services.pawapay.base_url'), '/') . '/v2/deposits', [
                 'depositId' => $depositId,
-                'amount' => $amount,
+                'amount' => (string) $amount,
                 'currency' => 'CDF',
                 'country' => 'COD',
-                'correspondent' => $provider,
+                'correspondent' => $correspondent,
                 'payer' => [
                     'type' => 'MSISDN',
                     'address' => ['value' => $phone],

@@ -6,7 +6,6 @@ use App\Models\Donation;
 use App\Services\PawaPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Throwable;
 
@@ -30,7 +29,7 @@ class PawaPayController extends Controller
             return response()->json(['message' => 'Le montant de la commande ne correspond pas.'], 422);
         }
 
-        $depositId = 'CONZA-' . now()->format('YmdHisv') . '-' . Str::upper(Str::random(6));
+        $depositId = 'CONZA-' . (int) floor(microtime(true) * 1000) . '-' . substr(base_convert((string) random_int(0, PHP_INT_MAX), 10, 36), 0, 8);
 
         try {
             $result = $pawaPay->createDeposit(
