@@ -6,9 +6,12 @@ use App\Models\Donation;
 use App\Models\Setting;
 use App\Services\PaymentService;
 use App\Services\EasyPayGateway;
+use App\Services\PawaPayService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class DonationController extends Controller
 {
@@ -68,7 +71,7 @@ class DonationController extends Controller
         return back()->with('success', 'Statut du don remis à pending.');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, PawaPayService $pawaPay)
     {
         $validated = $request->validate([
             'amount' => ['required', 'numeric', 'min:1'],
@@ -99,7 +102,39 @@ class DonationController extends Controller
             'external_reference' => null,
         ]);
 
-        return redirect()->route('donations.index')->with('success', 'Commande créée. Lancez le paiement Mobile Money.');
+        try {
+            Log::info('=== PAWAPAY DEPOSIT HIT ===', [
+                'timestamp' => now()->toISOString(),
+                'payload' => [
+                    'amount' => $donation->amount,
+                    'phone' => $phone,
+                    'provider' => $validated['provider'],
+                    'orderId' => $donation->id,
+                ],
+                'source' => '/dons',
+            ]);
+
+            $result = $pawaPay->createDeposit(
+                $phone,
+                $validated['provider'],
+                rtrim(rtrim(number_format((float) $donation->amount, 2, '.', ''), '0'), '.'),
+                ''
+            );
+
+            $depositId = (string) ($result['depositId'] ?? '');
+            $donation->update([
+                'external_reference' => $depositId !== '' ? $depositId : null,
+            ]);
+
+            return redirect()->route('donations.index')->with('success', 'Paiement Mobile Money initié. Confirmez sur votre téléphone.');
+        } catch (Throwable $exception) {
+            Log::error('PawaPay payment initiation from /dons failed', [
+                'order_id' => $donation->id,
+                'error' => $exception->getMessage(),
+            ]);
+
+            return redirect()->route('donations.index')->with('error', $exception->getMessage());
+        }
     }
 
     public function callback(Request $request, string $reference)

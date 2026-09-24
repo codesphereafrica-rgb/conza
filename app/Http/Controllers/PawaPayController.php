@@ -12,6 +12,11 @@ class PawaPayController extends Controller
 {
     public function deposit(Request $request, PawaPayService $pawaPay)
     {
+        Log::info('=== PAWAPAY DEPOSIT HIT ===', [
+            'timestamp' => now()->toISOString(),
+            'payload' => $request->all(),
+        ]);
+
         $data = $request->validate([
             'phone' => ['required', 'regex:/^243[0-9]{9}$/'],
             'provider' => ['required', 'string', 'max:40'],

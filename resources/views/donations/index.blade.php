@@ -64,7 +64,11 @@
                                         <span>{{ number_format($pendingDonation->amount, 2, ',', ' ') }} {{ $pendingCurrency }}</span>
                                         <span data-payment-status>En attente d'initialisation</span>
                                     </div>
-                                    <button type="button" class="btn small" data-pawapay-pay>Payer avec Mobile Money</button>
+                                    @if(empty($pendingDonation->external_reference))
+                                        <button type="button" class="btn small" data-pawapay-pay>Payer avec Mobile Money</button>
+                                    @else
+                                        <span class="muted">Paiement Mobile Money déjà initié</span>
+                                    @endif
                                     <div class="muted" data-payment-error style="display:none; margin-top:6px;"></div>
                                     <div class="progress-wrap" style="height:10px;">
                                         <div class="progress-bar pending-user-timer-bar" data-created-at="{{ $pendingDonation->created_at->toIso8601String() }}" data-reference="{{ $pendingDonation->external_reference }}" style="width:0%;"></div>
@@ -275,7 +279,9 @@
                     });
                 }
 
-                paymentButton.addEventListener('click', pay);
+                if (paymentButton) {
+                    paymentButton.addEventListener('click', pay);
+                }
 
                 function update() {
                     const now = Date.now();
@@ -329,8 +335,10 @@
                             window.location.reload();
                         } else if (['failed', 'rejected', 'cancelled'].includes(status)) {
                             statusText.textContent = 'Échec';
-                            paymentButton.style.display = 'inline-block';
-                            paymentButton.disabled = false;
+                            if (paymentButton) {
+                                paymentButton.style.display = 'inline-block';
+                                paymentButton.disabled = false;
+                            }
                         }
                     })
                     .catch(function () {
