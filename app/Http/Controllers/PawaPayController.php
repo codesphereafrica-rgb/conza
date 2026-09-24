@@ -35,7 +35,7 @@ class PawaPayController extends Controller
             $result = $pawaPay->createDeposit(
                 $data['phone'],
                 $data['provider'],
-                number_format((float) $donation->amount, 2, '.', ''),
+                rtrim(rtrim(number_format((float) $donation->amount, 2, '.', ''), '0'), '.'),
                 $depositId
             );
         } catch (Throwable $exception) {
@@ -48,13 +48,15 @@ class PawaPayController extends Controller
             return response()->json(['message' => $exception->getMessage()], 502);
         }
 
+        $actualDepositId = (string) ($result['depositId'] ?? $depositId);
+
         $donation->update([
             'provider' => strtolower($data['provider']),
-            'external_reference' => $depositId,
+            'external_reference' => $actualDepositId,
         ]);
 
         return response()->json([
-            'depositId' => $depositId,
+            'depositId' => $actualDepositId,
             'status' => $result['status'] ?? 'ACCEPTED',
             'orderId' => $donation->id,
             'pawapay' => $result,

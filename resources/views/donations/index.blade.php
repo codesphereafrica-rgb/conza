@@ -240,8 +240,13 @@
                         body: JSON.stringify({
                             orderId: donation.dataset.orderId,
                             phone: donation.dataset.phone,
-                            provider: donation.dataset.provider,
-                            amount: donation.dataset.amount
+                            provider: {
+                                VODACOM: 'MPESA_COD',
+                                ORANGE: 'ORANGE_COD',
+                                AIRTEL: 'AIRTEL_COD',
+                                AFRICELL: 'AFRICELL_COD'
+                            }[donation.dataset.provider] || donation.dataset.provider,
+                            amount: Number(donation.dataset.amount)
                         })
                     })
                     .then(function (response) {
