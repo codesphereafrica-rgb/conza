@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
         $middleware->validateCsrfTokens(except: [
             'api/payments/init',
+            'api/pawapay/callback',
+            'api/pawapay/refund',
+            'api/pawapay/payout',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

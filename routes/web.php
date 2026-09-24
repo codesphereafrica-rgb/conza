@@ -10,6 +10,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PawaPayController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +66,10 @@ Route::get('/api/payments/verify/{reference}', [PaymentController::class, 'verif
 Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
 Route::get('/payment/error', fn (Request $request) => app(PaymentController::class)->failure($request, 'error'))->name('payment.error');
 Route::get('/payment/cancel', fn (Request $request) => app(PaymentController::class)->failure($request, 'cancel'))->name('payment.cancel');
+Route::post('/api/pawapay/deposit', [PawaPayController::class, 'deposit'])->middleware('auth')->name('pawapay.deposit');
+Route::post('/api/pawapay/callback', [PawaPayController::class, 'callback'])->name('pawapay.callback');
+Route::post('/api/pawapay/refund', [PawaPayController::class, 'callback'])->name('pawapay.refund');
+Route::post('/api/pawapay/payout', [PawaPayController::class, 'callback'])->name('pawapay.payout');
 
 Route::middleware(['auth', \App\Http\Middleware\EnsureIsAdmin::class])->prefix('admin')->group(function () {
     Route::get('/', [AdminController::class, 'index'])->name('admin.index');

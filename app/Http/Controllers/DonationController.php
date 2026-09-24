@@ -75,29 +75,31 @@ class DonationController extends Controller
             'phone' => ['required', 'string', 'min:9'],
             'currency' => ['required', 'string', 'in:CDF,USD'],
             'country' => ['required', 'string', 'in:CD'],
-            'payment_method' => ['sometimes', 'string', 'in:EASYPAY'],
+            'provider' => ['required', 'string', 'in:VODACOM,ORANGE,AIRTEL,AFRICELL'],
         ]);
+
+        $phone = preg_replace('/\D+/', '', $validated['phone']);
+        if (str_starts_with($phone, '0')) {
+            $phone = '243' . substr($phone, 1);
+        } elseif (! str_starts_with($phone, '243')) {
+            $phone = '243' . $phone;
+        }
+
+        if (! preg_match('/^243[0-9]{9}$/', $phone) || strtoupper($validated['currency']) !== 'CDF') {
+            return back()->withInput()->with('error', 'Utilisez un numéro RDC valide et la devise CDF.');
+        }
 
         $donation = Donation::create([
             'user_id' => Auth::id(),
             'amount' => $validated['amount'],
             'currency' => strtoupper($validated['currency']),
-            'provider' => 'easypay',
+            'phone' => $phone,
+            'provider' => strtolower($validated['provider']),
             'status' => 'pending',
-            'external_reference' => 'don_' . time() . '_' . Auth::id(),
+            'external_reference' => null,
         ]);
 
-        $result = (new PaymentService())->createPayment($donation, $validated['phone'], $validated['payment_method'] ?? 'EASYPAY');
-
-        if (($result['success'] ?? false) === true) {
-            if (! empty($result['paymentUrl'])) {
-                return redirect()->away($result['paymentUrl']);
-            }
-
-            return redirect()->route('donations.index')->with('success', $result['message'] ?? 'Votre transaction a bien été initiée.');
-        }
-
-        return back()->withInput()->with('error', $result['message'] ?? 'Le paiement est indisponible pour le moment.');
+        return redirect()->route('donations.index')->with('success', 'Commande créée. Lancez le paiement Mobile Money.');
     }
 
     public function callback(Request $request, string $reference)
@@ -125,16 +127,22 @@ class DonationController extends Controller
     public function checkStatus(Request $request, string $reference)
     {
         $donation = Donation::where('external_reference', $reference)->first();
-        $paid = $donation && $donation->provider === 'easypay'
-            ? (new EasyPayGateway())->verifyPayment($reference)
-            : false;
-
         if (! $donation) {
             return response()->json([
                 'success' => false,
                 'message' => 'Paiement introuvable.',
             ], 404);
         }
+
+        if ($donation->provider !== 'easypay') {
+            return response()->json([
+                'success' => $donation->status === 'paid',
+                'status' => $donation->status,
+                'reference' => $reference,
+            ]);
+        }
+
+        $paid = (new EasyPayGateway())->verifyPayment($reference);
 
         if ($paid) {
             $donation->status = 'paid';

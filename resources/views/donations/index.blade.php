@@ -59,11 +59,13 @@
                             <h4 style="margin:0 0 8px;">Paiement en attente</h4>
                             @foreach($userPendingDonations as $pendingDonation)
                                 @php($pendingCurrency = strtoupper($pendingDonation->currency ?? 'CDF'))
-                                <div data-pending-donation style="margin-bottom:14px;">
+                                <div data-pending-donation data-order-id="{{ $pendingDonation->id }}" data-phone="{{ $pendingDonation->phone }}" data-provider="{{ strtoupper($pendingDonation->provider) }}" data-amount="{{ $pendingDonation->amount }}" style="margin-bottom:14px;">
                                     <div style="display:flex; justify-content:space-between; gap:12px; font-size:13px; margin-bottom:6px;">
                                         <span>{{ number_format($pendingDonation->amount, 2, ',', ' ') }} {{ $pendingCurrency }}</span>
-                                        <span>Validation dans :</span>
+                                        <span data-payment-status>En attente d'initialisation</span>
                                     </div>
+                                    <button type="button" class="btn small" data-pawapay-pay>Payer avec Mobile Money</button>
+                                    <div class="muted" data-payment-error style="display:none; margin-top:6px;"></div>
                                     <div class="progress-wrap" style="height:10px;">
                                         <div class="progress-bar pending-user-timer-bar" data-created-at="{{ $pendingDonation->created_at->toIso8601String() }}" data-reference="{{ $pendingDonation->external_reference }}" style="width:0%;"></div>
                                     </div>
@@ -144,8 +146,18 @@
                     @csrf
 
                     <div class="form-group">
-                        <label for="phone">Numéro de téléphone pour le push USSD</label>
-                        <input id="phone" name="phone" type="tel" placeholder="0970000000" required>
+                        <label for="phone">Numéro Mobile Money (RDC)</label>
+                        <input id="phone" name="phone" type="tel" value="{{ app()->environment('local') ? '243815000001' : '' }}" placeholder="243815000001" pattern="(?:243|0)[0-9]{9}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="provider">Opérateur</label>
+                        <select id="provider" name="provider" required>
+                            <option value="VODACOM">Vodacom</option>
+                            <option value="ORANGE">Orange</option>
+                            <option value="AIRTEL">Airtel</option>
+                            <option value="AFRICELL">Africell</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
@@ -157,7 +169,6 @@
                         <label for="currency">Devise</label>
                         <select id="currency" name="currency" required>
                             <option value="CDF">CDF</option>
-                            <option value="USD">USD</option>
                         </select>
                     </div>
 
@@ -168,10 +179,9 @@
                         </select>
                     </div>
 
-                    <input type="hidden" name="payment_method" value="EASYPAY">
-                    <p class="muted">Paiement sécurisé par EasyPay.</p>
+                    <p class="muted">Paiement sécurisé par PawaPay. En développement, utilisez un numéro de test RDC.</p>
 
-                    <button type="submit" class="btn">Valider le don</button>
+                    <button type="submit" class="btn">Créer le paiement</button>
                 </form>
             </div>
         @else
@@ -184,10 +194,66 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const bars = document.querySelectorAll('.pending-user-timer-bar');
+            const phoneInput = document.querySelector('#phone');
+            const providerInput = document.querySelector('#provider');
+            const testPhones = {
+                VODACOM: '243815000001',
+                ORANGE: '243898000001',
+                AIRTEL: '243990000001',
+                AFRICELL: '243900000001'
+            };
+            if (phoneInput && providerInput && @json(app()->environment('local'))) {
+                providerInput.addEventListener('change', function () {
+                    phoneInput.value = testPhones[providerInput.value] || '';
+                });
+            }
             bars.forEach(function (bar) {
+                const donation = bar.closest('[data-pending-donation]');
                 const createdAt = new Date(bar.dataset.createdAt).getTime();
                 const reference = bar.dataset.reference;
-                const durationMs = 1 * 60 * 1000;
+                const durationMs = 15 * 60 * 1000;
+                const paymentButton = donation.querySelector('[data-pawapay-pay]');
+                const statusText = donation.querySelector('[data-payment-status]');
+                const errorText = donation.querySelector('[data-payment-error]');
+
+                paymentButton.addEventListener('click', function () {
+                    paymentButton.disabled = true;
+                    statusText.textContent = 'Initialisation...';
+                    errorText.style.display = 'none';
+
+                    fetch('/api/pawapay/deposit', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            orderId: donation.dataset.orderId,
+                            phone: donation.dataset.phone,
+                            provider: donation.dataset.provider,
+                            amount: donation.dataset.amount
+                        })
+                    })
+                    .then(function (response) {
+                        return response.json().then(function (data) {
+                            if (!response.ok) {
+                                throw new Error(data.message || 'Le paiement n’a pas pu être initialisé.');
+                            }
+                            return data;
+                        });
+                    })
+                    .then(function () {
+                        statusText.textContent = 'En attente de confirmation';
+                        paymentButton.style.display = 'none';
+                    })
+                    .catch(function (error) {
+                        statusText.textContent = 'Échec';
+                        errorText.textContent = error.message;
+                        errorText.style.display = 'block';
+                        paymentButton.disabled = false;
+                    });
+                });
 
                 function update() {
                     const now = Date.now();
@@ -239,6 +305,10 @@
                         const status = String(data.status || '').toLowerCase();
                         if (['paid', 'success', 'completed', 'confirmed'].includes(status)) {
                             window.location.reload();
+                        } else if (['failed', 'rejected', 'cancelled'].includes(status)) {
+                            statusText.textContent = 'Échec';
+                            paymentButton.style.display = 'inline-block';
+                            paymentButton.disabled = false;
                         }
                     })
                     .catch(function () {

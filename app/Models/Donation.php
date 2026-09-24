@@ -13,6 +13,7 @@ class Donation extends Model
         'user_id',
         'amount',
         'currency',
+        'phone',
         'provider',
         'status',
         'external_reference',

@@ -48,4 +48,11 @@ return [
         'base_url' => 'https://www.e-com-easypay.com',
     ],
 
+    'pawapay' => [
+        'api_key' => env('PAWAPAY_API_KEY'),
+        'base_url' => env('PAWAPAY_BASE_URL', 'https://api.sandbox.pawapay.io'),
+        'webhook_secret' => env('PAWAPAY_WEBHOOK_SECRET'),
+        'timeout' => env('PAWAPAY_TIMEOUT', 20),
+    ],
+
 ];
