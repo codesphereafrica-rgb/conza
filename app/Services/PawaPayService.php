@@ -25,7 +25,7 @@ class PawaPayService
             'AFRICELL', 'AFRICELL_COD' => 'AFRICELL_COD',
         };
 
-        $apiKey = (string) config('services.pawapay.api_key');
+        $apiKey = trim((string) config('services.pawapay.api_key'));
         if ($apiKey === '') {
             Log::error('PawaPay API key missing on Render', [
                 'env_present' => getenv('PAWAPAY_API_KEY') !== false,
@@ -44,15 +44,18 @@ class PawaPayService
                 'type' => 'MSISDN',
                 'address' => ['value' => $phone],
             ],
-            'customerTimestamp' => now()->utc()->format('Y-m-d\\TH:i:s\\Z'),
-            'statementDescription' => 'CONZA',
+            'customerTimestamp' => now()->utc()->toISOString(),
+            'statementDescription' => 'CONZA Don',
         ];
 
-        $response = Http::withToken($apiKey)
+        $http = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $apiKey,
+        ])
             ->acceptJson()
             ->asJson()
-            ->timeout((int) config('services.pawapay.timeout', 20))
-            ->post(rtrim((string) config('services.pawapay.base_url'), '/') . '/v2/deposits', $payload);
+            ->timeout((int) config('services.pawapay.timeout', 20));
+        $depositUrl = rtrim((string) config('services.pawapay.base_url'), '/') . '/v2/deposits';
+        $response = $http->post($depositUrl, $payload);
 
         if ($response->failed()) {
             $rawError = $response->body();
@@ -64,16 +67,12 @@ class PawaPayService
                 'phone' => $phone,
             ]);
 
-            if ($response->status() === 400 && $correspondent === 'MPESA_COD') {
+            if ($response->status() === 400 && str_contains(strtolower($rawError), 'parameter \'type\'')) {
                 $depositId = 'CONZA-' . now()->valueOf() . '-' . Str::lower(Str::random(8));
                 $payload['depositId'] = $depositId;
-                $payload['correspondent'] = 'MPESA';
+                unset($payload['payer']['type']);
 
-                $response = Http::withToken($apiKey)
-                    ->acceptJson()
-                    ->asJson()
-                    ->timeout((int) config('services.pawapay.timeout', 20))
-                    ->post(rtrim((string) config('services.pawapay.base_url'), '/') . '/v2/deposits', $payload);
+                $response = $http->post($depositUrl, $payload);
 
                 if (! $response->failed()) {
                     $result = $response->json() ?? [];
@@ -85,7 +84,7 @@ class PawaPayService
                 Log::error('PAWAPAY RAW ERROR: ' . $rawError, [
                     'http_status' => $response->status(),
                     'deposit_id' => $depositId,
-                    'correspondent' => 'MPESA',
+                    'correspondent' => $correspondent,
                     'amount' => $amount,
                     'phone' => $phone,
                 ]);
