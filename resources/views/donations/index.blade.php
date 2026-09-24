@@ -216,17 +216,26 @@
                 const statusText = donation.querySelector('[data-payment-status]');
                 const errorText = donation.querySelector('[data-payment-error]');
 
-                paymentButton.addEventListener('click', function () {
+                function pay() {
                     paymentButton.disabled = true;
                     statusText.textContent = 'Initialisation...';
                     errorText.style.display = 'none';
+
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                    if (!csrfToken || !csrfToken.content) {
+                        statusText.textContent = 'Échec';
+                        errorText.textContent = 'Session expirée. Rechargez la page puis réessayez.';
+                        errorText.style.display = 'block';
+                        paymentButton.disabled = false;
+                        return;
+                    }
 
                     fetch('/api/pawapay/deposit', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                            'X-CSRF-TOKEN': csrfToken.content
                         },
                         body: JSON.stringify({
                             orderId: donation.dataset.orderId,
@@ -236,7 +245,13 @@
                         })
                     })
                     .then(function (response) {
-                        return response.json().then(function (data) {
+                        return response.text().then(function (body) {
+                            let data = {};
+                            try {
+                                data = body ? JSON.parse(body) : {};
+                            } catch (parseError) {
+                                throw new Error('Réponse invalide du serveur (' + response.status + ').');
+                            }
                             if (!response.ok) {
                                 throw new Error(data.message || 'Le paiement n’a pas pu être initialisé.');
                             }
@@ -253,7 +268,9 @@
                         errorText.style.display = 'block';
                         paymentButton.disabled = false;
                     });
-                });
+                }
+
+                paymentButton.addEventListener('click', pay);
 
                 function update() {
                     const now = Date.now();

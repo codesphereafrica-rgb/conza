@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Donation;
 use App\Services\PawaPayService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -47,7 +46,7 @@ class PawaPayController extends Controller
                 'error' => $exception->getMessage(),
             ]);
 
-            return response()->json(['message' => 'Impossible d’initier le paiement Mobile Money.'], 502);
+            return response()->json(['message' => $exception->getMessage()], 502);
         }
 
         $donation->update([

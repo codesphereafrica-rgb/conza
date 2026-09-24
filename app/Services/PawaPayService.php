@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class PawaPayService
@@ -18,7 +19,11 @@ class PawaPayService
 
         $apiKey = (string) config('services.pawapay.api_key');
         if ($apiKey === '') {
-            throw new RuntimeException('La clé API PawaPay n’est pas configurée.');
+            Log::error('PawaPay API key missing on Render', [
+                'env_present' => getenv('PAWAPAY_API_KEY') !== false,
+                'config_present' => (bool) config('services.pawapay.api_key'),
+            ]);
+            throw new RuntimeException('Clé API manquante sur Render');
         }
 
         $response = Http::withToken($apiKey)
